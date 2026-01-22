@@ -126,7 +126,7 @@
                             @foreach($departments as $i => $dept)
                                 <tr>
                                     <td class="text-muted">{{ $departments->firstItem() + $i }}</td>
-                                    <td>{{ $dept->name }}</td>
+                                    <td>{{ $dept->department_name }}</td>
                                     <td>{{ $dept->company?->company_name ?? '-' }}</td>
                                     <td>
                                         @if((int)$dept->is_hr === 1)
