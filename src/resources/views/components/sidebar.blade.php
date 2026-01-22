@@ -2,15 +2,11 @@
     <div class="sidebar-wrapper active">
         <div class="sidebar-header position-relative">
             <div class="d-flex justify-content-between align-items-center">
-                <!-- Logo Section -->
                 <div class="img-fluid d-flex align-items-center">
                     <h5 class="logo-text ms-3">HRM Admin</h5>
                 </div>
-                <!-- Theme Toggle -->
                 <div class="theme-toggle d-flex gap-2 align-items-center mt-2">
-                    <!-- SVG icons and theme switcher -->
                 </div>
-                <!-- Sidebar Toggler -->
                 <div class="sidebar-toggler x">
                     <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>
                 </div>
@@ -47,6 +43,13 @@
                                 <a href="{{ route('admin.master-data.saldo-cuti.index') }}" class="sidebar-link">
                                     <i class="bi bi-calendar2-check"></i>
                                     <span>Saldo Cuti</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.master-data.hari-libur.index') }}">
+                                <a href="{{ route('admin.master-data.hari-libur.index') }}" class="sidebar-link">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>Hari Libur</span>
                                 </a>
                             </li>
 

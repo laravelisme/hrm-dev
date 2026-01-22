@@ -192,7 +192,6 @@
                 dropdownParent: $('.select2-company-filter').closest('.input-group')
             });
 
-
             const indexUrl = @json(route('admin.master-data.department.index'));
             const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();
 

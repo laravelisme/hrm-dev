@@ -21,33 +21,38 @@ class DepartmentController extends Controller
 
     public function index(Request $request)
     {
-        $searchName      = trim((string) $request->query('searchName', ''));
-        $searchIsHr      = (string) $request->query('searchIsHr', ''); // jangan trim biar "0" aman
-        $searchCompanyId = (string) $request->query('searchCompanyId', '');
-        $perPage         = (int) $request->query('perPage', 10);
-        $perPage         = max(1, min($perPage, 100));
+        try {
+            $searchName      = trim((string) $request->query('searchName', ''));
+            $searchIsHr      = (string) $request->query('searchIsHr', ''); // jangan trim biar "0" aman
+            $searchCompanyId = (string) $request->query('searchCompanyId', '');
+            $perPage         = (int) $request->query('perPage', 10);
+            $perPage         = max(1, min($perPage, 100));
 
-        $query = $this->department->newQuery()->with('company:id,company_name');
+            $query = $this->department->newQuery()->with('company:id,company_name');
 
-        if ($searchName !== '' || $searchIsHr !== '' || $searchCompanyId !== '') {
-            $query->where(function ($query) use ($searchName, $searchIsHr, $searchCompanyId) {
-                if ($searchName !== '') {
-                    $query->where('name', 'like', '%' . $searchName . '%');
-                }
-                if ($searchIsHr !== '') {
-                    $query->where('is_hr', $searchIsHr);
-                }
-                if ($searchCompanyId !== '') {
-                    $query->where('company_id', $searchCompanyId);
-                }
-            });
+            if ($searchName !== '' || $searchIsHr !== '' || $searchCompanyId !== '') {
+                $query->where(function ($query) use ($searchName, $searchIsHr, $searchCompanyId) {
+                    if ($searchName !== '') {
+                        $query->where('name', 'like', '%' . $searchName . '%');
+                    }
+                    if ($searchIsHr !== '') {
+                        $query->where('is_hr', $searchIsHr);
+                    }
+                    if ($searchCompanyId !== '') {
+                        $query->where('company_id', $searchCompanyId);
+                    }
+                });
+            }
+
+            $departments = $query->orderByDesc('id')->paginate($perPage)->withQueryString();
+
+            $companies = MCompany::select('id', 'company_name')->orderBy('company_name')->get();
+
+            return view('pages.master-data.department.index', compact('departments', 'companies'));
+        } catch (\Throwable $e) {
+            Log::error('[DepartmentController@index] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            abort(500, 'Failed to load department data');
         }
-
-        $departments = $query->orderByDesc('id')->paginate($perPage)->withQueryString();
-
-        $companies = MCompany::select('id', 'company_name')->orderBy('company_name')->get();
-
-        return view('pages.master-data.department.index', compact('departments', 'companies'));
     }
 
 

@@ -65,6 +65,15 @@ Route::prefix('/')->group(function () {
                 Route::put('/{id}/update', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'update'])->name('admin.master-data.department.update');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'destroy'])->name('admin.master-data.department.destroy');
             });
+
+            Route::prefix('/hari-libur')->group(function () {
+                Route::get('/', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'index'])->name('admin.master-data.hari-libur.index');
+                Route::get('/create', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'create'])->name('admin.master-data.hari-libur.create');
+                Route::post('/store', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'store'])->name('admin.master-data.hari-libur.store');
+                Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'edit'])->name('admin.master-data.hari-libur.edit');
+                Route::put('/{id}/update', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'update'])->name('admin.master-data.hari-libur.update');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'destroy'])->name('admin.master-data.hari-libur.destroy');
+            });
         });
     });
 
