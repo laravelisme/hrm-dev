@@ -38,6 +38,15 @@ Route::prefix('/')->group(function () {
                 Route::put('/{id}/update', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'update'])->name('admin.master-data.saldo-cuti.update');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'destroy'])->name('admin.master-data.saldo-cuti.destroy');
             });
+
+            Route::prefix('lokasi-kerja')->group(function () {
+                Route::get('/', [\App\Http\Controllers\MasterData\LokasiKerja\LokasiKerjaController::class, 'index'])->name('admin.master-data.lokasi-kerja.index');
+                Route::get('/create', [\App\Http\Controllers\MasterData\LokasiKerja\LokasiKerjaController::class, 'create'])->name('admin.master-data.lokasi-kerja.create');
+                Route::post('/store', [\App\Http\Controllers\MasterData\LokasiKerja\LokasiKerjaController::class, 'store'])->name('admin.master-data.lokasi-kerja.store');
+                Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\LokasiKerja\LokasiKerjaController::class, 'edit'])->name('admin.master-data.lokasi-kerja.edit');
+                Route::put('/{id}/update', [\App\Http\Controllers\MasterData\LokasiKerja\LokasiKerjaController::class, 'update'])->name('admin.master-data.lokasi-kerja.update');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\LokasiKerja\LokasiKerjaController::class, 'destroy'])->name('admin.master-data.lokasi-kerja.destroy');
+            });
         });
     });
 

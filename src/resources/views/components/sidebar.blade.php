@@ -47,6 +47,13 @@
                                 <span>Saldo Cuti</span>
                             </a>
                         </li>
+
+                        <li class="submenu-item {{ activeState('admin.master-data.lokasi-kerja.index') }}">
+                            <a href="{{ route('admin.master-data.lokasi-kerja.index') }}" class="sidebar-link">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Lokasi Kerja</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
