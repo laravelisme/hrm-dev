@@ -35,7 +35,17 @@
                     </a>
                     <ul class="submenu">
                         <li class="submenu-item {{ activeState('admin.master-data.jabatan.index') }}">
-                            <a href="{{ route('admin.master-data.jabatan.index') }}" class="sidebar-link"><i class="bi bi-person-badge"></i><span>Jabatan</span></a>
+                            <a href="{{ route('admin.master-data.jabatan.index') }}" class="sidebar-link">
+                                <i class="bi bi-person-badge"></i>
+                                <span>Jabatan</span>
+                            </a>
+                        </li>
+
+                        <li class="submenu-item {{ activeState('admin.master-data.saldo-cuti.index') }}">
+                            <a href="{{ route('admin.master-data.saldo-cuti.index') }}" class="sidebar-link">
+                                <i class="bi bi-calendar2-check"></i>
+                                <span>Saldo Cuti</span>
+                            </a>
                         </li>
                     </ul>
                 </li>

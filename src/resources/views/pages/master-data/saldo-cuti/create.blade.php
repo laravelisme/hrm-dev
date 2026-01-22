@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
-@section('title', 'Edit Jabatan')
-@section('subtitle', 'Edit Jabatan')
+@section('title', 'Add Saldo Cuti')
+@section('subtitle', 'Add Saldo Cuti')
 
 @section('content')
     <section class="section">
@@ -9,40 +9,33 @@
             <div class="col-12 col-lg-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">Edit Jabatan</h4>
-                        <a href="{{ route('admin.master-data.jabatan.index') }}" class="btn btn-light">
+                        <h4 class="mb-0">Create New Saldo Cuti</h4>
+                        <a href="{{ route('admin.master-data.saldo-cuti.index') }}" class="btn btn-light">
                             <i class="bi bi-arrow-left me-1"></i> Back
                         </a>
                     </div>
 
                     <div class="card-body">
-                        <form id="formEditJabatan">
+                        <form id="formAddSaldoCuti">
                             @csrf
-                            @method('PUT')
                             <div class="row g-3">
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Nama Jabatan <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="name" value="{{ old('name', $jabatan->name) }}">
-                                    <div class="invalid-feedback" data-error-for="name"></div>
+                                    <label class="form-label">Jenis Cuti <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="jenis" placeholder="Cuti Tahunan">
+                                    <div class="invalid-feedback" data-error-for="jenis"></div>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label">Kode</label>
-                                    <input type="text" class="form-control" name="kode" value="{{ old('kode', $jabatan->kode) }}">
-                                    <div class="invalid-feedback" data-error-for="kode"></div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Level</label>
-                                    <input type="number" class="form-control" name="level" value="{{ old('level', $jabatan->level) }}">
-                                    <div class="invalid-feedback" data-error-for="level"></div>
+                                    <label class="form-label">Jumlah <span class="text-danger">*</span></label>
+                                    <input type="number" class="form-control" name="jumlah" placeholder="12" min="0" step="1">
+                                    <div class="invalid-feedback" data-error-for="jumlah"></div>
                                 </div>
 
                                 <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-                                    <a href="{{ route('admin.master-data.jabatan.index') }}" class="btn btn-light">Cancel</a>
+                                    <a href="{{ route('admin.master-data.saldo-cuti.index') }}" class="btn btn-light">Cancel</a>
                                     <button type="submit" class="btn btn-primary" id="btnSubmit">
-                                        <i class="bi bi-save me-1"></i> Update Jabatan
+                                        <i class="bi bi-save me-1"></i> Save Saldo Cuti
                                     </button>
                                 </div>
 
@@ -58,21 +51,21 @@
 @push('scripts')
     <script>
         $(function () {
-            const updateUrl = @json(route('admin.master-data.jabatan.update', $jabatan->id));
-            const indexUrl = @json(route('admin.master-data.jabatan.index'));
+            const storeUrl = @json(route('admin.master-data.saldo-cuti.store'));
+            const indexUrl = @json(route('admin.master-data.saldo-cuti.index'));
 
             function resetFieldErrors() {
-                $('#formEditJabatan .is-invalid').removeClass('is-invalid');
-                $('#formEditJabatan [data-error-for]').text('');
+                $('#formAddSaldoCuti .is-invalid').removeClass('is-invalid');
+                $('#formAddSaldoCuti [data-error-for]').text('');
             }
 
             function setFieldError(field, message) {
-                const $input = $('#formEditJabatan [name="' + field + '"]');
+                const $input = $('#formAddSaldoCuti [name="' + field + '"]');
                 $input.addClass('is-invalid');
-                $('#formEditJabatan [data-error-for="' + field + '"]').text(message);
+                $('#formAddSaldoCuti [data-error-for="' + field + '"]').text(message);
             }
 
-            $('#formEditJabatan').on('submit', function (e) {
+            $('#formAddSaldoCuti').on('submit', function (e) {
                 e.preventDefault();
                 resetFieldErrors();
 
@@ -80,7 +73,7 @@
                 $('#btnSubmit').prop('disabled', true);
 
                 $.ajax({
-                    url: updateUrl,
+                    url: storeUrl,
                     method: 'POST',
                     data: formData,
                     headers: { 'X-CSRF-TOKEN': $('input[name="_token"]').val() },
@@ -90,7 +83,7 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
-                            text: res?.message || 'Jabatan updated successfully',
+                            text: res?.message || 'Saldo cuti created successfully',
                             confirmButtonText: 'OK'
                         }).then(() => window.location.href = indexUrl);
                     },
@@ -113,7 +106,7 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: xhr.responseJSON?.message || 'Failed to update jabatan',
+                            text: xhr.responseJSON?.message || 'Failed to create saldo cuti',
                             confirmButtonText: 'OK'
                         });
                     }

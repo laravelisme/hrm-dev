@@ -29,6 +29,15 @@ Route::prefix('/')->group(function () {
                 Route::put('/{id}/update', [JabatanController::class, 'update'])->name('admin.master-data.jabatan.update');
                 Route::delete('/{id}/delete', [JabatanController::class, 'destroy'])->name('admin.master-data.jabatan.destroy');
             });
+
+            Route::prefix('saldo-cuti')->group(function () {
+                Route::get('/', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'index'])->name('admin.master-data.saldo-cuti.index');
+                Route::get('/create', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'create'])->name('admin.master-data.saldo-cuti.create');
+                Route::post('/store', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'store'])->name('admin.master-data.saldo-cuti.store');
+                Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'edit'])->name('admin.master-data.saldo-cuti.edit');
+                Route::put('/{id}/update', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'update'])->name('admin.master-data.saldo-cuti.update');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'destroy'])->name('admin.master-data.saldo-cuti.destroy');
+            });
         });
     });
 
