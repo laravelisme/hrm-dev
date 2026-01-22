@@ -56,6 +56,15 @@ Route::prefix('/')->group(function () {
                 Route::put('/{id}/update', [\App\Http\Controllers\MasterData\Company\CompanyController::class, 'update'])->name('admin.master-data.company.update');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\Company\CompanyController::class, 'destroy'])->name('admin.master-data.company.destroy');
             });
+
+            Route::prefix('/department')->group(function () {
+                Route::get('/', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'index'])->name('admin.master-data.department.index');
+                Route::get('/create', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'create'])->name('admin.master-data.department.create');
+                Route::post('/store', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'store'])->name('admin.master-data.department.store');
+                Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'edit'])->name('admin.master-data.department.edit');
+                Route::put('/{id}/update', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'update'])->name('admin.master-data.department.update');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'destroy'])->name('admin.master-data.department.destroy');
+            });
         });
     });
 
