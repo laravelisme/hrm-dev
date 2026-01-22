@@ -1,0 +1,11 @@
+docker compose down -v
+docker compose up -d postgres_master
+docker logs -f postgres-master
+
+docker compose up -d postgres_slave
+docker logs -f postgres-slave
+
+docker compose up -d
+
+docker exec -it postgres-master psql -U user123 -d test -c \
+"SELECT client_addr, state, sync_state FROM pg_stat_replication;"
