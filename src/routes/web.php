@@ -20,7 +20,7 @@ Route::prefix('/')->group(function () {
             return view('pages.dashboard.index');
         })->name('admin.dashboard');
 
-        Route::prefix('master-data')->group(function () {
+        Route::prefix('master-data')->middleware(['role:hr'])->group(function () {
             Route::prefix('jabatan')->group(function () {
                 Route::get('/', [JabatanController::class, 'index'])->name('admin.master-data.jabatan.index');
                 Route::get('/create', [JabatanController::class, 'create'])->name('admin.master-data.jabatan.create');

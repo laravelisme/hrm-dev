@@ -11,7 +11,9 @@ class JabatanUpdateFormRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->user() !== null;
+        $user = $this->user();
+
+        return $user && $user->hasRole('hr');
     }
 
     /**
