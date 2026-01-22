@@ -1,3 +1,5 @@
+chmod +x ./postgres/standby/start-standby.sh
+
 docker compose down -v
 docker compose up -d postgres_master
 docker logs -f postgres-master
