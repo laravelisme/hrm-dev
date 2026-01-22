@@ -65,6 +65,21 @@
                                     <div class="invalid-feedback" data-error-for="is_repeat"></div>
                                 </div>
 
+                                <div class="col-md-12" id="wrapCompany" style="display:none;">
+                                    <label class="form-label">Pilih Perusahaan <span class="text-danger">*</span></label>
+
+                                    <select class="form-select" name="company_ids[]" multiple>
+                                        @foreach ($companies as $company)
+                                            <option value="{{ $company->id }}">
+                                                {{ $company->company_name ?? $company->company_name ?? ('Company #' . $company->id) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    <div class="invalid-feedback d-block" data-error-for="company_ids"></div>
+                                    <small class="text-muted">Bisa pilih lebih dari 1, ketik untuk mencari.</small>
+                                </div>
+
                                 <div class="col-12 d-flex justify-content-end gap-2 mt-3">
                                     <a href="{{ route('admin.master-data.hari-libur.index') }}" class="btn btn-light">Cancel</a>
                                     <button type="submit" class="btn btn-primary" id="btnSubmit">
@@ -90,22 +105,63 @@
             const storeUrl = @json(route('admin.master-data.hari-libur.store'));
             const indexUrl = @json(route('admin.master-data.hari-libur.index'));
 
+            const $form = $('#formAddHariLibur');
+            const $isUmum = $form.find('[name="is_umum"]');
+            const $wrapCompany = $('#wrapCompany');
+            const $companySelect = $form.find('[name="company_ids[]"]');
+
+            if ($companySelect.length) {
+                $companySelect.select2({
+                    width: '100%',
+                    placeholder: 'Pilih perusahaan...',
+                    allowClear: true
+                });
+            }
+
             function resetFieldErrors() {
-                $('#formAddHariLibur .is-invalid').removeClass('is-invalid');
-                $('#formAddHariLibur [data-error-for]').text('');
+                $form.find('.is-invalid').removeClass('is-invalid');
+                $form.find('[data-error-for]').text('');
+
+                $form.find('.select2-selection').removeClass('is-invalid');
             }
 
             function setFieldError(field, message) {
-                const $input = $('#formAddHariLibur [name="' + field + '"]');
+                const $input = $form.find('[name="' + field + '"], [name="' + field + '[]"]');
                 $input.addClass('is-invalid');
-                $('#formAddHariLibur [data-error-for="' + field + '"]').text(message);
+
+                if ($input.hasClass('select2-hidden-accessible')) {
+                    $input.next('.select2-container')
+                        .find('.select2-selection')
+                        .addClass('is-invalid');
+                }
+
+                $form.find('[data-error-for="' + field + '"]').text(message);
             }
 
-            $('#formAddHariLibur').on('submit', function (e) {
+            function toggleCompanySelect() {
+                const isUmumVal = $isUmum.val(); // "1" / "0"
+
+                if (isUmumVal === '0') {
+                    $wrapCompany.show();
+                    $companySelect.prop('disabled', false);
+                } else {
+                    $wrapCompany.hide();
+                    $companySelect.val(null).trigger('change');
+                    $companySelect.prop('disabled', true);
+                }
+            }
+
+            toggleCompanySelect();
+            $isUmum.on('change', function () {
+                resetFieldErrors();
+                toggleCompanySelect();
+            });
+
+            $form.on('submit', function (e) {
                 e.preventDefault();
                 resetFieldErrors();
 
-                const formData = $(this).serialize();
+                const formData = $form.serialize();
                 $('#btnSubmit').prop('disabled', true);
 
                 $.ajax({
@@ -128,7 +184,11 @@
 
                         if (xhr.status === 422) {
                             const errors = xhr.responseJSON?.errors || {};
-                            Object.keys(errors).forEach(key => setFieldError(key, errors[key][0]));
+
+                            Object.keys(errors).forEach((key) => {
+                                const baseKey = key.split('.')[0];
+                                setFieldError(baseKey, errors[key][0]);
+                            });
 
                             Swal.fire({
                                 icon: 'error',

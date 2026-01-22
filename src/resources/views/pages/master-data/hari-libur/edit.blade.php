@@ -19,6 +19,7 @@
                         <form id="formEditHariLibur">
                             @csrf
                             @method('PUT')
+
                             <div class="row g-3">
 
                                 <div class="col-md-6">
@@ -31,20 +32,22 @@
                                 <div class="col-md-3">
                                     <label class="form-label">Tanggal Mulai <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control" name="tanggal_mulai"
-                                           value="{{ old('tanggal_mulai', $hariLibur->tanggal_mulai) }}">
+                                           value="{{ old('tanggal_mulai', optional($hariLibur->tanggal_mulai)->format('Y-m-d') ?? $hariLibur->tanggal_mulai ?? '') }}">
                                     <div class="invalid-feedback" data-error-for="tanggal_mulai"></div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <label class="form-label">Tanggal Selesai <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control" name="tanggal_selesai"
-                                           value="{{ old('tanggal_selesai', $hariLibur->tanggal_selesai) }}">
+                                           value="{{ old('tanggal_selesai', optional($hariLibur->tanggal_selesai)->format('Y-m-d') ?? $hariLibur->tanggal_selesai ?? '') }}">
                                     <div class="invalid-feedback" data-error-for="tanggal_selesai"></div>
                                 </div>
 
                                 <div class="col-md-4">
                                     <label class="form-label">Cuti Bersama <span class="text-danger">*</span></label>
-                                    @php($valBersama = (string) old('is_cuti_bersama', (int)($hariLibur->is_cuti_bersama ?? 0)))
+                                    @php
+                                        $valBersama = (string) old('is_cuti_bersama', (int)($hariLibur->is_cuti_bersama ?? 0))
+                                    @endphp
                                     <select class="form-select" name="is_cuti_bersama">
                                         <option value="0" @selected($valBersama === '0')>Tidak</option>
                                         <option value="1" @selected($valBersama === '1')>Ya</option>
@@ -54,7 +57,9 @@
 
                                 <div class="col-md-4">
                                     <label class="form-label">Terapkan disemua perusahaan <span class="text-danger">*</span></label>
-                                    @php($valUmum = (string) old('is_umum', (int)($hariLibur->is_umum ?? 1)))
+                                    @php
+                                        $valUmum = (string) old('is_umum', (int)($hariLibur->is_umum ?? 1))
+                                    @endphp
                                     <select class="form-select" name="is_umum">
                                         <option value="1" @selected($valUmum === '1')>Ya</option>
                                         <option value="0" @selected($valUmum === '0')>Tidak</option>
@@ -64,12 +69,36 @@
 
                                 <div class="col-md-4">
                                     <label class="form-label">Repeat (Tahunan) <span class="text-danger">*</span></label>
-                                    @php($valRepeat = (string) old('is_repeat', (int)($hariLibur->is_repeat ?? 0)))
+                                    @php
+                                        $valRepeat = (string) old('is_repeat', (int)($hariLibur->is_repeat ?? 0))
+                                    @endphp
+
                                     <select class="form-select" name="is_repeat">
                                         <option value="0" @selected($valRepeat === '0')>Tidak</option>
                                         <option value="1" @selected($valRepeat === '1')>Ya</option>
                                     </select>
                                     <div class="invalid-feedback" data-error-for="is_repeat"></div>
+                                </div>
+
+                                <div class="col-md-12" id="wrapCompany" style="display:none;">
+                                    <label class="form-label">Pilih Perusahaan <span class="text-danger">*</span></label>
+
+                                    @php
+                                        $oldCompanyIds = old('company_ids', $selectedCompanyIds ?? []);
+                                        $oldCompanyIds = is_array($oldCompanyIds) ? $oldCompanyIds : [];
+                                    @endphp
+
+                                    <select class="form-select" name="company_ids[]" multiple>
+                                        @foreach ($companies as $company)
+                                            <option value="{{ $company->id }}"
+                                                @selected(in_array($company->id, $oldCompanyIds))>
+                                                {{ $company->company_name ?? ('Company #' . $company->id) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    <div class="invalid-feedback d-block" data-error-for="company_ids"></div>
+                                    <small class="text-muted">Bisa pilih lebih dari 1, ketik untuk mencari.</small>
                                 </div>
 
                                 <div class="col-12 d-flex justify-content-end gap-2 mt-3">
@@ -81,6 +110,7 @@
 
                             </div>
                         </form>
+
                         <small class="text-muted d-block mt-3">
                             Tips: jika hanya 1 hari, set tanggal mulai dan tanggal selesai sama.
                         </small>
@@ -97,22 +127,62 @@
             const updateUrl = @json(route('admin.master-data.hari-libur.update', $hariLibur->id));
             const indexUrl  = @json(route('admin.master-data.hari-libur.index'));
 
+            const $form = $('#formEditHariLibur');
+            const $isUmum = $form.find('[name="is_umum"]');
+            const $wrapCompany = $('#wrapCompany');
+            const $companySelect = $form.find('[name="company_ids[]"]');
+
+            if ($companySelect.length) {
+                $companySelect.select2({
+                    width: '100%',
+                    placeholder: 'Pilih perusahaan...',
+                    allowClear: true
+                });
+            }
+
             function resetFieldErrors() {
-                $('#formEditHariLibur .is-invalid').removeClass('is-invalid');
-                $('#formEditHariLibur [data-error-for]').text('');
+                $form.find('.is-invalid').removeClass('is-invalid');
+                $form.find('[data-error-for]').text('');
+                $form.find('.select2-selection').removeClass('is-invalid');
             }
 
             function setFieldError(field, message) {
-                const $input = $('#formEditHariLibur [name="' + field + '"]');
+                const $input = $form.find('[name="' + field + '"], [name="' + field + '[]"]');
                 $input.addClass('is-invalid');
-                $('#formEditHariLibur [data-error-for="' + field + '"]').text(message);
+
+                if ($input.hasClass('select2-hidden-accessible')) {
+                    $input.next('.select2-container')
+                        .find('.select2-selection')
+                        .addClass('is-invalid');
+                }
+
+                $form.find('[data-error-for="' + field + '"]').text(message);
             }
 
-            $('#formEditHariLibur').on('submit', function (e) {
+            function toggleCompanySelect() {
+                const isUmumVal = $isUmum.val();
+
+                if (isUmumVal === '0') {
+                    $wrapCompany.show();
+                    $companySelect.prop('disabled', false);
+                } else {
+                    $wrapCompany.hide();
+                    $companySelect.prop('disabled', true);
+                    $companySelect.val(null).trigger('change');
+                }
+            }
+
+            toggleCompanySelect();
+            $isUmum.on('change', function () {
+                resetFieldErrors();
+                toggleCompanySelect();
+            });
+
+            $form.on('submit', function (e) {
                 e.preventDefault();
                 resetFieldErrors();
 
-                const formData = $(this).serialize();
+                const formData = $form.serialize();
                 $('#btnSubmit').prop('disabled', true);
 
                 $.ajax({
@@ -135,7 +205,11 @@
 
                         if (xhr.status === 422) {
                             const errors = xhr.responseJSON?.errors || {};
-                            Object.keys(errors).forEach(key => setFieldError(key, errors[key][0]));
+
+                            Object.keys(errors).forEach((key) => {
+                                const baseKey = key.split('.')[0];
+                                setFieldError(baseKey, errors[key][0]);
+                            });
 
                             Swal.fire({
                                 icon: 'error',
