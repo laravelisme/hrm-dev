@@ -56,6 +56,13 @@
                                     <span>Lokasi Kerja</span>
                                 </a>
                             </li>
+
+                            <li class="submenu-item {{ activeState('admin.master-data.company.index') }}">
+                                <a href="{{ route('admin.master-data.company.index') }}" class="sidebar-link">
+                                    <i class="bi bi-buildings"></i>
+                                    <span>Company</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 @endif
