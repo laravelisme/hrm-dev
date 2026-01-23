@@ -3,7 +3,7 @@
         <div class="sidebar-header position-relative">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="img-fluid d-flex align-items-center">
-                    <h5 class="logo-text ms-3">HRM Admin</h5>
+                    <h5 class="logo-text ms-3">HRM Admin PT. TAKO ANUGERAH KOPORASI</h5>
                 </div>
                 <div class="theme-toggle d-flex gap-2 align-items-center mt-2">
                 </div>
@@ -105,6 +105,10 @@
                                 </a>
                             </li>
 
+                            <li class="submenu-item {{ activeState('admin.master-data.grup-jam-kerja.index') }}">
+                                <a href="{{ route('admin.master-data.grup-jam-kerja.index') }}" class="sidebar-link">
+                                    <i class="bi bi-clock"></i>
+                                    <span>Grup Jam Kerja</span>
                             <li class="submenu-item {{ activeState('admin.master-data.setting.index') }}">
                                 <a href="{{ route('admin.master-data.setting.index') }}" class="sidebar-link">
                                     <i class="bi bi-gear"></i>
