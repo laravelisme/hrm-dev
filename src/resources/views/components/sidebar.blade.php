@@ -26,6 +26,13 @@
 
                 @php($user = auth()->user())
                 @if($user && $user->hasRole('hr'))
+                    <li class="sidebar-item {{ activeState('admin.dashboard') }}">
+                        <a href="{{ route('admin.dashboard') }}" class="sidebar-link">
+                            <i class="bi bi-person-plus"></i>
+                            <span>Calon Karyawan</span>
+                        </a>
+                    </li>
+
                     <li class="sidebar-item has-sub {{ request()->is('admin/master-data*') ? 'active' : '' }}">
                         <a href="#" class="sidebar-link">
                             <i class="bi bi-folder-fill"></i>
