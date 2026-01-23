@@ -7,6 +7,7 @@ use App\Http\Requests\Recruitment\CalonKaryawanRegisterRequest;
 use App\Models\MCompany;
 use App\Models\MDepartment;
 use App\Models\MCalonKaryawan; // buat model ini
+use App\Models\MStatusRecruitment;
 use App\Models\TTokenCalonKaryawan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -155,7 +156,16 @@ class RegisterController extends Controller
 
                 unset($data['token']);
 
+                DB::beginTransaction();
+
                 $calon = MCalonKaryawan::create($data);
+
+                $statusRecruitment = MStatusRecruitment::create([
+                   'm_calon_karyawan_id' => $calon->id,
+                   'status' => 'SHORTLIST_ADMIN',
+                ]);
+
+                DB::commit();
 
                 $tokenRow->update(['is_used' => true]);
 
@@ -163,6 +173,7 @@ class RegisterController extends Controller
             });
 
         } catch (\Throwable $e) {
+            DB::rollBack();
             Log::error('[RegisterController@store] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return back()->withErrors(['general' => 'Gagal submit form. Coba lagi.'])->withInput();
         }

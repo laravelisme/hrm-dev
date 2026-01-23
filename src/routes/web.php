@@ -20,8 +20,6 @@ Route::prefix('/')->group(function () {
         Route::post('/register', [\App\Http\Controllers\Recruitment\RegisterController::class, 'store'])->name('register.store');
         Route::get('/select2/companies', [\App\Http\Controllers\Recruitment\RegisterController::class, 'select2Companies'])->name('select2.companies');
         Route::get('/select2/departments', [\App\Http\Controllers\Recruitment\RegisterController::class, 'select2Departments'])->name('select2.departments');
-
-        // opsional biar setelah submit tidak balik ke token-used
         Route::get('/register/success', [\App\Http\Controllers\Recruitment\RegisterController::class, 'success'])->name('register.success');
     });
 
@@ -36,6 +34,12 @@ Route::prefix('/')->group(function () {
                 Route::get('/', [\App\Http\Controllers\CalonKaryawan\GenerateLink\GenerateLinkController::class, 'index'])->name('admin.calon-karyawan.generate-link.index');
                 Route::post('/store', [\App\Http\Controllers\CalonKaryawan\GenerateLink\GenerateLinkController::class, 'store'])->name('admin.calon-karyawan.generate-link.store');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\GenerateLink\GenerateLinkController::class, 'destroy'])->name('admin.calon-karyawan.generate-link.destroy');
+            });
+
+            Route::prefix('/shortlist-admin')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'index'])->name('admin.calon-karyawan.shortlist-admin.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'show'])->name('admin.calon-karyawan.shortlist-admin.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'destroy'])->name('admin.calon-karyawan.shortlist-admin.destroy');
             });
         });
 

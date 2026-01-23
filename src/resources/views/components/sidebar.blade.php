@@ -40,6 +40,13 @@
                                 </a>
                             </li>
 
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.shortlist-admin.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.shortlist-admin.index') }}" class="sidebar-link">
+                                    <i class="bi bi-person-check"></i>
+                                    <span>Shortlist Adm</span>
+                                </a>
+                            </li>
+
                         </ul>
                     </li>
 
