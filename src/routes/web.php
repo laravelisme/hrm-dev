@@ -23,7 +23,6 @@ Route::prefix('/')->group(function () {
         Route::get('/register/success', [\App\Http\Controllers\Recruitment\RegisterController::class, 'success'])->name('register.success');
     });
 
-
     Route::middleware([AuthMiddleware::class])->group(function () {
         Route::get('dashboard', function () {
             return view('pages.dashboard.index');
@@ -116,15 +115,15 @@ Route::prefix('/')->group(function () {
                 Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'edit'])->name('admin.master-data.grup-jam-kerja.edit');
                 Route::put('/{id}/update', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'update'])->name('admin.master-data.grup-jam-kerja.update');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'destroy'])->name('admin.master-data.grup-jam-kerja.destroy');
-            Route::prefix('/setting')->group(function () {
-                Route::get('/', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'index'])->name('admin.master-data.setting.index');
-                Route::get('/create', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'create'])->name('admin.master-data.setting.create');
-                Route::post('/create', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'store'])->name('admin.master-data.setting.store');
-                Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'edit'])->name('admin.master-data.setting.edit');
-                Route::put('/{id}/update', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'update'])->name('admin.master-data.setting.update');
-                Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'destroy'])->name('admin.master-data.setting.destroy');
+                Route::prefix('/setting')->group(function () {
+                    Route::get('/', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'index'])->name('admin.master-data.setting.index');
+                    Route::get('/create', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'create'])->name('admin.master-data.setting.create');
+                    Route::post('/create', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'store'])->name('admin.master-data.setting.store');
+                    Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'edit'])->name('admin.master-data.setting.edit');
+                    Route::put('/{id}/update', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'update'])->name('admin.master-data.setting.update');
+                    Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'destroy'])->name('admin.master-data.setting.destroy');
+                });
             });
         });
     });
-
 });
