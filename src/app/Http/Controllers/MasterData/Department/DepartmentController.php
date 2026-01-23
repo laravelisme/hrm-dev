@@ -23,32 +23,35 @@ class DepartmentController extends Controller
     {
         try {
             $searchName      = trim((string) $request->query('searchName', ''));
-            $searchIsHr      = (string) $request->query('searchIsHr', ''); // jangan trim biar "0" aman
+            $searchIsHr      = (string) $request->query('searchIsHr', '');
             $searchCompanyId = (string) $request->query('searchCompanyId', '');
             $perPage         = (int) $request->query('perPage', 10);
             $perPage         = max(1, min($perPage, 100));
 
-            $query = $this->department->newQuery()->with('company:id,company_name');
+            $query = $this->department->newQuery()
+                ->with('company:id,company_name')
+                ->select(['id','department_name','company_id','is_hr','created_at','updated_at']);
 
-            if ($searchName !== '' || $searchIsHr !== '' || $searchCompanyId !== '') {
-                $query->where(function ($query) use ($searchName, $searchIsHr, $searchCompanyId) {
-                    if ($searchName !== '') {
-                        $query->where('name', 'like', '%' . $searchName . '%');
-                    }
-                    if ($searchIsHr !== '') {
-                        $query->where('is_hr', $searchIsHr);
-                    }
-                    if ($searchCompanyId !== '') {
-                        $query->where('company_id', $searchCompanyId);
-                    }
-                });
+            if ($searchName !== '') {
+                $query->where('department_name', 'like', '%' . $searchName . '%');
+            }
+            if ($searchIsHr !== '') {
+                $query->where('is_hr', (int) $searchIsHr);
+            }
+            if ($searchCompanyId !== '') {
+                $query->where('company_id', (int) $searchCompanyId);
             }
 
-            $departments = $query->orderByDesc('id')->paginate($perPage)->withQueryString();
+            $departments = $query->orderByDesc('id')
+                ->paginate($perPage)
+                ->withQueryString();
 
-            $companies = MCompany::select('id', 'company_name')->orderBy('company_name')->get();
+            $selectedCompany = null;
+            if ($searchCompanyId !== '') {
+                $selectedCompany = MCompany::select('id','company_name')->find((int)$searchCompanyId);
+            }
 
-            return view('pages.master-data.department.index', compact('departments', 'companies'));
+            return view('pages.master-data.department.index', compact('departments', 'selectedCompany'));
         } catch (\Throwable $e) {
             Log::error('[DepartmentController@index] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             abort(500, 'Failed to load department data');
@@ -56,12 +59,42 @@ class DepartmentController extends Controller
     }
 
 
+    public function companyOptions(Request $request)
+    {
+        $term    = trim((string) $request->get('q', $request->get('term', '')));
+        $page    = max(1, (int) $request->get('page', 1));
+        $perPage = (int) $request->get('perPage', 20);
+        $perPage = max(1, min($perPage, 50));
+
+        $q = MCompany::query()
+            ->select('id', 'company_name');
+
+        if ($term !== '') {
+            $q->where('company_name', 'like', '%' . $term . '%');
+        }
+
+        $paginator = $q->orderBy('company_name')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        $results = $paginator->getCollection()->map(fn ($c) => [
+            'id'   => $c->id,
+            'text' => $c->company_name,
+        ])->values();
+
+        return response()->json([
+            'results' => $results,
+            'pagination' => [
+                'more' => $paginator->hasMorePages(),
+            ],
+        ]);
+    }
+
+
     public function create()
     {
         try {
 
-            $companies = MCompany::all();
-            return view('pages.master-data.department.create', compact('companies'));
+            return view('pages.master-data.department.create');
 
         } catch (\Throwable $e) {
             Log::error('[DepartmentController@create] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
@@ -88,9 +121,13 @@ class DepartmentController extends Controller
     {
         try {
 
-            $department = $this->department->findOrFail($id);
-            $companies = MCompany::all();
-            return view('pages.master-data.department.edit', compact('department', 'companies'));
+            $department = $this->department
+                ->with('company:id,company_name')
+                ->findOrFail($id);
+
+            $selectedCompany = $department->company;
+
+            return view('pages.master-data.department.edit', compact('department', 'selectedCompany'));
 
         } catch (\Throwable $e) {
             Log::error('[DepartmentController@edit] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);

@@ -29,10 +29,13 @@
                                 <div class="col-md-6">
                                     <label class="form-label">Company <span class="text-danger">*</span></label>
                                     <select class="form-select select2-company" name="company_id">
-                                        <option value="" selected disabled>Pilih Company</option>
-                                        @foreach($companies as $c)
-                                            <option value="{{ $c->id }}">{{ $c->company_name }}</option>
-                                        @endforeach
+                                        <option value="">Pilih Company</option>
+
+                                        @if(old('company_id'))
+                                            <option value="{{ old('company_id') }}" selected>
+                                                {{ old('company_name_label', 'Selected Company') }}
+                                            </option>
+                                        @endif
                                     </select>
                                     <div class="invalid-feedback" data-error-for="company_id"></div>
                                 </div>
@@ -66,12 +69,43 @@
 @push('scripts')
     <script>
         $(function () {
+            const companyOptionsUrl = @json(route('admin.master-data.department.company-options'));
+            const oldCompanyId = @json(old('company_id'));
+
             $('.select2-company').select2({
                 theme: 'bootstrap-5',
                 width: '100%',
                 placeholder: 'Pilih Company',
-                allowClear: true
+                allowClear: true,
+                ajax: {
+                    url: companyOptionsUrl,
+                    dataType: 'json',
+                    delay: 300,
+                    data: function (params) {
+                        return {
+                            q: params.term || '',
+                            page: params.page || 1,
+                            perPage: 20
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results || [],
+                            pagination: { more: !!(data.pagination && data.pagination.more) }
+                        };
+                    },
+                    cache: true
+                }
             });
+
+            if (oldCompanyId) {
+                $.ajax({
+                    url: companyOptionsUrl,
+                    dataType: 'json',
+                    data: { q: '', page: 1, perPage: 1, id: oldCompanyId }
+                });
+            }
 
             const storeUrl = @json(route('admin.master-data.department.store'));
             const indexUrl = @json(route('admin.master-data.department.index'));

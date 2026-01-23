@@ -62,20 +62,21 @@
                                 </select>
                             </div>
 
-                            <!-- Search Company (Select2) -->
+                            <!-- Search Company (Select2 AJAX) -->
                             <div class="input-group input-group-sm" style="min-width: 260px; max-height: 40px;">
                                 <span class="input-group-text"><i class="bi bi-buildings"></i></span>
                                 <select name="searchCompanyId" class="form-select select2-company-filter">
                                     <option value="">All Company</option>
-                                    @foreach($companies as $c)
-                                        <option value="{{ $c->id }}" @selected((string)request('searchCompanyId') === (string)$c->id)>
-                                            {{ $c->company_name }}
+
+                                    @if(!empty($selectedCompany))
+                                        <option value="{{ $selectedCompany->id }}" selected>
+                                            {{ $selectedCompany->company_name }}
                                         </option>
-                                    @endforeach
+                                    @endif
                                 </select>
                             </div>
 
-                            @if(request()->filled('searchName') || request()->has('searchIsHr') || request()->filled('searchCompanyId') || request()->filled('perPage'))
+                        @if(request()->filled('searchName') || request()->has('searchIsHr') || request()->filled('searchCompanyId') || request()->filled('perPage'))
                                 <a href="{{ url()->current() }}" class="btn btn-light btn-sm">
                                     <i class="bi bi-x-circle"></i>
                                 </a>
@@ -183,14 +184,54 @@
 @push('scripts')
     <script>
         $(function () {
+            const $form = $('form[method="GET"]');
+            const companyOptionsUrl = @json(route('admin.master-data.department.company-options'));
+
+            // Debounce helper
+            function debounce(fn, wait = 500) {
+                let t;
+                return function(...args) {
+                    clearTimeout(t);
+                    t = setTimeout(() => fn.apply(this, args), wait);
+                };
+            }
+
+            const submitDebounced = debounce(() => $form.trigger('submit'), 500);
+
+            $('input[name="searchName"]').on('input', submitDebounced);
+
+            $('select[name="searchIsHr"]').on('change', () => $form.trigger('submit'));
+            $('select[name="perPage"]').on('change', () => $form.trigger('submit'));
 
             $('.select2-company-filter').select2({
                 theme: 'bootstrap-5',
                 width: '100%',
                 placeholder: 'All Company',
                 allowClear: true,
+                ajax: {
+                    url: companyOptionsUrl,
+                    dataType: 'json',
+                    delay: 300,
+                    data: function (params) {
+                        return {
+                            q: params.term || '',
+                            page: params.page || 1,
+                            perPage: 20
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results || [],
+                            pagination: { more: !!(data.pagination && data.pagination.more) }
+                        };
+                    },
+                    cache: true
+                },
                 dropdownParent: $('.select2-company-filter').closest('.input-group')
             });
+
+            $('.select2-company-filter').on('change', () => $form.trigger('submit'));
 
             const indexUrl = @json(route('admin.master-data.department.index'));
             const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();

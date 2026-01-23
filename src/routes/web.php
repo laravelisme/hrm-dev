@@ -59,6 +59,7 @@ Route::prefix('/')->group(function () {
 
             Route::prefix('/department')->group(function () {
                 Route::get('/', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'index'])->name('admin.master-data.department.index');
+                Route::get('/company-options', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'companyOptions'])->name('admin.master-data.department.company-options');
                 Route::get('/create', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'create'])->name('admin.master-data.department.create');
                 Route::post('/store', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'store'])->name('admin.master-data.department.store');
                 Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\Department\DepartmentController::class, 'edit'])->name('admin.master-data.department.edit');

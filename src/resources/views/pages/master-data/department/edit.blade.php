@@ -31,13 +31,21 @@
                                 <div class="col-md-6">
                                     <label class="form-label">Company <span class="text-danger">*</span></label>
                                     <select class="form-select select2-company" name="company_id">
-                                        <option value="" disabled>Pilih Company</option>
-                                        @foreach($companies as $c)
-                                            <option value="{{ $c->id }}"
-                                                @selected((string)old('company_id', $department->company_id) === (string)$c->id)>
-                                                {{ $c->company_name }}
+                                        <option value="">Pilih Company</option>
+                                        @php
+                                            $oldCompanyId = old('company_id');
+                                            $currentCompanyId = $oldCompanyId ?: ($department->company_id ?? null);
+                                            $currentCompanyName =
+                                                $oldCompanyId
+                                                    ? (old('company_name_label') ?? 'Selected Company')
+                                                    : ($selectedCompany->company_name ?? null);
+                                        @endphp
+
+                                        @if($currentCompanyId)
+                                            <option value="{{ $currentCompanyId }}" selected>
+                                                {{ $currentCompanyName ?? 'Selected Company' }}
                                             </option>
-                                        @endforeach
+                                        @endif
                                     </select>
                                     <div class="invalid-feedback" data-error-for="company_id"></div>
                                 </div>
@@ -70,11 +78,33 @@
 @push('scripts')
     <script>
         $(function () {
+            const companyOptionsUrl = @json(route('admin.master-data.department.company-options'));
+
             $('.select2-company').select2({
                 theme: 'bootstrap-5',
                 width: '100%',
                 placeholder: 'Pilih Company',
-                allowClear: true
+                allowClear: true,
+                ajax: {
+                    url: companyOptionsUrl,
+                    dataType: 'json',
+                    delay: 300,
+                    data: function (params) {
+                        return {
+                            q: params.term || '',
+                            page: params.page || 1,
+                            perPage: 20
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results || [],
+                            pagination: { more: !!(data.pagination && data.pagination.more) }
+                        };
+                    },
+                    cache: true
+                }
             });
 
             const updateUrl = @json(route('admin.master-data.department.update', $department->id));
