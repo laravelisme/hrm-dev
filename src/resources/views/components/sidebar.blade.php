@@ -3,7 +3,7 @@
         <div class="sidebar-header position-relative">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="img-fluid d-flex align-items-center">
-                    <h5 class="logo-text ms-3">HRM Admin</h5>
+                    <h5 class="logo-text ms-3">HRM Admin PT. TAKO ANUGERAH KOPORASI</h5>
                 </div>
                 <div class="theme-toggle d-flex gap-2 align-items-center mt-2">
                 </div>
