@@ -30,6 +30,9 @@ Route::prefix('/')->group(function () {
         })->name('admin.dashboard');
 
         Route::prefix('calon-karyawan')->middleware(['role:hr'])->group(function () {
+
+            Route::post('/{id}/update-status-recruitment', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'updateStatus'])->name('admin.calon-karyawan.update-status-recruitment');
+
             Route::prefix('generate-link')->group(function () {
                 Route::get('/', [\App\Http\Controllers\CalonKaryawan\GenerateLink\GenerateLinkController::class, 'index'])->name('admin.calon-karyawan.generate-link.index');
                 Route::post('/store', [\App\Http\Controllers\CalonKaryawan\GenerateLink\GenerateLinkController::class, 'store'])->name('admin.calon-karyawan.generate-link.store');
@@ -40,6 +43,12 @@ Route::prefix('/')->group(function () {
                 Route::get('/', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'index'])->name('admin.calon-karyawan.shortlist-admin.index');
                 Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'show'])->name('admin.calon-karyawan.shortlist-admin.show');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'destroy'])->name('admin.calon-karyawan.shortlist-admin.destroy');
+            });
+
+            Route::prefix('/test-tulis')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'index'])->name('admin.calon-karyawan.test-tulis.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'show'])->name('admin.calon-karyawan.test-tulis.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'destroy'])->name('admin.calon-karyawan.test-tulis.destroy');
             });
         });
 

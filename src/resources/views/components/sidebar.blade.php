@@ -47,6 +47,13 @@
                                 </a>
                             </li>
 
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.test-tulis.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.test-tulis.index') }}" class="sidebar-link">
+                                    <i class="bi bi-journal-text"></i>
+                                    <span>Test Tulis</span>
+                                </a>
+                            </li>
+
                         </ul>
                     </li>
 

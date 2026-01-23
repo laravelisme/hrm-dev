@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Calon Karyawan - Shortlist Admin')
+@section('title', 'Calon Karyawan - Tes Tulis')
 @section('subtitle', 'Recruitment')
 
 @section('content')
@@ -9,10 +9,10 @@
             <div class="card-header">
                 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2">
                     <div>
-                        <h4 class="mb-0">Shortlist Admin</h4>
+                        <h4 class="mb-0">Tes Tulis</h4>
                         <p class="text-muted mb-0">
                             Total: <span class="fw-bold">{{ $calonKaryawans->total() }}</span> calon karyawan
-                            <span class="ms-2 badge bg-light-success text-dark">SHORTLIST_ADMIN</span>
+                            <span class="ms-2 badge bg-light-primary text-dark">TES_TULIS</span>
                         </p>
                     </div>
 
@@ -100,7 +100,7 @@
                 @if($calonKaryawans->count() === 0)
                     <div class="alert alert-light-primary mb-0">
                         <i class="bi bi-info-circle me-1"></i>
-                        Tidak ada calon karyawan (SHORTLIST_ADMIN).
+                        Tidak ada calon karyawan (TES_TULIS).
                     </div>
                 @else
                     <div class="table-responsive">
@@ -133,7 +133,7 @@
 
                                     <td>
                                         @php($st = optional($ck->latestStatusRecruitment)->status)
-                                        <span class="badge bg-light-success text-dark">
+                                        <span class="badge bg-light-primary text-dark">
                                             {{ $st ?: '-' }}
                                         </span>
                                     </td>
@@ -149,23 +149,36 @@
                                             <ul class="dropdown-menu dropdown-menu-end">
                                                 <li>
                                                     <a class="dropdown-item"
-                                                       href="{{ route('admin.calon-karyawan.shortlist-admin.show', $ck->id) }}">
+                                                       href="{{ route('admin.calon-karyawan.test-tulis.show', $ck->id) }}">
                                                         <i class="bi bi-eye me-2"></i> Show
                                                     </a>
                                                 </li>
 
                                                 <li><hr class="dropdown-divider"></li>
 
+                                                {{-- Lanjut Interview --}}
                                                 <li>
                                                     <button type="button"
                                                             class="dropdown-item btn-update-status"
                                                             data-url="{{ route('admin.calon-karyawan.update-status-recruitment', $ck->id) }}"
                                                             data-name="{{ $ck->nama_lengkap }}"
-                                                            data-status="TES_TULIS">
-                                                        <i class="bi bi-journal-check me-2"></i> Lanjut Tes Tulis
+                                                            data-status="INTERVIEW">
+                                                        <i class="bi bi-person-check me-2"></i> Lanjut Interview
                                                     </button>
                                                 </li>
 
+                                                {{-- Mundur ke Shortlist Admin --}}
+                                                <li>
+                                                    <button type="button"
+                                                            class="dropdown-item text-secondary btn-update-status"
+                                                            data-url="{{ route('admin.calon-karyawan.update-status-recruitment', $ck->id) }}"
+                                                            data-name="{{ $ck->nama_lengkap }}"
+                                                            data-status="SHORTLIST_ADMIN">
+                                                        <i class="bi bi-arrow-counterclockwise me-2"></i> Kembalikan ke Shortlist Admin
+                                                    </button>
+                                                </li>
+
+                                                {{-- Reject --}}
                                                 <li>
                                                     <button type="button"
                                                             class="dropdown-item text-warning btn-update-status"
@@ -178,10 +191,11 @@
 
                                                 <li><hr class="dropdown-divider"></li>
 
+                                                {{-- Delete --}}
                                                 <li>
                                                     <button type="button"
                                                             class="dropdown-item text-danger btn-delete-calon"
-                                                            data-url="{{ route('admin.calon-karyawan.shortlist-admin.destroy', $ck->id) }}"
+                                                            data-url="{{ route('admin.calon-karyawan.test-tulis.destroy', $ck->id) }}"
                                                             data-name="{{ $ck->nama_lengkap }}"
                                                             data-nik="{{ $ck->nik }}">
                                                         <i class="bi bi-trash me-2"></i> Delete
@@ -213,7 +227,7 @@
 @push('scripts')
     <script>
         $(function () {
-            const indexUrl = @json(route('admin.calon-karyawan.shortlist-admin.index'));
+            const indexUrl = @json(route('admin.calon-karyawan.test-tulis.index'));
             const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();
 
             const $form = $('#filterForm');
@@ -250,17 +264,22 @@
                 const status = $(this).data('status');
 
                 const labelMap = {
-                    TES_TULIS: 'Tes Tulis',
+                    INTERVIEW: 'Interview',
+                    SHORTLIST_ADMIN: 'Shortlist Admin',
                     REJECTED: 'Rejected'
                 };
 
                 const isReject = status === 'REJECTED';
+                const isRollback = status === 'SHORTLIST_ADMIN';
+
+                let title = 'Ubah status?';
+                if (isReject) title = 'Reject calon karyawan?';
+                else if (isRollback) title = 'Kembalikan ke Shortlist Admin?';
+                else if (status === 'INTERVIEW') title = 'Lanjutkan ke Interview?';
 
                 Swal.fire({
-                    title: isReject ? 'Reject calon karyawan?' : 'Lanjutkan ke Tes Tulis?',
-                    html: isReject
-                        ? `Yakin reject <b>${name}</b>?<br><small class="text-muted">Aksi ini akan mengubah status recruitment.</small>`
-                        : `Yakin lanjutkan <b>${name}</b> ke <b>${labelMap[status] || status}</b>?<br><small class="text-muted">Aksi ini akan mengubah status recruitment.</small>`,
+                    title: title,
+                    html: `Yakin ubah status <b>${name}</b> ke <b>${labelMap[status] || status}</b>?<br><small class="text-muted">Aksi ini akan mengubah status recruitment.</small>`,
                     icon: isReject ? 'warning' : 'question',
                     showCancelButton: true,
                     confirmButtonText: isReject ? 'Ya, Reject' : 'Ya, Lanjutkan',
