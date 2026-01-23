@@ -61,6 +61,20 @@
                                 </a>
                             </li>
 
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.talent-pool.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.talent-pool.index') }}" class="sidebar-link">
+                                    <i class="bi bi-people"></i>
+                                    <span>Talent Pool</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.offering.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.offering.index') }}" class="sidebar-link">
+                                    <i class="bi bi-people"></i>
+                                    <span>Offering</span>
+                                </a>
+                            </li>
+
                         </ul>
                     </li>
 

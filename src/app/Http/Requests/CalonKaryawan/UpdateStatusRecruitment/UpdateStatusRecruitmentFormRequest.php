@@ -24,7 +24,7 @@ class UpdateStatusRecruitmentFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|in:SHORTLIST_ADMIN,TES_TULIS,INTERVIEW,TALENT_POOL, OFFERING,REJECTED',
+            'status' => 'required|in:SHORTLIST_ADMIN,TES_TULIS,INTERVIEW,TALENT_POOL,OFFERING,REJECTED',
         ];
     }
 }

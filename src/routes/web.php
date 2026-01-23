@@ -55,6 +55,18 @@ Route::prefix('/')->group(function () {
                 Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'show'])->name('admin.calon-karyawan.interview.show');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'destroy'])->name('admin.calon-karyawan.interview.destroy');
             });
+
+            Route::prefix('/talent-pool')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\TalentPool\TalentPoolController::class, 'index'])->name('admin.calon-karyawan.talent-pool.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\TalentPool\TalentPoolController::class, 'show'])->name('admin.calon-karyawan.talent-pool.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\TalentPool\TalentPoolController::class, 'destroy'])->name('admin.calon-karyawan.talent-pool.destroy');
+            });
+
+            Route::prefix('/offering')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\Offering\OfferingController::class, 'index'])->name('admin.calon-karyawan.offering.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\Offering\OfferingController::class, 'show'])->name('admin.calon-karyawan.offering.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\Offering\OfferingController::class, 'destroy'])->name('admin.calon-karyawan.offering.destroy');
+            });
         });
 
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {
