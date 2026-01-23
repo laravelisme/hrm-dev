@@ -88,12 +88,17 @@
                                         $oldCompanyIds = is_array($oldCompanyIds) ? $oldCompanyIds : [];
                                     @endphp
 
-                                    <select class="form-select" name="company_ids[]" multiple>
-                                        @foreach ($companies as $company)
-                                            <option value="{{ $company->id }}"
-                                                @selected(in_array($company->id, $oldCompanyIds))>
-                                                {{ $company->company_name ?? ('Company #' . $company->id) }}
+                                    <select class="form-select select2-company-multi" name="company_ids[]" multiple>
+                                        @foreach(($selectedCompanies ?? []) as $c)
+                                            <option value="{{ $c->id }}" selected>
+                                                {{ $c->company_name ?? ('Company #' . $c->id) }}
                                             </option>
+                                        @endforeach
+
+                                        @foreach($oldCompanyIds as $cid)
+                                            @if(!collect($selectedCompanies ?? [])->pluck('id')->contains((int)$cid))
+                                                <option value="{{ $cid }}" selected>Company #{{ $cid }}</option>
+                                            @endif
                                         @endforeach
                                     </select>
 
@@ -126,19 +131,41 @@
         $(function () {
             const updateUrl = @json(route('admin.master-data.hari-libur.update', $hariLibur->id));
             const indexUrl  = @json(route('admin.master-data.hari-libur.index'));
+            const companyOptionsUrl = @json(route('admin.master-data.hari-libur.company-options'));
 
             const $form = $('#formEditHariLibur');
             const $isUmum = $form.find('[name="is_umum"]');
             const $wrapCompany = $('#wrapCompany');
-            const $companySelect = $form.find('[name="company_ids[]"]');
+            const $companySelect = $form.find('.select2-company-multi');
 
-            if ($companySelect.length) {
-                $companySelect.select2({
-                    width: '100%',
-                    placeholder: 'Pilih perusahaan...',
-                    allowClear: true
-                });
-            }
+            // select2 AJAX multiple + load more
+            $companySelect.select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Pilih perusahaan...',
+                allowClear: true,
+                closeOnSelect: false,
+                ajax: {
+                    url: companyOptionsUrl,
+                    dataType: 'json',
+                    delay: 300,
+                    data: function (params) {
+                        return {
+                            q: params.term || '',
+                            page: params.page || 1,
+                            perPage: 20
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results || [],
+                            pagination: { more: !!(data.pagination && data.pagination.more) }
+                        };
+                    },
+                    cache: true
+                }
+            });
 
             function resetFieldErrors() {
                 $form.find('.is-invalid').removeClass('is-invalid');
@@ -151,9 +178,7 @@
                 $input.addClass('is-invalid');
 
                 if ($input.hasClass('select2-hidden-accessible')) {
-                    $input.next('.select2-container')
-                        .find('.select2-selection')
-                        .addClass('is-invalid');
+                    $input.next('.select2-container').find('.select2-selection').addClass('is-invalid');
                 }
 
                 $form.find('[data-error-for="' + field + '"]').text(message);
@@ -161,14 +186,13 @@
 
             function toggleCompanySelect() {
                 const isUmumVal = $isUmum.val();
-
                 if (isUmumVal === '0') {
                     $wrapCompany.show();
                     $companySelect.prop('disabled', false);
                 } else {
                     $wrapCompany.hide();
                     $companySelect.prop('disabled', true);
-                    $companySelect.val(null).trigger('change');
+                    // jangan clear pilihan
                 }
             }
 
@@ -182,17 +206,15 @@
                 e.preventDefault();
                 resetFieldErrors();
 
-                const formData = $form.serialize();
                 $('#btnSubmit').prop('disabled', true);
 
                 $.ajax({
                     url: updateUrl,
                     method: 'POST',
-                    data: formData,
+                    data: $form.serialize(),
                     headers: { 'X-CSRF-TOKEN': $('input[name="_token"]').val() },
                     success: function (res) {
                         $('#btnSubmit').prop('disabled', false);
-
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
@@ -205,7 +227,6 @@
 
                         if (xhr.status === 422) {
                             const errors = xhr.responseJSON?.errors || {};
-
                             Object.keys(errors).forEach((key) => {
                                 const baseKey = key.split('.')[0];
                                 setFieldError(baseKey, errors[key][0]);

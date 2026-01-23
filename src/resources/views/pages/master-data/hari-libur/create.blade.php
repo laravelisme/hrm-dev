@@ -68,13 +68,7 @@
                                 <div class="col-md-12" id="wrapCompany" style="display:none;">
                                     <label class="form-label">Pilih Perusahaan <span class="text-danger">*</span></label>
 
-                                    <select class="form-select" name="company_ids[]" multiple>
-                                        @foreach ($companies as $company)
-                                            <option value="{{ $company->id }}">
-                                                {{ $company->company_name ?? $company->company_name ?? ('Company #' . $company->id) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <select class="form-select select2-company-multi" name="company_ids[]" multiple></select>
 
                                     <div class="invalid-feedback d-block" data-error-for="company_ids"></div>
                                     <small class="text-muted">Bisa pilih lebih dari 1, ketik untuk mencari.</small>
@@ -104,19 +98,41 @@
         $(function () {
             const storeUrl = @json(route('admin.master-data.hari-libur.store'));
             const indexUrl = @json(route('admin.master-data.hari-libur.index'));
+            const companyOptionsUrl = @json(route('admin.master-data.hari-libur.company-options'));
 
             const $form = $('#formAddHariLibur');
             const $isUmum = $form.find('[name="is_umum"]');
             const $wrapCompany = $('#wrapCompany');
-            const $companySelect = $form.find('[name="company_ids[]"]');
+            const $companySelect = $form.find('.select2-company-multi');
 
-            if ($companySelect.length) {
-                $companySelect.select2({
-                    width: '100%',
-                    placeholder: 'Pilih perusahaan...',
-                    allowClear: true
-                });
-            }
+            // init select2 AJAX (multiple + load more)
+            $companySelect.select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Pilih perusahaan...',
+                closeOnSelect: false,       // biar enak multi pilih
+                allowClear: true,
+                ajax: {
+                    url: companyOptionsUrl,
+                    dataType: 'json',
+                    delay: 300,
+                    data: function (params) {
+                        return {
+                            q: params.term || '',
+                            page: params.page || 1,
+                            perPage: 20
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results || [],
+                            pagination: { more: !!(data.pagination && data.pagination.more) }
+                        };
+                    },
+                    cache: true
+                }
+            });
 
             function resetFieldErrors() {
                 $form.find('.is-invalid').removeClass('is-invalid');
@@ -139,7 +155,7 @@
             }
 
             function toggleCompanySelect() {
-                const isUmumVal = $isUmum.val(); // "1" / "0"
+                const isUmumVal = $isUmum.val();
 
                 if (isUmumVal === '0') {
                     $wrapCompany.show();
@@ -184,7 +200,6 @@
 
                         if (xhr.status === 422) {
                             const errors = xhr.responseJSON?.errors || {};
-
                             Object.keys(errors).forEach((key) => {
                                 const baseKey = key.split('.')[0];
                                 setFieldError(baseKey, errors[key][0]);
@@ -211,3 +226,4 @@
         });
     </script>
 @endpush
+

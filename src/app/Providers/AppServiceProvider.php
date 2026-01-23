@@ -8,6 +8,17 @@ use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
+
+    protected $listen = [
+        \App\Events\HariLiburCreated::class => [
+            \App\Listeners\AttachCompaniesToHariLibur::class,
+        ],
+        \App\Events\HariLiburUpdated::class => [
+            \App\Listeners\SyncCompaniesToHariLibur::class,
+        ],
+    ];
+
+
     /**
      * Register any application services.
      */

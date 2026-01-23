@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\MasterData\HariLibur;
 
+use App\Events\HariLiburCreated;
+use App\Events\HariLiburUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\HariLibur\HariLiburStoreFormRequest;
 use App\Http\Requests\MasterData\HariLibur\HariLiburUpdateFormRequest;
@@ -63,10 +65,7 @@ class HariLiburController extends Controller
     public function create()
     {
         try {
-
-            $companies = MCompany::all();
-
-            return view('pages.master-data.hari-libur.create', compact('companies'));
+            return view('pages.master-data.hari-libur.create');
 
         } catch (\Throwable $e) {
             Log::error('[HariLiburController@create] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
@@ -74,54 +73,69 @@ class HariLiburController extends Controller
         }
     }
 
+    public function companyOptions(Request $request)
+    {
+        $term    = trim((string) $request->get('q', $request->get('term', '')));
+        $page    = max(1, (int) $request->get('page', 1));
+        $perPage = (int) $request->get('perPage', 20);
+        $perPage = max(1, min($perPage, 50));
+
+        $q = MCompany::query()
+            ->select('id', 'company_name');
+
+        if ($term !== '') {
+            $q->where('company_name', 'like', '%' . $term . '%');
+        }
+
+        $paginator = $q->orderBy('company_name')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        $results = $paginator->getCollection()->map(fn ($c) => [
+            'id'   => $c->id,
+            'text' => $c->company_name,
+        ])->values();
+
+        return response()->json([
+            'results' => $results,
+            'pagination' => [
+                'more' => $paginator->hasMorePages(),
+            ],
+        ]);
+    }
+
     public function store(HariLiburStoreFormRequest $request)
     {
         try {
-
             $data = $request->validated();
 
-            DB::beginTransaction();
+            $hariLibur = null;
 
-            $hariLibur = $this->hariLibur->create([
-                'hari_libur' => $data['hari_libur'],
-                'tanggal_mulai' => $data['tanggal_mulai'],
-                'tanggal_selesai' => $data['tanggal_selesai'],
-                'is_cuti_bersama' => $data['is_cuti_bersama'],
-                'is_umum' => $data['is_umum'],
-                'is_repeat' => $data['is_repeat'],
-            ]);
-            if ($hariLibur->is_umum === true) {
-                $companies =MCompany::select('id')->get();
-                $hariLiburCompaniesData = [];
-                foreach ($companies as $company) {
-                    $hariLiburCompaniesData[] = [
-                        'hari_libur_id' => $hariLibur->id,
-                        'company_id' => $company->id,
-                    ];
-                }
+            DB::transaction(function () use ($data, &$hariLibur) {
 
-                MHariLiburCompany::insert($hariLiburCompaniesData);
-            } else {
-                $companyIds = $data['company_ids'] ?? [];
-                $hariLiburCompaniesData = [];
-                foreach ($companyIds as $companyId) {
-                    $hariLiburCompaniesData[] = [
-                        'hari_libur_id' => $hariLibur->id,
-                        'company_id' => $companyId,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
-                }
+                $hariLibur = $this->hariLibur->create([
+                    'hari_libur'        => $data['hari_libur'],
+                    'tanggal_mulai'     => $data['tanggal_mulai'],
+                    'tanggal_selesai'   => $data['tanggal_selesai'],
+                    'is_cuti_bersama'   => (int) $data['is_cuti_bersama'],
+                    'is_umum'           => (int) $data['is_umum'],
+                    'is_repeat'         => (int) $data['is_repeat'],
+                ]);
 
-                MHariLiburCompany::insert($hariLiburCompaniesData);
-            }
+                $isUmum = ((int) $data['is_umum']) === 1;
+                $companyIds = $isUmum ? [] : ($data['company_ids'] ?? []);
 
-            DB::commit();
+                DB::afterCommit(function () use ($hariLibur, $isUmum, $companyIds) {
+                    event(new HariLiburCreated(
+                        hariLiburId: (int) $hariLibur->id,
+                        isUmum: $isUmum,
+                        companyIds: $companyIds
+                    ));
+                });
+            });
 
             return $this->successResponse($hariLibur, 'Hari libur data stored successfully', 201);
 
         } catch (\Throwable $e) {
-            DB::rollBack();
             Log::error('[HariLiburController@store] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return $this->errorResponse('Failed to store hari libur data', 500);
         }
@@ -131,13 +145,18 @@ class HariLiburController extends Controller
     {
         try {
             $hariLibur = $this->hariLibur->findOrFail($id);
-            $companies = MCompany::all();
 
             $selectedCompanyIds = MHariLiburCompany::where('hari_libur_id', $hariLibur->id)
                 ->pluck('company_id')
                 ->toArray();
 
-            return view('pages.master-data.hari-libur.edit', compact('hariLibur', 'companies', 'selectedCompanyIds'));
+            $selectedCompanies = MCompany::query()
+                ->select('id', 'company_name')
+                ->whereIn('id', $selectedCompanyIds)
+                ->orderBy('company_name')
+                ->get();
+
+            return view('pages.master-data.hari-libur.edit', compact('hariLibur', 'selectedCompanyIds', 'selectedCompanies'));
 
         } catch (\Throwable $e) {
             Log::error('[HariLiburController@edit] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
@@ -154,34 +173,30 @@ class HariLiburController extends Controller
             $companyIds = $data['company_ids'] ?? [];
             unset($data['company_ids']);
 
-            $hariLibur = DB::transaction(function () use ($id, $data, $companyIds) {
+            $hariLibur = null;
+
+            DB::transaction(function () use ($id, $data, $companyIds, &$hariLibur) {
                 $hariLibur = $this->hariLibur->findOrFail($id);
-                $hariLibur->update($data);
 
-                MHariLiburCompany::where('hari_libur_id', $hariLibur->id)->delete();
+                $hariLibur->update([
+                    'hari_libur'        => $data['hari_libur'],
+                    'tanggal_mulai'     => $data['tanggal_mulai'],
+                    'tanggal_selesai'   => $data['tanggal_selesai'],
+                    'is_cuti_bersama'   => (int) $data['is_cuti_bersama'],
+                    'is_umum'           => (int) $data['is_umum'],
+                    'is_repeat'         => (int) $data['is_repeat'],
+                ]);
 
-                $ids = $hariLibur->is_umum
-                    ? MCompany::pluck('id')->all()
-                    : $companyIds;
+                $isUmum = ((int) $hariLibur->is_umum) === 1;
+                $ids = $isUmum ? [] : $companyIds;
 
-                $ids = array_values(array_unique($ids));
-
-                $now = now();
-                $rows = [];
-                foreach ($ids as $cid) {
-                    $rows[] = [
-                        'hari_libur_id' => $hariLibur->id,
-                        'company_id'    => $cid,
-                        'created_at'    => $now,
-                        'updated_at'    => $now,
-                    ];
-                }
-
-                if (!empty($rows)) {
-                    MHariLiburCompany::insert($rows);
-                }
-
-                return $hariLibur;
+                DB::afterCommit(function () use ($hariLibur, $isUmum, $ids) {
+                    event(new HariLiburUpdated(
+                        hariLiburId: (int) $hariLibur->id,
+                        isUmum: $isUmum,
+                        companyIds: $ids
+                    ));
+                });
             });
 
             return $this->successResponse($hariLibur->fresh(), 'Hari libur data updated successfully', 200);

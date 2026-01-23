@@ -86,6 +86,29 @@ services:
       - laravel_load_balancing
 
   # =========================
+  # LARAVEL QUEUE WORKER
+  # =========================
+  laravel_queue:
+    build: ./php
+    container_name: laravel_queue
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      postgres_master:
+        condition: service_healthy
+    command: >
+      sh -lc "php artisan queue:work
+      --sleep=1
+      --tries=3
+      --timeout=120
+      --max-time=3600
+      --memory=256"
+    restart: unless-stopped
+    networks:
+      - laravel_load_balancing
+
+  # =========================
   # NGINX (APP)
   # =========================
   nginx_laravel_1:

@@ -69,6 +69,7 @@ Route::prefix('/')->group(function () {
 
             Route::prefix('/hari-libur')->group(function () {
                 Route::get('/', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'index'])->name('admin.master-data.hari-libur.index');
+                Route::get('/company-options', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'companyOptions'])->name('admin.master-data.hari-libur.company-options');
                 Route::get('/create', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'create'])->name('admin.master-data.hari-libur.create');
                 Route::post('/store', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'store'])->name('admin.master-data.hari-libur.store');
                 Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'edit'])->name('admin.master-data.hari-libur.edit');
