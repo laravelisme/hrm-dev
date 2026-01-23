@@ -54,6 +54,13 @@
                                 </a>
                             </li>
 
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.interview.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.interview.index') }}" class="sidebar-link">
+                                    <i class="bi bi-person-video3"></i>
+                                    <span>Interview</span>
+                                </a>
+                            </li>
+
                         </ul>
                     </li>
 

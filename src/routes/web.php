@@ -49,6 +49,12 @@ Route::prefix('/')->group(function () {
                 Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'show'])->name('admin.calon-karyawan.test-tulis.show');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'destroy'])->name('admin.calon-karyawan.test-tulis.destroy');
             });
+
+            Route::prefix('/interview')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'index'])->name('admin.calon-karyawan.interview.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'show'])->name('admin.calon-karyawan.interview.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'destroy'])->name('admin.calon-karyawan.interview.destroy');
+            });
         });
 
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {
