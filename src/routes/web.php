@@ -15,10 +15,42 @@ Route::prefix('/')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->name('admin.login.post');
     Route::post('logout', [AuthController::class, 'logout'])->name('admin.logout');
 
+    Route::prefix('recruitment')->name('recruitment.')->group(function () {
+        Route::get('/register', [\App\Http\Controllers\Recruitment\RegisterController::class, 'create'])->name('register');
+        Route::post('/register', [\App\Http\Controllers\Recruitment\RegisterController::class, 'store'])->name('register.store');
+        Route::get('/select2/companies', [\App\Http\Controllers\Recruitment\RegisterController::class, 'select2Companies'])->name('select2.companies');
+        Route::get('/select2/departments', [\App\Http\Controllers\Recruitment\RegisterController::class, 'select2Departments'])->name('select2.departments');
+        Route::get('/register/success', [\App\Http\Controllers\Recruitment\RegisterController::class, 'success'])->name('register.success');
+    });
+
+
     Route::middleware([AuthMiddleware::class])->group(function () {
         Route::get('dashboard', function () {
             return view('pages.dashboard.index');
         })->name('admin.dashboard');
+
+        Route::prefix('calon-karyawan')->middleware(['role:hr'])->group(function () {
+
+            Route::post('/{id}/update-status-recruitment', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'updateStatus'])->name('admin.calon-karyawan.update-status-recruitment');
+
+            Route::prefix('generate-link')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\GenerateLink\GenerateLinkController::class, 'index'])->name('admin.calon-karyawan.generate-link.index');
+                Route::post('/store', [\App\Http\Controllers\CalonKaryawan\GenerateLink\GenerateLinkController::class, 'store'])->name('admin.calon-karyawan.generate-link.store');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\GenerateLink\GenerateLinkController::class, 'destroy'])->name('admin.calon-karyawan.generate-link.destroy');
+            });
+
+            Route::prefix('/shortlist-admin')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'index'])->name('admin.calon-karyawan.shortlist-admin.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'show'])->name('admin.calon-karyawan.shortlist-admin.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'destroy'])->name('admin.calon-karyawan.shortlist-admin.destroy');
+            });
+
+            Route::prefix('/test-tulis')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'index'])->name('admin.calon-karyawan.test-tulis.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'show'])->name('admin.calon-karyawan.test-tulis.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'destroy'])->name('admin.calon-karyawan.test-tulis.destroy');
+            });
+        });
 
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {
             Route::prefix('jabatan')->group(function () {
@@ -84,6 +116,13 @@ Route::prefix('/')->group(function () {
                 Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'edit'])->name('admin.master-data.grup-jam-kerja.edit');
                 Route::put('/{id}/update', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'update'])->name('admin.master-data.grup-jam-kerja.update');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'destroy'])->name('admin.master-data.grup-jam-kerja.destroy');
+            Route::prefix('/setting')->group(function () {
+                Route::get('/', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'index'])->name('admin.master-data.setting.index');
+                Route::get('/create', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'create'])->name('admin.master-data.setting.create');
+                Route::post('/create', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'store'])->name('admin.master-data.setting.store');
+                Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'edit'])->name('admin.master-data.setting.edit');
+                Route::put('/{id}/update', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'update'])->name('admin.master-data.setting.update');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\Setting\SettingController::class, 'destroy'])->name('admin.master-data.setting.destroy');
             });
         });
     });
