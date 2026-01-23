@@ -76,6 +76,15 @@ Route::prefix('/')->group(function () {
                 Route::put('/{id}/update', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'update'])->name('admin.master-data.hari-libur.update');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\HariLibur\HariLiburController::class, 'destroy'])->name('admin.master-data.hari-libur.destroy');
             });
+
+            Route::prefix('/grup-jam-kerja')->group(function () {
+                Route::get('/', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'index'])->name('admin.master-data.grup-jam-kerja.index');
+                Route::get('/create', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'create'])->name('admin.master-data.grup-jam-kerja.create');
+                Route::post('/store', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'store'])->name('admin.master-data.grup-jam-kerja.store');
+                Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'edit'])->name('admin.master-data.grup-jam-kerja.edit');
+                Route::put('/{id}/update', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'update'])->name('admin.master-data.grup-jam-kerja.update');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\MasterData\GrupJamKerja\GrupJamKerjaController::class, 'destroy'])->name('admin.master-data.grup-jam-kerja.destroy');
+            });
         });
     });
 

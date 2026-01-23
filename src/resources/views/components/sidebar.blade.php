@@ -73,6 +73,13 @@
                                     <span>Department</span>
                                 </a>
                             </li>
+
+                            <li class="submenu-item {{ activeState('admin.master-data.grup-jam-kerja.index') }}">
+                                <a href="{{ route('admin.master-data.grup-jam-kerja.index') }}" class="sidebar-link">
+                                    <i class="bi bi-clock"></i>
+                                    <span>Grup Jam Kerja</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 @endif
