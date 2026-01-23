@@ -26,6 +26,37 @@
 
                 @php($user = auth()->user())
                 @if($user && $user->hasRole('hr'))
+
+                    <li class="sidebar-item has-sub {{ request()->is('admin/calon-karyawan*') ? 'active' : '' }}">
+                        <a href="#" class="sidebar-link">
+                            <i class="bi bi-person-plus"></i>
+                            <span>Calon Karyawan</span>
+                        </a>
+                        <ul class="submenu">
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.generate-link.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.generate-link.index') }}" class="sidebar-link">
+                                    <i class="bi bi-link-45deg"></i>
+                                    <span>Generate Link</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.shortlist-admin.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.shortlist-admin.index') }}" class="sidebar-link">
+                                    <i class="bi bi-person-check"></i>
+                                    <span>Shortlist Adm</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.test-tulis.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.test-tulis.index') }}" class="sidebar-link">
+                                    <i class="bi bi-journal-text"></i>
+                                    <span>Test Tulis</span>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+
                     <li class="sidebar-item has-sub {{ request()->is('admin/master-data*') ? 'active' : '' }}">
                         <a href="#" class="sidebar-link">
                             <i class="bi bi-folder-fill"></i>
@@ -71,6 +102,13 @@
                                 <a href="{{ route('admin.master-data.department.index') }}" class="sidebar-link">
                                     <i class="bi bi-diagram-3"></i>
                                     <span>Department</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.master-data.setting.index') }}">
+                                <a href="{{ route('admin.master-data.setting.index') }}" class="sidebar-link">
+                                    <i class="bi bi-gear"></i>
+                                    <span>Setting</span>
                                 </a>
                             </li>
                         </ul>
