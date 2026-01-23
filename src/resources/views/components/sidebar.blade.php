@@ -73,6 +73,13 @@
                                     <span>Department</span>
                                 </a>
                             </li>
+
+                            <li class="submenu-item {{ activeState('admin.master-data.setting.index') }}">
+                                <a href="{{ route('admin.master-data.setting.index') }}" class="sidebar-link">
+                                    <i class="bi bi-gear"></i>
+                                    <span>Setting</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 @endif
