@@ -16,36 +16,70 @@
                     </div>
 
                     <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2">
-                        <form method="GET" action="{{ url()->current() }}" class="d-flex flex-column flex-md-row gap-2">
+                        <form id="filterForm" method="GET" action="{{ url()->current() }}" class="d-flex flex-column flex-md-row gap-2">
+                            {{-- Keep current page if exists (akan dihapus via JS saat filter berubah) --}}
+                            @if(request()->filled('page'))
+                                <input type="hidden" name="page" value="{{ request('page') }}">
+                            @endif
+
                             <!-- Search Name -->
                             <div class="input-group input-group-sm" style="min-width: 180px; max-height: 40px;">
                                 <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
-                                <input type="text" class="form-control" name="searchName" placeholder="Search Name..."
-                                       value="{{ request('searchName') }}" autocomplete="off" />
+                                <input
+                                    id="searchName"
+                                    type="text"
+                                    class="form-control"
+                                    name="searchName"
+                                    placeholder="Search Name..."
+                                    value="{{ request('searchName') }}"
+                                    autocomplete="off"
+                                />
                             </div>
 
                             <!-- Search Kode -->
                             <div class="input-group input-group-sm" style="min-width: 120px; max-height: 40px;">
                                 <span class="input-group-text"><i class="bi bi-key"></i></span>
-                                <input type="text" class="form-control" name="searchKode" placeholder="Search Kode..."
-                                       value="{{ request('searchKode') }}" autocomplete="off" />
+                                <input
+                                    id="searchKode"
+                                    type="text"
+                                    class="form-control"
+                                    name="searchKode"
+                                    placeholder="Search Kode..."
+                                    value="{{ request('searchKode') }}"
+                                    autocomplete="off"
+                                />
                             </div>
 
                             <!-- Search Level -->
                             <div class="input-group input-group-sm" style="min-width: 120px; max-height: 40px;">
                                 <span class="input-group-text"><i class="bi bi-bar-chart"></i></span>
-                                <input type="text" class="form-control" name="searchLevel" placeholder="Search Level..."
-                                       value="{{ request('searchLevel') }}" autocomplete="off" />
+                                <input
+                                    id="searchLevel"
+                                    type="text"
+                                    class="form-control"
+                                    name="searchLevel"
+                                    placeholder="Search Level..."
+                                    value="{{ request('searchLevel') }}"
+                                    autocomplete="off"
+                                />
                             </div>
 
-                            @if(request()->filled('searchName') || request()->filled('searchKode') || request()->filled('searchLevel') || request()->filled('perPage'))
-                                <a href="{{ url()->current() }}" class="btn btn-light btn-sm">
+                            @php
+                                $hasFilter =
+                                    request()->filled('searchName') ||
+                                    request()->filled('searchKode') ||
+                                    request()->filled('searchLevel') ||
+                                    request()->filled('perPage');
+                            @endphp
+
+                            @if($hasFilter)
+                                <a href="{{ url()->current() }}" class="btn btn-light btn-sm" style="max-height: 40px;">
                                     <i class="bi bi-x-circle"></i>
                                 </a>
                             @endif
 
                             <!-- Per page -->
-                            <select name="perPage" class="form-select form-select-sm" style="min-width: 100px; max-height: 40px;" onchange="this.form.submit()">
+                            <select id="perPage" name="perPage" class="form-select form-select-sm" style="min-width: 100px; max-height: 40px;">
                                 @foreach([10, 20, 50, 100] as $n)
                                     <option value="{{ $n }}" @selected((int)request('perPage', 10) === $n)>
                                         {{ $n }}/page
@@ -53,6 +87,7 @@
                                 @endforeach
                             </select>
 
+                            {{-- tombol filter masih boleh, tapi sekarang optional --}}
                             <button class="btn btn-primary btn-sm" type="submit" style="max-height: 40px;">
                                 <i class="bi bi-funnel me-1"></i>
                             </button>
@@ -101,12 +136,6 @@
                                                 <i class="bi bi-three-dots"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end">
-{{--                                                <li>--}}
-{{--                                                    <a class="dropdown-item" href="{{ route('admin.master-data.jabatan.show', $jabatan->id) }}">--}}
-{{--                                                        <i class="bi bi-eye me-2"></i> Detail--}}
-{{--                                                    </a>--}}
-{{--                                                </li>--}}
-{{--                                                <li><hr class="dropdown-divider"></li>--}}
                                                 <li>
                                                     <a class="dropdown-item" href="{{ route('admin.master-data.jabatan.edit', $jabatan->id) }}">
                                                         <i class="bi bi-pencil-square me-2"></i> Edit
@@ -149,6 +178,51 @@
             const indexUrl = @json(route('admin.master-data.jabatan.index'));
             const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();
 
+            const $form = $('#filterForm');
+            const $searchName = $('#searchName');
+            const $searchKode = $('#searchKode');
+            const $searchLevel = $('#searchLevel');
+            const $perPage = $('#perPage');
+
+            function debounce(fn, wait) {
+                let t;
+                return function (...args) {
+                    clearTimeout(t);
+                    t = setTimeout(() => fn.apply(this, args), wait);
+                };
+            }
+
+            function submitFilter(resetPage = true) {
+                if (!$form.length) return;
+
+                if (resetPage) {
+                    $form.find('input[name="page"]').remove();
+                }
+
+                $form.trigger('submit');
+            }
+
+            const debouncedSubmit = debounce(() => submitFilter(true), 400);
+
+            // debounce untuk input
+            $searchName.on('input', function () {
+                debouncedSubmit();
+            });
+
+            $searchKode.on('input', function () {
+                debouncedSubmit();
+            });
+
+            $searchLevel.on('input', function () {
+                debouncedSubmit();
+            });
+
+            // perPage auto submit
+            $perPage.on('change', function () {
+                submitFilter(true);
+            });
+
+            // delete handler tetap
             $(document).on('click', '.btn-delete-jabatan', function () {
                 const url  = $(this).data('url');
                 const name = $(this).data('name') || 'this jabatan';

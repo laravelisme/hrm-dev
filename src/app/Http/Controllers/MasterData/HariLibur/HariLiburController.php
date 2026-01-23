@@ -75,32 +75,37 @@ class HariLiburController extends Controller
 
     public function companyOptions(Request $request)
     {
-        $term    = trim((string) $request->get('q', $request->get('term', '')));
-        $page    = max(1, (int) $request->get('page', 1));
-        $perPage = (int) $request->get('perPage', 20);
-        $perPage = max(1, min($perPage, 50));
+        try {
+            $term    = trim((string) $request->get('q', $request->get('term', '')));
+            $page    = max(1, (int) $request->get('page', 1));
+            $perPage = (int) $request->get('perPage', 20);
+            $perPage = max(1, min($perPage, 50));
 
-        $q = MCompany::query()
-            ->select('id', 'company_name');
+            $q = MCompany::query()
+                ->select('id', 'company_name');
 
-        if ($term !== '') {
-            $q->where('company_name', 'like', '%' . $term . '%');
+            if ($term !== '') {
+                $q->where('company_name', 'like', '%' . $term . '%');
+            }
+
+            $paginator = $q->orderBy('company_name')
+                ->paginate($perPage, ['*'], 'page', $page);
+
+            $results = $paginator->getCollection()->map(fn ($c) => [
+                'id'   => $c->id,
+                'text' => $c->company_name,
+            ])->values();
+
+            return response()->json([
+                'results' => $results,
+                'pagination' => [
+                    'more' => $paginator->hasMorePages(),
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('[HariLiburController@companyOptions] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->errorResponse('Failed to load company options', 500);
         }
-
-        $paginator = $q->orderBy('company_name')
-            ->paginate($perPage, ['*'], 'page', $page);
-
-        $results = $paginator->getCollection()->map(fn ($c) => [
-            'id'   => $c->id,
-            'text' => $c->company_name,
-        ])->values();
-
-        return response()->json([
-            'results' => $results,
-            'pagination' => [
-                'more' => $paginator->hasMorePages(),
-            ],
-        ]);
     }
 
     public function store(HariLiburStoreFormRequest $request)

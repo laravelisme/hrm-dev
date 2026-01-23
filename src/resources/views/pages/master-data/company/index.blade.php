@@ -16,32 +16,50 @@
                     </div>
 
                     <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2">
-                        <form method="GET" action="{{ url()->current() }}" class="d-flex flex-column flex-md-row gap-2">
+                        <form id="filterForm" method="GET" action="{{ url()->current() }}" class="d-flex flex-column flex-md-row gap-2">
+                            {{-- Keep current page if exists (akan dihapus via JS saat filter berubah) --}}
+                            @if(request()->filled('page'))
+                                <input type="hidden" name="page" value="{{ request('page') }}">
+                            @endif
+
                             <!-- Search Name -->
                             <div class="input-group input-group-sm" style="min-width: 220px; max-height: 40px;">
                                 <span class="input-group-text"><i class="bi bi-building"></i></span>
-                                <input type="text" class="form-control" name="searchName" placeholder="Search Company..."
-                                       value="{{ request('searchName') }}" autocomplete="off" />
+                                <input
+                                    id="searchName"
+                                    type="text"
+                                    class="form-control"
+                                    name="searchName"
+                                    placeholder="Search Company..."
+                                    value="{{ request('searchName') }}"
+                                    autocomplete="off"
+                                />
                             </div>
 
                             <!-- Search Level -->
                             <div class="input-group input-group-sm" style="min-width: 160px; max-height: 40px;">
                                 <span class="input-group-text"><i class="bi bi-diagram-3"></i></span>
-                                <select name="searchLevel" class="form-select">
+                                <select id="searchLevel" name="searchLevel" class="form-select">
                                     <option value="">All Level</option>
                                     <option value="HOLDING" @selected(request('searchLevel') === 'HOLDING')>HOLDING</option>
                                     <option value="COMPANY" @selected(request('searchLevel') === 'COMPANY')>COMPANY</option>
                                 </select>
                             </div>
 
-                            @if(request()->filled('searchName') || request()->filled('searchLevel') || request()->filled('perPage'))
-                                <a href="{{ url()->current() }}" class="btn btn-light btn-sm">
+                            @php
+                                $hasFilter = request()->filled('searchName')
+                                    || request()->filled('searchLevel')
+                                    || request()->filled('perPage');
+                            @endphp
+
+                            @if($hasFilter)
+                                <a href="{{ url()->current() }}" class="btn btn-light btn-sm" style="max-height: 40px;">
                                     <i class="bi bi-x-circle"></i>
                                 </a>
                             @endif
 
                             <!-- Per page -->
-                            <select name="perPage" class="form-select form-select-sm" style="min-width: 100px; max-height: 40px;" onchange="this.form.submit()">
+                            <select id="perPage" name="perPage" class="form-select form-select-sm" style="min-width: 100px; max-height: 40px;">
                                 @foreach([10, 20, 50, 100] as $n)
                                     <option value="{{ $n }}" @selected((int)request('perPage', 10) === $n)>
                                         {{ $n }}/page
@@ -140,6 +158,43 @@
         $(function () {
             const indexUrl = @json(route('admin.master-data.company.index'));
             const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();
+
+            const $form = $('#filterForm');
+            const $searchName  = $('#searchName');
+            const $searchLevel = $('#searchLevel');
+            const $perPage     = $('#perPage');
+
+            function debounce(fn, wait) {
+                let t;
+                return function (...args) {
+                    clearTimeout(t);
+                    t = setTimeout(() => fn.apply(this, args), wait);
+                };
+            }
+
+            function submitFilter(resetPage = true) {
+                if (!$form.length) return;
+
+                if (resetPage) {
+                    $form.find('input[name="page"]').remove();
+                }
+
+                $form.trigger('submit');
+            }
+
+            const debouncedSubmit = debounce(() => submitFilter(true), 400);
+
+            $searchName.on('input', function () {
+                debouncedSubmit();
+            });
+
+            $searchLevel.on('change', function () {
+                submitFilter(true);
+            });
+
+            $perPage.on('change', function () {
+                submitFilter(true);
+            });
 
             $(document).on('click', '.btn-delete-company', function () {
                 const url  = $(this).data('url');

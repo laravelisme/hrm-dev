@@ -16,26 +16,46 @@
                     </div>
 
                     <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2">
-                        <form method="GET" action="{{ url()->current() }}" class="d-flex flex-column flex-md-row gap-2">
+                        <form id="filterForm" method="GET" action="{{ url()->current() }}" class="d-flex flex-column flex-md-row gap-2">
+                            {{-- Keep current page if exists (akan dihapus via JS saat filter berubah) --}}
+                            @if(request()->filled('page'))
+                                <input type="hidden" name="page" value="{{ request('page') }}">
+                            @endif
 
                             <!-- Search Nama -->
                             <div class="input-group input-group-sm" style="min-width: 220px; max-height: 40px;">
                                 <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                <input type="text" class="form-control" name="searchName" placeholder="Search Nama..."
-                                       value="{{ request('searchName') }}" autocomplete="off" />
+                                <input
+                                    id="searchName"
+                                    type="text"
+                                    class="form-control"
+                                    name="searchName"
+                                    placeholder="Search Nama..."
+                                    value="{{ request('searchName') }}"
+                                    autocomplete="off"
+                                />
                             </div>
 
                             <!-- Search Tahun -->
                             <div class="input-group input-group-sm" style="min-width: 140px; max-height: 40px;">
                                 <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
-                                <input type="number" class="form-control" name="searchTahun" placeholder="Tahun..."
-                                       value="{{ request('searchTahun') }}" min="1900" max="2100" autocomplete="off" />
+                                <input
+                                    id="searchTahun"
+                                    type="number"
+                                    class="form-control"
+                                    name="searchTahun"
+                                    placeholder="Tahun..."
+                                    value="{{ request('searchTahun') }}"
+                                    min="1900"
+                                    max="2100"
+                                    autocomplete="off"
+                                />
                             </div>
 
                             <!-- Cuti Bersama -->
                             <div class="input-group input-group-sm" style="min-width: 190px; max-height: 40px;">
                                 <span class="input-group-text"><i class="bi bi-people"></i></span>
-                                <select name="searchIsBersama" class="form-select">
+                                <select id="searchIsBersama" name="searchIsBersama" class="form-select">
                                     <option value="">Cuti Bersama: All</option>
                                     <option value="1" @selected(request('searchIsBersama') === '1')>Ya</option>
                                     <option value="0" @selected(request('searchIsBersama') === '0')>Tidak</option>
@@ -45,27 +65,30 @@
                             <!-- Hari Libur Umum -->
                             <div class="input-group input-group-sm" style="min-width: 180px; max-height: 40px;">
                                 <span class="input-group-text"><i class="bi bi-megaphone"></i></span>
-                                <select name="searchIsUmum" class="form-select">
+                                <select id="searchIsUmum" name="searchIsUmum" class="form-select">
                                     <option value="">Libur Umum: All</option>
                                     <option value="1" @selected(request('searchIsUmum') === '1')>Ya</option>
                                     <option value="0" @selected(request('searchIsUmum') === '0')>Tidak</option>
                                 </select>
                             </div>
 
-                            @if(
-                                request()->filled('searchName') ||
-                                request()->filled('searchTahun') ||
-                                request()->filled('searchIsBersama') ||
-                                request()->filled('searchIsUmum') ||
-                                request()->filled('perPage')
-                            )
+                            @php
+                                $hasFilter =
+                                    request()->filled('searchName') ||
+                                    request()->filled('searchTahun') ||
+                                    request()->filled('searchIsBersama') ||
+                                    request()->filled('searchIsUmum') ||
+                                    request()->filled('perPage');
+                            @endphp
+
+                            @if($hasFilter)
                                 <a href="{{ url()->current() }}" class="btn btn-light btn-sm" style="max-height: 40px;">
                                     <i class="bi bi-x-circle"></i>
                                 </a>
                             @endif
 
                             <!-- Per page -->
-                            <select name="perPage" class="form-select form-select-sm" style="min-width: 110px; max-height: 40px;" onchange="this.form.submit()">
+                            <select id="perPage" name="perPage" class="form-select form-select-sm" style="min-width: 110px; max-height: 40px;">
                                 @foreach([10, 20, 50, 100] as $n)
                                     <option value="{{ $n }}" @selected((int)request('perPage', 10) === $n)>
                                         {{ $n }}/page
@@ -189,6 +212,53 @@
         $(function () {
             const indexUrl = @json(route('admin.master-data.hari-libur.index'));
             const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();
+
+            const $form = $('#filterForm');
+            const $searchName = $('#searchName');
+            const $searchTahun = $('#searchTahun');
+            const $searchIsBersama = $('#searchIsBersama');
+            const $searchIsUmum = $('#searchIsUmum');
+            const $perPage = $('#perPage');
+
+            function debounce(fn, wait) {
+                let t;
+                return function (...args) {
+                    clearTimeout(t);
+                    t = setTimeout(() => fn.apply(this, args), wait);
+                };
+            }
+
+            function submitFilter(resetPage = true) {
+                if (!$form.length) return;
+
+                if (resetPage) {
+                    $form.find('input[name="page"]').remove();
+                }
+
+                $form.trigger('submit');
+            }
+
+            const debouncedSubmit = debounce(() => submitFilter(true), 400);
+
+            $searchName.on('input', function () {
+                debouncedSubmit();
+            });
+
+            $searchTahun.on('input', function () {
+                debouncedSubmit();
+            });
+
+            $searchIsBersama.on('change', function () {
+                submitFilter(true);
+            });
+
+            $searchIsUmum.on('change', function () {
+                submitFilter(true);
+            });
+
+            $perPage.on('change', function () {
+                submitFilter(true);
+            });
 
             $(document).on('click', '.btn-delete-hari-libur', function () {
                 const url  = $(this).data('url');

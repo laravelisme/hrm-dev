@@ -32,7 +32,7 @@ class SaldoCutiController extends Controller
             if ($searchJenis || $searchJumlah) {
                 $query->where(function ($query) use ($searchJenis, $searchJumlah) {
                     if ($searchJenis) {
-                        $query->where('jenis_cuti', 'like', '%' . $searchJenis . '%');
+                        $query->where('jenis', 'like', '%' . $searchJenis . '%');
                     }
                     if ($searchJumlah) {
                         $query->where('jumlah', $searchJumlah);
