@@ -26,11 +26,21 @@
 
                 @php($user = auth()->user())
                 @if($user && $user->hasRole('hr'))
-                    <li class="sidebar-item {{ activeState('admin.dashboard') }}">
-                        <a href="{{ route('admin.dashboard') }}" class="sidebar-link">
+
+                    <li class="sidebar-item has-sub {{ request()->is('admin/calon-karyawan*') ? 'active' : '' }}">
+                        <a href="#" class="sidebar-link">
                             <i class="bi bi-person-plus"></i>
                             <span>Calon Karyawan</span>
                         </a>
+                        <ul class="submenu">
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.generate-link.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.generate-link.index') }}" class="sidebar-link">
+                                    <i class="bi bi-link-45deg"></i>
+                                    <span>Generate Link</span>
+                                </a>
+                            </li>
+
+                        </ul>
                     </li>
 
                     <li class="sidebar-item has-sub {{ request()->is('admin/master-data*') ? 'active' : '' }}">

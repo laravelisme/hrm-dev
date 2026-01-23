@@ -15,10 +15,29 @@ Route::prefix('/')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->name('admin.login.post');
     Route::post('logout', [AuthController::class, 'logout'])->name('admin.logout');
 
+    Route::prefix('recruitment')->name('recruitment.')->group(function () {
+        Route::get('/register', [\App\Http\Controllers\Recruitment\RegisterController::class, 'create'])->name('register');
+        Route::post('/register', [\App\Http\Controllers\Recruitment\RegisterController::class, 'store'])->name('register.store');
+        Route::get('/select2/companies', [\App\Http\Controllers\Recruitment\RegisterController::class, 'select2Companies'])->name('select2.companies');
+        Route::get('/select2/departments', [\App\Http\Controllers\Recruitment\RegisterController::class, 'select2Departments'])->name('select2.departments');
+
+        // opsional biar setelah submit tidak balik ke token-used
+        Route::get('/register/success', [\App\Http\Controllers\Recruitment\RegisterController::class, 'success'])->name('register.success');
+    });
+
+
     Route::middleware([AuthMiddleware::class])->group(function () {
         Route::get('dashboard', function () {
             return view('pages.dashboard.index');
         })->name('admin.dashboard');
+
+        Route::prefix('calon-karyawan')->middleware(['role:hr'])->group(function () {
+            Route::prefix('generate-link')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\GenerateLink\GenerateLinkController::class, 'index'])->name('admin.calon-karyawan.generate-link.index');
+                Route::post('/store', [\App\Http\Controllers\CalonKaryawan\GenerateLink\GenerateLinkController::class, 'store'])->name('admin.calon-karyawan.generate-link.store');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\GenerateLink\GenerateLinkController::class, 'destroy'])->name('admin.calon-karyawan.generate-link.destroy');
+            });
+        });
 
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {
             Route::prefix('jabatan')->group(function () {

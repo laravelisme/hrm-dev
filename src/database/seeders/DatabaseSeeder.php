@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
 
             for ($j = 0; $j < $batchSize; $j++) {
                 $companies[] = [
-                    'company_name' => 'PT Rejosoft Cemerlang ' . ($i + $j + 1),
+                    'company_name' => 'PT Takoma Cemerlang ' . ($i + $j + 1),
                     'level' => $levels[array_rand($levels)],
                     'created_at' => now(),
                     'updated_at' => now(),
