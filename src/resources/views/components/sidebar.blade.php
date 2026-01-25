@@ -75,6 +75,13 @@
                                 </a>
                             </li>
 
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.rejected.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.rejected.index') }}" class="sidebar-link">
+                                    <i class="bi bi-person-x"></i>
+                                    <span>Rejected</span>
+                                </a>
+                            </li>
+
                         </ul>
                     </li>
 

@@ -67,6 +67,13 @@ Route::prefix('/')->group(function () {
                 Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\Offering\OfferingController::class, 'show'])->name('admin.calon-karyawan.offering.show');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\Offering\OfferingController::class, 'destroy'])->name('admin.calon-karyawan.offering.destroy');
             });
+
+            Route::prefix('/rejected')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\Rejected\RejectedController::class, 'index'])->name('admin.calon-karyawan.rejected.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\Rejected\RejectedController::class, 'show'])->name('admin.calon-karyawan.rejected.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\Rejected\RejectedController::class, 'destroy'])->name('admin.calon-karyawan.rejected.destroy');
+            });
+
         });
 
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {
