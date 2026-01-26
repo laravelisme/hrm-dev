@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class PUserRole extends Model
 {
-    //
+    protected $guarded = ['id'];
 }
