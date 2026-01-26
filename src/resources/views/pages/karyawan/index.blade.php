@@ -5,6 +5,19 @@
 
 @push('styles')
     <style>
+        /* --- Fix overflow filter bar --- */
+        .filter-form { flex-wrap: wrap; }
+        .filter-form .input-group{
+            flex: 1 1 220px;
+            min-width: 0;
+        }
+        .filter-form > .form-select,
+        .filter-form > .btn,
+        .filter-form > a.btn {
+            flex: 0 0 auto;
+        }
+
+        /* --- Select2 Bootstrap 5 (rapi di input-group-sm) --- */
         .input-group-sm .select2-container--bootstrap-5 .select2-selection {
             min-height: calc(1.5em + .5rem + 2px) !important;
             height: calc(1.5em + .5rem + 2px) !important;
@@ -12,22 +25,19 @@
             font-size: .875rem !important;
             border-radius: 0 .2rem .2rem 0 !important;
         }
-
         .input-group-sm .select2-container--bootstrap-5 .select2-selection__rendered {
             line-height: calc(1.5em + .5rem) !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
         }
-
         .input-group-sm .select2-container--bootstrap-5 .select2-selection__arrow {
             height: calc(1.5em + .5rem + 2px) !important;
         }
-
         .input-group-sm .select2-container {
             width: 1% !important;
             flex: 1 1 auto !important;
+            min-width: 0 !important;
         }
-
         .input-group-sm .select2-container--bootstrap-5 .select2-selection {
             border-left: 0 !important;
         }
@@ -46,61 +56,77 @@
                         </p>
                     </div>
 
-                    <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2">
-                        <form id="filterForm" method="GET" action="{{ url()->current() }}" class="d-flex flex-column flex-md-row gap-2">
+                    <div class="d-flex flex-column flex-md-row flex-wrap align-items-stretch align-items-md-center gap-2">
+                        <form id="filterForm" method="GET" action="{{ url()->current() }}"
+                              class="d-flex flex-wrap align-items-center gap-2 filter-form">
 
                             @if(request()->filled('page'))
                                 <input type="hidden" name="page" value="{{ request('page') }}">
                             @endif
 
                             {{-- Search Nama --}}
-                            <div class="input-group input-group-sm" style="min-width: 200px;">
+                            <div class="input-group input-group-sm" style="min-width: 220px;">
                                 <span class="input-group-text"><i class="bi bi-person"></i></span>
                                 <input type="text" id="searchName" name="searchName" class="form-control"
                                        placeholder="Search Nama..." value="{{ request('searchName') }}">
                             </div>
 
                             {{-- Search NIK --}}
-                            <div class="input-group input-group-sm" style="min-width: 160px;">
+                            <div class="input-group input-group-sm" style="min-width: 180px;">
                                 <span class="input-group-text"><i class="bi bi-credit-card"></i></span>
                                 <input type="text" id="searchNik" name="searchNik" class="form-control"
                                        placeholder="Search NIK..." value="{{ request('searchNik') }}">
                             </div>
 
-                                {{-- Jabatan --}}
-                                <div class="input-group input-group-sm" style="min-width:220px;">
-                                    <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
-                                    <select id="searchJabatan" name="searchJabatan" class="form-select select2-jabatan">
-                                        <option value="">All Jabatan</option>
-                                        @isset($selectedJabatan)
-                                            <option value="{{ $selectedJabatan->id }}" selected>{{ $selectedJabatan->nama_jabatan }}</option>
-                                        @endisset
-                                    </select>
-                                </div>
+                            {{-- Jabatan --}}
+                            <div class="input-group input-group-sm" style="min-width: 220px;">
+                                <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+                                <select id="searchJabatan" name="searchJabatan" class="form-select select2-jabatan">
+                                    <option value="">All Jabatan</option>
+                                    @isset($selectedJabatan)
+                                        <option value="{{ $selectedJabatan->id }}" selected>
+                                            {{ $selectedJabatan->name }}
+                                        </option>
+                                    @endisset
+                                </select>
+                            </div>
 
-                                {{-- Department --}}
-                                <div class="input-group input-group-sm" style="min-width:220px;">
-                                    <span class="input-group-text"><i class="bi bi-diagram-3"></i></span>
-                                    <select id="searchDepartment" name="searchDepartment" class="form-select select2-department">
-                                        <option value="">All Department</option>
-                                        @isset($selectedDepartment)
-                                            <option value="{{ $selectedDepartment->id }}" selected>{{ $selectedDepartment->nama_departement }}</option>
-                                        @endisset
-                                    </select>
-                                </div>
+                            {{-- Department --}}
+                            <div class="input-group input-group-sm" style="min-width: 220px;">
+                                <span class="input-group-text"><i class="bi bi-diagram-3"></i></span>
+                                <select id="searchDepartment" name="searchDepartment" class="form-select select2-department">
+                                    <option value="">All Department</option>
+                                    @isset($selectedDepartment)
+                                        <option value="{{ $selectedDepartment->id }}" selected>
+                                            {{ $selectedDepartment->department_name }}
+                                        </option>
+                                    @endisset
+                                </select>
+                            </div>
 
-                                {{-- Company --}}
-                                <div class="input-group input-group-sm" style="min-width:220px;">
-                                    <span class="input-group-text"><i class="bi bi-building"></i></span>
-                                    <select id="searchCompany" name="searchCompany" class="form-select select2-company">
-                                        <option value="">All Company</option>
-                                        @isset($selectedCompany)
-                                            <option value="{{ $selectedCompany->id }}" selected>{{ $selectedCompany->nama_company }}</option>
-                                        @endisset
-                                    </select>
-                                </div>
+                            {{-- Company --}}
+                            <div class="input-group input-group-sm" style="min-width: 220px;">
+                                <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                <select id="searchCompany" name="searchCompany" class="form-select select2-company">
+                                    <option value="">All Company</option>
+                                    @isset($selectedCompany)
+                                        <option value="{{ $selectedCompany->id }}" selected>
+                                            {{ $selectedCompany->company_name }}
+                                        </option>
+                                    @endisset
+                                </select>
+                            </div>
 
-                                @php
+                            {{-- Per Page --}}
+                            <select id="perPage" name="perPage" class="form-select form-select-sm" style="min-width: 110px;">
+                                @foreach([10,20,50,100] as $n)
+                                    <option value="{{ $n }}" @selected((int)request('perPage',10)===$n)>
+                                        {{ $n }}/page
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            @php
                                 $hasFilter = request()->filled('searchName')
                                     || request()->filled('searchNik')
                                     || request()->filled('searchJabatan')
@@ -109,24 +135,15 @@
                                     || request()->filled('perPage');
                             @endphp
 
+                            <button class="btn btn-primary btn-sm" type="submit" title="Filter">
+                                <i class="bi bi-funnel"></i>
+                            </button>
+
                             @if($hasFilter)
-                                <a href="{{ url()->current() }}" class="btn btn-light btn-sm">
+                                <a href="{{ url()->current() }}" class="btn btn-light btn-sm" title="Reset filter">
                                     <i class="bi bi-x-circle"></i>
                                 </a>
                             @endif
-
-                            {{-- Per Page --}}
-                            <select id="perPage" name="perPage" class="form-select form-select-sm" style="min-width:100px;">
-                                @foreach([10,20,50,100] as $n)
-                                    <option value="{{ $n }}" @selected((int)request('perPage',10)===$n)>
-                                        {{ $n }}/page
-                                    </option>
-                                @endforeach
-                            </select>
-
-                            <button class="btn btn-primary btn-sm" type="submit">
-                                <i class="bi bi-funnel me-1"></i>
-                            </button>
                         </form>
 
                         <a href="{{ route('admin.karyawan.create') }}" class="btn btn-primary btn-sm">
@@ -168,9 +185,9 @@
                                     <td>{{ $k->nama_departement ?? '-' }}</td>
                                     <td>{{ $k->nama_company ?? '-' }}</td>
                                     <td>
-                                    <span class="badge {{ $k->is_active ? 'bg-light-success text-success' : 'bg-light-secondary text-muted' }}">
-                                        {{ $k->is_active ? 'Active' : 'Inactive' }}
-                                    </span>
+                                        <span class="badge {{ $k->is_active ? 'bg-light-success text-success' : 'bg-light-secondary text-muted' }}">
+                                            {{ $k->is_active ? 'Active' : 'Inactive' }}
+                                        </span>
                                     </td>
                                     <td class="text-end">
                                         <div class="dropdown">
@@ -219,7 +236,6 @@
         $(function () {
             const indexUrl = @json(route('admin.karyawan.index'));
             const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();
-
             const $form = $('#filterForm');
 
             function debounce(fn, wait) {
@@ -232,10 +248,7 @@
                 $form.trigger('submit');
             }
 
-            // input text
             $('#searchName, #searchNik').on('input', debounce(() => submitFilter(true), 400));
-
-            // per page
             $('#perPage').on('change', () => submitFilter(true));
 
             const jabatanUrl    = @json(route('admin.karyawan.options.jabatan'));
@@ -251,7 +264,7 @@
                         width: '100%',
                         placeholder,
                         allowClear: true,
-                        minimumInputLength: 0,       // biar bisa langsung buka tanpa ngetik
+                        minimumInputLength: 0,
                         dropdownAutoWidth: true,
                         ajax: {
                             url,
@@ -266,7 +279,7 @@
                                 params.page = params.page || 1;
                                 return {
                                     results: data.results || [],
-                                    pagination: { more: !!data.pagination?.more }
+                                    pagination: { more: !!(data.pagination && data.pagination.more) }
                                 };
                             },
                             cache: true
@@ -278,7 +291,6 @@
                         }
                     });
 
-                    // penting: change select2 harus reset page
                     $el.on('change', () => submitFilter(true));
                 });
             }
@@ -287,7 +299,6 @@
             initSelect2('.select2-department', departmentUrl, 'All Department');
             initSelect2('.select2-company', companyUrl, 'All Company');
 
-            // Delete (punyamu udah oke)
             $(document).on('click', '.btn-delete-karyawan', function () {
                 const url  = $(this).data('url');
                 const name = $(this).data('name');

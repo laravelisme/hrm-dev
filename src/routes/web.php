@@ -34,7 +34,9 @@ Route::prefix('/')->group(function () {
             Route::get('/options/department', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'departmentOptions'])->name('admin.karyawan.options.department');
             Route::get('/options/company', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'companyOptions'])->name('admin.karyawan.options.company');
             Route::get('/create', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'create'])->name('admin.karyawan.create');
+            Route::post('/store', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'store'])->name('admin.karyawan.store');
             Route::get('/{id}/show', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'show'])->name('admin.karyawan.show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'edit'])->name('admin.karyawan.edit');
             Route::delete('/{id}/delete', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'destroy'])->name('admin.karyawan.destroy');
         });
 
