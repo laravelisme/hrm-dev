@@ -28,6 +28,16 @@ Route::prefix('/')->group(function () {
             return view('pages.dashboard.index');
         })->name('admin.dashboard');
 
+        Route::prefix('/karyawan')->middleware(['role:hr|admin'])->group(function () {
+            Route::get('/', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'index'])->name('admin.karyawan.index');
+            Route::get('/options/jabatan', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'jabatanOptions'])->name('admin.karyawan.options.jabatan');
+            Route::get('/options/department', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'departmentOptions'])->name('admin.karyawan.options.department');
+            Route::get('/options/company', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'companyOptions'])->name('admin.karyawan.options.company');
+            Route::get('/create', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'create'])->name('admin.karyawan.create');
+            Route::get('/{id}/show', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'show'])->name('admin.karyawan.show');
+            Route::delete('/{id}/delete', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'destroy'])->name('admin.karyawan.destroy');
+        });
+
         Route::prefix('calon-karyawan')->middleware(['role:hr'])->group(function () {
 
             Route::post('/{id}/update-status-recruitment', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'updateStatus'])->name('admin.calon-karyawan.update-status-recruitment');

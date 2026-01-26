@@ -25,6 +25,17 @@
                 </li>
 
                 @php($user = auth()->user())
+
+                @if($user && $user->hasAnyRole(['hr', 'admin']))
+                    <li class="sidebar-item {{ activeState('admin.karyawan.index') }}">
+                        <a href="{{ route('admin.karyawan.index') }}" class="sidebar-link">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Karyawan</span>
+                        </a>
+                    </li>
+                @endif
+
+                @php($user = auth()->user())
                 @if($user && $user->hasRole('hr'))
 
                     <li class="sidebar-item has-sub {{ request()->is('admin/calon-karyawan*') ? 'active' : '' }}">
