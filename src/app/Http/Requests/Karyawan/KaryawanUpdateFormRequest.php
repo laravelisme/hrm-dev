@@ -43,10 +43,35 @@ class KaryawanUpdateFormRequest extends FormRequest
                 Rule::unique('m_karyawans','nik')->ignore($karyawanId),
             ],
 
+            'm_lokasi_kerja_id' => ['nullable','integer','exists:m_lokasi_kerjas,id'],
+            'nama_lokasi_kerja' => ['nullable','string','max:255'],
+
+            'atasan1_id' => ['nullable','integer','exists:m_karyawans,id'],
+            'atasan2_id' => ['nullable','integer','exists:m_karyawans,id'],
+
             'm_jabatan_id'    => ['nullable','exists:m_jabatans,id'],
             'm_department_id' => ['nullable','exists:m_departments,id'],
             'm_company_id'    => ['nullable','exists:m_companies,id'],
             'm_group_kerja_id' => ['nullable', 'exists:m_grup_jam_kerja,id'],
+
+            'nama_pasangan' => ['nullable','string','max:255'],
+            'tempat_lahir_pasangan' => ['nullable','string','max:255'],
+            'tanggal_lahir_pasangan' => ['nullable','date'],
+            'pekerjaan_pasangan' => ['nullable','string','max:255'],
+            'nama_perusahaan_pasangan' => ['nullable','string','max:255'],
+            'jabatan_pasangan' => ['nullable','string','max:255'],
+
+            'anak_ke' => ['nullable','integer'],
+            'jumlah_anak' => ['nullable','integer'],
+            'jumlah_saudara_kandung' => ['nullable','integer'],
+
+            'jabatan_tugas_utama' => ['nullable','string','max:255'],
+            'jabatan_tugas' => ['nullable','string','max:255'],
+            'jabatan_aplikasi' => ['nullable','string','max:255'],
+            'fasilitas' => ['nullable','string','max:255'],
+            'rencana_karir' => ['nullable','string','max:255'],
+            'jabatan_tanggal_mulai' => ['nullable','date'],
+            'jabatan_tanggal_selesai' => ['nullable','date'],
 
             'tinggi_badan' => ['nullable','string','max:50'],
             'berat_badan' => ['nullable','string','max:50'],
@@ -72,6 +97,11 @@ class KaryawanUpdateFormRequest extends FormRequest
             'is_data_benar' => ['boolean'],
             'skip_level_two' => ['boolean'],
 
+            // ===== KONTAK DARURAT =====
+            'darurat_nama' => ['nullable','string','max:255'],
+            'darurat_hubungan' => ['nullable','string','max:255'],
+            'darurat_hp' => ['nullable','string','max:50'],
+            'darurat_alamat' => ['nullable','string','max:255'],
 
             // ===== ORANG TUA =====
             'nama_ayah' => ['nullable','string','max:255'],
@@ -93,6 +123,17 @@ class KaryawanUpdateFormRequest extends FormRequest
             'agama' => ['nullable','string','max:50'],
             'tanggal_bergabung' => ['nullable','date'],
             'status_karyawan' => ['nullable','string','max:50'],
+
+            // ===== m_karyawan_jabatans (riwayat) =====
+            'jabatans' => ['nullable','array'],
+            'jabatans.*.m_jabatan_id' => ['nullable','exists:m_jabatans,id','required_with:jabatans.*.m_department_id,jabatans.*.m_company_id'],
+            'jabatans.*.m_department_id' => ['nullable','exists:m_departments,id','required_with:jabatans.*.m_jabatan_id,jabatans.*.m_company_id'],
+            'jabatans.*.m_company_id' => ['nullable','exists:m_companies,id','required_with:jabatans.*.m_jabatan_id,jabatans.*.m_department_id'],
+            'jabatans.*.tugas_utama' => ['nullable','string','max:255'],
+            'jabatans.*.tugas' => ['nullable','string','max:255'],
+            'jabatans.*.aplikasi' => ['nullable','string','max:255'],
+            'jabatans.*.tanggal_mulai' => ['nullable','date'],
+            'jabatans.*.tanggal_selesai' => ['nullable','date'],
 
             // ===== detail arrays =====
             'pendidikan' => ['nullable','array'],

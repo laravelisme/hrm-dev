@@ -11,6 +11,7 @@ use App\Models\MGrupJamKerja;
 use App\Models\MJabatan;
 use App\Models\MKaryawan;
 use App\Models\MLokasiKerja;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -285,6 +286,16 @@ class KaryawanController extends Controller
 
                     'm_department_id' => $data['m_department_id'] ?? null,
                     'nama_departement' => $department?->department_name,
+                    'm_lokasi_kerja_id' => $data['m_lokasi_kerja_id'] ?? null,
+                    'nama_lokasi_kerja' => $data['nama_lokasi_kerja'] ?? null,
+
+                    'jabatan_tugas_utama' => $data['jabatan_tugas_utama'] ?? null,
+                    'jabatan_tugas' => $data['jabatan_tugas'] ?? null,
+                    'jabatan_aplikasi' => $data['jabatan_aplikasi'] ?? null,
+                    'fasilitas' => $data['fasilitas'] ?? null,
+                    'rencana_karir' => $data['rencana_karir'] ?? null,
+                    'jabatan_tanggal_mulai' => $data['jabatan_tanggal_mulai'] ?? null,
+                    'jabatan_tanggal_selesai' => $data['jabatan_tanggal_selesai'] ?? null,
 
                     'atasan1_id' => $data['atasan1_id'] ?? null,
                     'nama_atasan1' => $atasan1?->nama_karyawan,
@@ -302,6 +313,17 @@ class KaryawanController extends Controller
                     'nama_ibu' => $data['nama_ibu'] ?? null,
                     'tanggal_lahir_ibu' => $data['tanggal_lahir_ibu'] ?? null,
                     'pekerjaan_ibu' => $data['pekerjaan_ibu'] ?? null,
+
+                    'nama_pasangan' => $data['nama_pasangan'] ?? null,
+                    'tempat_lahir_pasangan' => $data['tempat_lahir_pasangan'] ?? null,
+                    'tanggal_lahir_pasangan' => $data['tanggal_lahir_pasangan'] ?? null,
+                    'pekerjaan_pasangan' => $data['pekerjaan_pasangan'] ?? null,
+                    'nama_perusahaan_pasangan' => $data['nama_perusahaan_pasangan'] ?? null,
+                    'jabatan_pasangan' => $data['jabatan_pasangan'] ?? null,
+
+                    'anak_ke' => $data['anak_ke'] ?? null,
+                    'jumlah_anak' => $data['jumlah_anak'] ?? null,
+                    'jumlah_saudara_kandung' => $data['jumlah_saudara_kandung'] ?? null,
 
                     'no_hp' => $data['no_hp'] ?? null,
                     'alamat_ktp' => $data['alamat_ktp'] ?? null,
@@ -343,6 +365,11 @@ class KaryawanController extends Controller
                     'riwayat_penyakit' => $data['riwayat_penyakit'] ?? null,
                     'kendaraan' => $data['kendaraan'] ?? null,
                     'sim' => $data['sim'] ?? null,
+
+                    'darurat_nama' => $data['darurat_nama'] ?? null,
+                    'darurat_hubungan' => $data['darurat_hubungan'] ?? null,
+                    'darurat_hp' => $data['darurat_hp'] ?? null,
+                    'darurat_alamat' => $data['darurat_alamat'] ?? null,
                 ]);
 
                 if (!empty($data['m_jabatan_id']) || !empty($data['m_department_id']) || !empty($data['m_company_id'])) {
@@ -354,6 +381,9 @@ class KaryawanController extends Controller
                         'nama_department' => $department?->department_name,
                         'nama_company' => $company?->company_name,
                         'tanggal_mulai' => $data['tanggal_bergabung'] ?? null,
+                        'tugas' => $data['jabatan_tugas'] ?? null,
+                        'aplikasi' => $data['jabatan_aplikasi'] ?? null,
+                        'tugas_utama' => $data['jabatan_tugas_utama'] ?? null,
                     ]);
                 }
 
@@ -455,6 +485,28 @@ class KaryawanController extends Controller
                     'm_jabatan_id' => $data['m_jabatan_id'] ?? null,
                     'nama_jabatan' => $jabatan?->name,
                     'level' => $jabatan?->level,
+                    'm_lokasi_kerja_id' => $data['m_lokasi_kerja_id'] ?? null,
+                    'nama_lokasi_kerja' => $data['nama_lokasi_kerja'] ?? null,
+
+                    'jabatan_tugas_utama' => $data['jabatan_tugas_utama'] ?? null,
+                    'jabatan_tugas' => $data['jabatan_tugas'] ?? null,
+                    'jabatan_aplikasi' => $data['jabatan_aplikasi'] ?? null,
+                    'fasilitas' => $data['fasilitas'] ?? null,
+                    'rencana_karir' => $data['rencana_karir'] ?? null,
+                    'jabatan_tanggal_mulai' => $data['jabatan_tanggal_mulai'] ?? null,
+                    'jabatan_tanggal_selesai' => $data['jabatan_tanggal_selesai'] ?? null,
+
+                    'nama_pasangan' => $data['nama_pasangan'] ?? null,
+                    'tempat_lahir_pasangan' => $data['tempat_lahir_pasangan'] ?? null,
+                    'tanggal_lahir_pasangan' => $data['tanggal_lahir_pasangan'] ?? null,
+                    'pekerjaan_pasangan' => $data['pekerjaan_pasangan'] ?? null,
+                    'nama_perusahaan_pasangan' => $data['nama_perusahaan_pasangan'] ?? null,
+                    'jabatan_pasangan' => $data['jabatan_pasangan'] ?? null,
+
+                    'anak_ke' => $data['anak_ke'] ?? null,
+                    'jumlah_anak' => $data['jumlah_anak'] ?? null,
+                    'jumlah_saudara_kandung' => $data['jumlah_saudara_kandung'] ?? null,
+
 
                     'm_department_id' => $data['m_department_id'] ?? null,
                     'nama_departement' => $department?->department_name,
@@ -505,13 +557,13 @@ class KaryawanController extends Controller
                     'is_resign' => (bool)($data['is_resign'] ?? 0),
                     'skip_level_two' => (bool)($data['skip_level_two'] ?? 0),
 
-                    'cv_file' => $data['cv_file'] ?? null,
-                    'kk_file' => $data['kk_file'] ?? null,
-                    'npwp_file' => $data['npwp_file'] ?? null,
-                    'sim_file' => $data['sim_file'] ?? null,
-                    'ijazah_file' => $data['ijazah_file'] ?? null,
-                    'ktp_file' => $data['ktp_file'] ?? null,
-                    'foto' => $data['foto'] ?? null,
+                    'cv_file' => $data['cv_file'] ?? $karyawan->cv_file,
+                    'kk_file' => $data['kk_file'] ?? $karyawan->kk_file,
+                    'npwp_file' => $data['npwp_file'] ?? $karyawan->npwp_file,
+                    'sim_file' => $data['sim_file'] ?? $karyawan->sim_file,
+                    'ijazah_file' => $data['ijazah_file'] ?? $karyawan->ijazah_file,
+                    'ktp_file' => $data['ktp_file'] ?? $karyawan->ktp_file,
+                    'foto' => $data['foto'] ?? $karyawan->foto,
 
                     'tinggi_badan' => $data['tinggi_badan'] ?? null,
                     'berat_badan' => $data['berat_badan'] ?? null,
@@ -519,6 +571,11 @@ class KaryawanController extends Controller
                     'riwayat_penyakit' => $data['riwayat_penyakit'] ?? null,
                     'kendaraan' => $data['kendaraan'] ?? null,
                     'sim' => $data['sim'] ?? null,
+
+                    'darurat_nama' => $data['darurat_nama'] ?? null,
+                    'darurat_hubungan' => $data['darurat_hubungan'] ?? null,
+                    'darurat_hp' => $data['darurat_hp'] ?? null,
+                    'darurat_alamat' => $data['darurat_alamat'] ?? null,
                 ]);
 
                 $changedPosition =
@@ -534,7 +591,11 @@ class KaryawanController extends Controller
                         'nama_jabatan' => $jabatan?->name,
                         'nama_department' => $department?->department_name,
                         'nama_company' => $company?->company_name,
+                        'tugas' => $data['jabatan_tugas'] ?? null,
+                        'aplikasi' => $data['jabatan_aplikasi'] ?? null,
+                        'tugas_utama' => $data['jabatan_tugas_utama'] ?? null,
                         'tanggal_mulai' => $data['tanggal_bergabung'] ?? now()->toDateString(),
+                        'tanggal_selesai' => Carbon::now()->toDateString(),
                     ]);
                 }
 
