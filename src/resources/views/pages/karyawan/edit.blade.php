@@ -170,7 +170,7 @@
                                             <div class="invalid-feedback"></div>
                                             @if(!empty($karyawan->foto))
                                                 <small class="text-muted d-block mt-1">
-                                                    File saat ini: <span class="fw-semibold">{{ basename($karyawan->foto) }}</span>
+                                                    File saat ini: <span class="fw-semibold"><a target="_blank" href="{{ Storage::url($karyawan->foto) }}">Lihat</a></span>
                                                 </small>
                                             @endif
                                         </div>
@@ -606,7 +606,7 @@
                                             <input type="file" class="form-control" name="ktp_file">
                                             <div class="invalid-feedback"></div>
                                             @if(!empty($karyawan->ktp_file))
-                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold">{{ basename($karyawan->ktp_file) }}</span></small>
+                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold"><a target="_blank" href="{{ Storage::url($karyawan->ktp_file) }}">Lihat</a></span></small>
                                             @endif
                                         </div>
                                         <div class="col-md-4">
@@ -614,7 +614,7 @@
                                             <input type="file" class="form-control" name="kk_file">
                                             <div class="invalid-feedback"></div>
                                             @if(!empty($karyawan->kk_file))
-                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold">{{ basename($karyawan->kk_file) }}</span></small>
+                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold"><a target="_blank" href="{{ Storage::url($karyawan->kk_file) }}">Lihat</a></span></small>
                                             @endif
                                         </div>
                                         <div class="col-md-4">
@@ -622,7 +622,7 @@
                                             <input type="file" class="form-control" name="npwp_file">
                                             <div class="invalid-feedback"></div>
                                             @if(!empty($karyawan->npwp_file))
-                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold">{{ basename($karyawan->npwp_file) }}</span></small>
+                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold"><a target="_blank" href="{{ Storage::url($karyawan->npwp_file) }}">Lihat</a>{{ basename($karyawan->npwp_file) }}</span></small>
                                             @endif
                                         </div>
                                         <div class="col-md-4">
@@ -630,7 +630,7 @@
                                             <input type="file" class="form-control" name="sim_file">
                                             <div class="invalid-feedback"></div>
                                             @if(!empty($karyawan->sim_file))
-                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold">{{ basename($karyawan->sim_file) }}</span></small>
+                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold"><a target="_blank" href="{{ Storage::url($karyawan->sim_file) }}">Lihat</a></span></small>
                                             @endif
                                         </div>
                                         <div class="col-md-4">
@@ -638,7 +638,7 @@
                                             <input type="file" class="form-control" name="ijazah_file">
                                             <div class="invalid-feedback"></div>
                                             @if(!empty($karyawan->ijazah_file))
-                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold">{{ basename($karyawan->ijazah_file) }}</span></small>
+                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold"><a target="_blank" href="{{ Storage::url($karyawan->ijazah_file) }}">Lihat</a></span></small>
                                             @endif
                                         </div>
                                         <div class="col-md-4">
@@ -646,7 +646,7 @@
                                             <input type="file" class="form-control" name="cv_file">
                                             <div class="invalid-feedback"></div>
                                             @if(!empty($karyawan->cv_file))
-                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold">{{ basename($karyawan->cv_file) }}</span></small>
+                                                <small class="text-muted d-block mt-1">Saat ini: <span class="fw-semibold"><a target="_blank" href="{{ Storage::url($karyawan->cv_file) }}">Lihat</a></span></small>
                                             @endif
                                         </div>
                                     </div>

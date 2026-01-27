@@ -207,6 +207,49 @@ class KaryawanController extends Controller
         $data = $request->validated();
 
         try {
+
+            if ($request->hasFile('cv_file')) {
+                $cvFile = $request->file('cv_file');
+                $cvFilePath = $cvFile->store('karyawan_cv', 'public');
+                $data['cv_file'] = $cvFilePath;
+            }
+
+            if ($request->hasFile('kk_file')) {
+                $kkFile = $request->file('kk_file');
+                $kkFilePath = $kkFile->store('karyawan_kk', 'public');
+                $data['kk_file'] = $kkFilePath;
+            }
+
+            if ($request->hasFile('npwp_file')) {
+                $ktpFile = $request->file('npwp_file');
+                $ktpFilePath = $ktpFile->store('karyawan_npwp', 'public');
+                $data['npwp_file'] = $ktpFilePath;
+            }
+
+            if ($request->hasFile('sim_file')) {
+                $simFile = $request->file('sim_file');
+                $simFilePath = $simFile->store('karyawan_sim', 'public');
+                $data['sim_file'] = $simFilePath;
+            }
+
+            if ($request->hasFile('ijazah_file')) {
+                $ijazahFile = $request->file('ijazah_file');
+                $ijazahFilePath = $ijazahFile->store('karyawan_ijazah', 'public');
+                $data['ijazah_file'] = $ijazahFilePath;
+            }
+
+            if ($request->hasFile('ktp_file')) {
+                $ktpFile = $request->file('ktp_file');
+                $ktpFilePath = $ktpFile->store('karyawan_ktp', 'public');
+                $data['ktp_file'] = $ktpFilePath;
+            }
+
+            if ($request->hasFile('foto')) {
+                $fotoFile = $request->file('foto');
+                $fotoFilePath = $fotoFile->store('karyawan_foto', 'public');
+                $data['foto'] = $fotoFilePath;
+            }
+
             DB::transaction(function () use ($data) {
 
                 $userId = DB::table('p_users')->insertGetId([
@@ -286,6 +329,14 @@ class KaryawanController extends Controller
                     'is_pembaruan_data' => (bool)($data['is_pembaruan_data'] ?? 0),
                     'is_resign' => (bool)($data['is_resign'] ?? 0),
                     'skip_level_two' => (bool)($data['skip_level_two'] ?? 0),
+
+                    'cv_file' => $data['cv_file'] ?? null,
+                    'kk_file' => $data['kk_file'] ?? null,
+                    'npwp_file' => $data['npwp_file'] ?? null,
+                    'sim_file' => $data['sim_file'] ?? null,
+                    'ijazah_file' => $data['ijazah_file'] ?? null,
+                    'ktp_file' => $data['ktp_file'] ?? null,
+                    'foto' => $data['foto'] ?? null,
                     'created_by' => auth()->user()->name ?? null,
                 ]);
 
@@ -321,6 +372,49 @@ class KaryawanController extends Controller
         $data = $request->validated();
 
         try {
+
+            if ($request->hasFile('cv_file')) {
+                $cvFile = $request->file('cv_file');
+                $cvFilePath = $cvFile->store('karyawan_cv', 'public');
+                $data['cv_file'] = $cvFilePath;
+            }
+
+            if ($request->hasFile('kk_file')) {
+                $kkFile = $request->file('kk_file');
+                $kkFilePath = $kkFile->store('karyawan_kk', 'public');
+                $data['kk_file'] = $kkFilePath;
+            }
+
+            if ($request->hasFile('npwp_file')) {
+                $ktpFile = $request->file('npwp_file');
+                $ktpFilePath = $ktpFile->store('karyawan_npwp', 'public');
+                $data['npwp_file'] = $ktpFilePath;
+            }
+
+            if ($request->hasFile('sim_file')) {
+                $simFile = $request->file('sim_file');
+                $simFilePath = $simFile->store('karyawan_sim', 'public');
+                $data['sim_file'] = $simFilePath;
+            }
+
+            if ($request->hasFile('ijazah_file')) {
+                $ijazahFile = $request->file('ijazah_file');
+                $ijazahFilePath = $ijazahFile->store('karyawan_ijazah', 'public');
+                $data['ijazah_file'] = $ijazahFilePath;
+            }
+
+            if ($request->hasFile('ktp_file')) {
+                $ktpFile = $request->file('ktp_file');
+                $ktpFilePath = $ktpFile->store('karyawan_ktp', 'public');
+                $data['ktp_file'] = $ktpFilePath;
+            }
+
+            if ($request->hasFile('foto')) {
+                $fotoFile = $request->file('foto');
+                $fotoFilePath = $fotoFile->store('karyawan_foto', 'public');
+                $data['foto'] = $fotoFilePath;
+            }
+
             DB::transaction(function () use ($id, $data) {
 
                 $karyawan = MKaryawan::findOrFail($id);
@@ -405,6 +499,14 @@ class KaryawanController extends Controller
                     'is_pembaruan_data' => (bool)($data['is_pembaruan_data'] ?? 0),
                     'is_resign' => (bool)($data['is_resign'] ?? 0),
                     'skip_level_two' => (bool)($data['skip_level_two'] ?? 0),
+
+                    'cv_file' => $data['cv_file'] ?? null,
+                    'kk_file' => $data['kk_file'] ?? null,
+                    'npwp_file' => $data['npwp_file'] ?? null,
+                    'sim_file' => $data['sim_file'] ?? null,
+                    'ijazah_file' => $data['ijazah_file'] ?? null,
+                    'ktp_file' => $data['ktp_file'] ?? null,
+                    'foto' => $data['foto'] ?? null,
                 ]);
 
                 $changedPosition =
