@@ -288,10 +288,8 @@ class KaryawanController extends Controller
 
                     'atasan1_id' => $data['atasan1_id'] ?? null,
                     'nama_atasan1' => $atasan1?->nama_karyawan,
-
                     'atasan2_id' => $data['atasan2_id'] ?? null,
                     'nama_atasan2' => $atasan2?->nama_karyawan,
-
                     'm_group_kerja_id' => $data['m_group_kerja_id'] ?? null,
 
                     'm_company_id' => $data['m_company_id'] ?? null,
@@ -338,6 +336,13 @@ class KaryawanController extends Controller
                     'ktp_file' => $data['ktp_file'] ?? null,
                     'foto' => $data['foto'] ?? null,
                     'created_by' => auth()->user()->name ?? null,
+
+                    'tinggi_badan' => $data['tinggi_badan'] ?? null,
+                    'berat_badan' => $data['berat_badan'] ?? null,
+                    'golongan_darah' => $data['golongan_darah'] ?? null,
+                    'riwayat_penyakit' => $data['riwayat_penyakit'] ?? null,
+                    'kendaraan' => $data['kendaraan'] ?? null,
+                    'sim' => $data['sim'] ?? null,
                 ]);
 
                 if (!empty($data['m_jabatan_id']) || !empty($data['m_department_id']) || !empty($data['m_company_id'])) {
@@ -507,6 +512,13 @@ class KaryawanController extends Controller
                     'ijazah_file' => $data['ijazah_file'] ?? null,
                     'ktp_file' => $data['ktp_file'] ?? null,
                     'foto' => $data['foto'] ?? null,
+
+                    'tinggi_badan' => $data['tinggi_badan'] ?? null,
+                    'berat_badan' => $data['berat_badan'] ?? null,
+                    'golongan_darah' => $data['golongan_darah'] ?? null,
+                    'riwayat_penyakit' => $data['riwayat_penyakit'] ?? null,
+                    'kendaraan' => $data['kendaraan'] ?? null,
+                    'sim' => $data['sim'] ?? null,
                 ]);
 
                 $changedPosition =

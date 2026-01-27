@@ -48,6 +48,13 @@ class KaryawanUpdateFormRequest extends FormRequest
             'm_company_id'    => ['nullable','exists:m_companies,id'],
             'm_group_kerja_id' => ['nullable', 'exists:m_grup_jam_kerja,id'],
 
+            'tinggi_badan' => ['nullable','string','max:50'],
+            'berat_badan' => ['nullable','string','max:50'],
+            'golongan_darah' => ['nullable','string','max:10'],
+            'riwayat_penyakit' => ['nullable','string','max:255'],
+            'kendaraan' => ['nullable','string','max:255'],
+            'sim' => ['nullable','string','max:50'],
+
             // ===== FLAGS =====
             'is_active' => ['boolean'],
             'is_active_organisasi' => ['boolean'],
