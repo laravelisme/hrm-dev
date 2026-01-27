@@ -126,24 +126,24 @@
                                 @endforeach
                             </select>
 
-                            @php
-                                $hasFilter = request()->filled('searchName')
-                                    || request()->filled('searchNik')
-                                    || request()->filled('searchJabatan')
-                                    || request()->filled('searchDepartment')
-                                    || request()->filled('searchCompany')
-                                    || request()->filled('perPage');
-                            @endphp
+{{--                            @php--}}
+{{--                                $hasFilter = request()->filled('searchName')--}}
+{{--                                    || request()->filled('searchNik')--}}
+{{--                                    || request()->filled('searchJabatan')--}}
+{{--                                    || request()->filled('searchDepartment')--}}
+{{--                                    || request()->filled('searchCompany')--}}
+{{--                                    || request()->filled('perPage');--}}
+{{--                            @endphp--}}
 
-                            <button class="btn btn-primary btn-sm" type="submit" title="Filter">
-                                <i class="bi bi-funnel"></i>
-                            </button>
+{{--                            <button class="btn btn-primary btn-sm" type="submit" title="Filter">--}}
+{{--                                <i class="bi bi-funnel"></i>--}}
+{{--                            </button>--}}
 
-                            @if($hasFilter)
-                                <a href="{{ url()->current() }}" class="btn btn-light btn-sm" title="Reset filter">
-                                    <i class="bi bi-x-circle"></i>
-                                </a>
-                            @endif
+{{--                            @if($hasFilter)--}}
+{{--                                <a href="{{ url()->current() }}" class="btn btn-light btn-sm" title="Reset filter">--}}
+{{--                                    <i class="bi bi-x-circle"></i>--}}
+{{--                                </a>--}}
+{{--                            @endif--}}
                         </form>
 
                         <a href="{{ route('admin.karyawan.create') }}" class="btn btn-primary btn-sm">
