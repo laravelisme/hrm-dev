@@ -11,6 +11,7 @@ use App\Models\MGrupJamKerja;
 use App\Models\MJabatan;
 use App\Models\MKaryawan;
 use App\Models\MLokasiKerja;
+use App\Models\TSaldoCuti;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -393,6 +394,20 @@ class KaryawanController extends Controller
                 $karyawan->bahasas()->createMany($this->filterRows($data['bahasa'] ?? []));
                 $karyawan->anaks()->createMany($this->filterRows($data['anak'] ?? []));
                 $karyawan->saudaras()->createMany($this->filterRows($data['saudara'] ?? []));
+
+                TSaldoCuti::create([
+                    'm_karyawan_id' => $karyawan->id,
+                    'nama_karyawan' => $karyawan->nama_karyawan,
+                    'tahun' => Carbon::now()->year,
+                    'saldo' => 0,
+                    'sisa_saldo' => 0,
+                    'm_company_id' => $karyawan->m_company_id,
+                    'nama_perusahaan' => $karyawan->nama_company,
+                    'm_department_id' => $karyawan->m_department_id,
+                    'nama_department' => $karyawan->nama_departement,
+                    'm_karyawan_jabatan_id' => !empty($karyawan->m_jabatan_id) ? $karyawan->jabatans()->latest()->first()->id : null,
+                    'nama_jabatan' => $karyawan->nama_jabatan,
+                ]);
             });
 
             return $this->successResponse(null, 'Karyawan + User berhasil dibuat (password = NIK)', 201);

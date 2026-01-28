@@ -9,6 +9,7 @@ Route::get('/', function () {
     return redirect()->route('admin.dashboard');
 });
 
+
 Route::prefix('/')->group(function () {
     // Auth
     Route::get('login', [AuthController::class, 'viewLogin'])->name('admin.login');
@@ -67,6 +68,9 @@ Route::prefix('/')->group(function () {
 
             Route::prefix('/test-tulis')->group(function () {
                 Route::get('/', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'index'])->name('admin.calon-karyawan.test-tulis.index');
+                Route::get('{id}/test', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'edit'])->name('admin.calon-karyawan.test-tulis.showTest');
+                Route::post('{id}/test/generate', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'generateTest'])->name('admin.calon-karyawan.test-tulis.generateTest');
+                Route::put('{id}/test/deadline', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'update'])->name('admin.calon-karyawan.test-tulis.updateDeadline');
                 Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'show'])->name('admin.calon-karyawan.test-tulis.show');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'destroy'])->name('admin.calon-karyawan.test-tulis.destroy');
             });

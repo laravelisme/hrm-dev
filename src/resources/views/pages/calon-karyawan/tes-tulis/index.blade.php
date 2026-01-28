@@ -154,6 +154,13 @@
                                                     </a>
                                                 </li>
 
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                       href="{{ route('admin.calon-karyawan.test-tulis.showTest', $ck->id) }}">
+                                                        <i class="bi bi-link-45deg me-2"></i> Show Test
+                                                    </a>
+                                                </li>
+
                                                 <li><hr class="dropdown-divider"></li>
 
                                                 {{-- Lanjut Interview --}}

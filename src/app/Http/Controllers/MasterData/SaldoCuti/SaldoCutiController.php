@@ -90,7 +90,7 @@ class SaldoCutiController extends Controller
             if (!$saldoCuti) {
                 abort(404, 'Saldo cuti not found');
             } else {
-                return view('pages.master-data.saldo-cuti.show', compact('saldoCuti'));
+                return view('pages.master-data.saldo-cuti-tahunan.show', compact('saldoCuti'));
             }
 
         } catch (\Throwable $e) {

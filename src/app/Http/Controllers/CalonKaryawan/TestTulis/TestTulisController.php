@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\CalonKaryawan\TestTulis;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Recruitment\TestTulis\GenerateDeadlineFormRequest;
+use App\Http\Requests\Recruitment\TestTulis\GenerateTestFormRequest;
+use App\Http\Requests\Recruitment\TestTulis\SettingTestFormRequest;
 use App\Models\MCalonKaryawan;
+use App\Models\TTestTulis;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -72,6 +76,96 @@ class TestTulisController extends Controller
         } catch (\Throwable $e) {
             Log::error('[TestTulisController@show] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             abort(500, 'Failed to load calon karyawan detail');
+        }
+    }
+
+    public function edit($id)
+    {
+        try {
+
+            $calonKaryawan = $this->mCalonKaryawan->findOrFail($id);
+            $testTulis = TTestTulis::where('m_calon_karyawan_id', $id)->first();
+            if (!$testTulis) {
+                abort(404, 'Calon karyawan test not found');
+            }
+
+            return view('pages.calon-karyawan.tes-tulis.show-test', compact('testTulis', 'calonKaryawan'));
+
+        } catch (\Throwable $e) {
+            Log::error('[TestTulisController@showTest] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            abort(500, 'Failed to load calon karyawan test detail');
+        }
+    }
+
+    public function generateTest(GenerateTestFormRequest $request, $id)
+    {
+        try {
+            $testTulis = TTestTulis::where('m_calon_karyawan_id', $id)->first();
+
+            // komunikasi dengan service eksternal untuk generate test mas ocha
+
+            $testTulis->test_psikologi = 'http://example.com/test/psikologi/' . $testTulis->id;
+            $testTulis->test_teknikal = 'http://example.com/test/teknikal/' . $testTulis->id;
+
+            $testTulis->save();
+
+            return $this->successResponse($testTulis, 'Test for calon karyawan generated successfully', 200);
+
+        } catch (\Throwable $e) {
+            Log::error('[TestTulisController@generateTest] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->errorResponse('Failed to generate test for calon karyawan', 500);
+        }
+    }
+
+    public function update(GenerateDeadlineFormRequest $request, $id)
+    {
+        try {
+
+            $data = $request->validated();
+
+            $testTulis = TTestTulis::findOrFail($id);
+            $testTulis->deadline_psikologi = $data['deadline_psikologi'];
+            $testTulis->deadline_teknikal = $data['deadline_teknikal'];
+
+            $testTulis->save();
+
+            return $this->successResponse($testTulis, 'Test deadline for calon karyawan updated successfully', 200);
+
+        } catch (\Throwable $e) {
+            Log::error('[TestTulisController@update] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->errorResponse('Failed to update test for calon karyawan', 500);
+        }
+    }
+
+    public function setTest(SettingTestFormRequest $request)
+    {
+        try {
+
+            $data = $request->validated();
+
+            $calonKaryawan = MCalonKaryawan::where('nik', $data['nik'])->first();
+            if (!$calonKaryawan) {
+                return $this->errorResponse('Calon karyawan not found', 404);
+            }
+
+            $testTulis = TTestTulis::where('m_calon_karyawan_id', $calonKaryawan->id)->first();
+
+//            if ($data['token'] !== $testTulis->token) {
+//                return $this->errorResponse('Token tidak sesuai', 404);
+//            }
+
+            $testTulis->result_psikologi = $data['result_psikologi'];
+            $testTulis->result_teknikal = $data['result_teknikal'];
+            $testTulis->status_psikologi = 'completed';
+            $testTulis->status_teknikal = 'completed';
+
+            $testTulis->save();
+
+            return $this->successResponse($testTulis, 'Test for calon karyawan set successfully', 200);
+
+        } catch (\Throwable $e) {
+            Log::error('[TestTulisController@setTest] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->errorResponse('Failed to set test for calon karyawan', 500);
         }
     }
 

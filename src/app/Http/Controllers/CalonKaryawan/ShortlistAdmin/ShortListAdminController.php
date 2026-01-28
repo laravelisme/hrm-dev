@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CalonKaryawan\UpdateStatusRecruitment\UpdateStatusRecruitmentFormRequest;
 use App\Models\MCalonKaryawan;
 use App\Models\MStatusRecruitment;
+use App\Models\TTestTulis;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ShortListAdminController extends Controller
@@ -87,12 +89,45 @@ class ShortListAdminController extends Controller
             if (!$status) {
                 return $this->errorResponse('Calon karyawan status not found', 404);
             }
+
+            DB::beginTransaction();
             $status->status = $data['status'];
             $status->save();
+
+            switch ($data['status']) {
+                case 'TES_TULIS':
+                    $testTulis = TTestTulis::where('m_calon_karyawan_id', $id)->first();
+                    if (!$testTulis) {
+                        TTestTulis::create([
+                            'm_calon_karyawan_id' => $id,
+                            'status_psikologi' => 'pending',
+                            'status_teknikal' => 'pending',
+                        ]);
+                        break;
+                    }
+
+                    $testTulis->status_psikologi = 'pending';
+                    $testTulis->status_teknikal = 'pending';
+                    $testTulis->test_psikologi = null;
+                    $testTulis->test_teknikal = null;
+                    $testTulis->deadline_psikologi = null;
+                    $testTulis->deadline_teknikal = null;
+                    $testTulis->result_psikologi = null;
+                    $testTulis->result_teknikal = null;
+                    $testTulis->save();
+
+                    break;
+
+                default :
+                    break;
+            }
+
+            DB::commit();
 
             return $this->successResponse($status, 'Calon karyawan status updated successfully', 200);
 
         } catch (\Throwable $e) {
+            DB::rollBack();
             Log::error('[ShortlistAdminController@updateStatus] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return $this->errorResponse('Failed to update calon karyawan status', 500);
         }
