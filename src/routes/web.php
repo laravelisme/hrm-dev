@@ -108,6 +108,19 @@ Route::prefix('/')->group(function () {
                 Route::put('/{id}', [\App\Http\Controllers\Transaksi\SaldoCutiTahunan\SaldoCutiTahunanController::class, 'update'])->name('admin.transaksi.saldo-cuti-tahunan.update');
                 Route::post('generate', [\App\Http\Controllers\Transaksi\SaldoCutiTahunan\SaldoCutiTahunanController::class, 'generateNewSaldo'])->name('admin.transaksi.saldo-cuti-tahunan.generateNewSaldo');
             });
+
+            Route::prefix('cuti-karyawan')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'index'])->name('admin.transaksi.cuti-karyawan.index');
+                Route::get('/create', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'create'])->name('admin.transaksi.cuti-karyawan.create');
+                Route::post('/store', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'store'])->name('admin.transaksi.cuti-karyawan.store');
+                Route::get('/{id}', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'show'])->name('admin.transaksi.cuti-karyawan.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'destroy'])->name('admin.transaksi.cuti-karyawan.destroy');
+                Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'karyawanDetail'])->name('admin.transaksi.cuti-karyawan.karyawan-detail');
+
+                Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'karyawanOptions'])->name('admin.transaksi.cuti-karyawan.karyawan-options');
+                Route::get('/options/jenis-cuti', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'jenisCutiOptions'])->name('admin.transaksi.cuti-karyawan.jenis-cuti-options');
+                Route::get('/options/companies', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'companyOptions'])->name('admin.transaksi.cuti-karyawan.company-options');
+            });
         });
 
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {

@@ -174,7 +174,14 @@
                             <li class="submenu-item {{ activeState('admin.transaksi.saldo-cuti-tahunan.index') }}">
                                 <a href="{{ route('admin.transaksi.saldo-cuti-tahunan.index') }}" class="sidebar-link">
                                     <i class="bi bi-calendar-check"></i>
-                                    <span>Cuti Tahunan</span>
+                                    <span>Saldo Cuti Karyawan</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.transaksi.cuti-karyawan.index') }}">
+                                <a href="{{ route('admin.transaksi.cuti-karyawan.index') }}" class="sidebar-link">
+                                    <i class="bi bi-person-check"></i>
+                                    <span>Cuti Karyawan</span>
                                 </a>
                             </li>
                         </ul>

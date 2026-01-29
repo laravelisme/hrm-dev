@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\MJenisCuti;
 use App\Models\User;
 use App\Models\MCompany;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -15,6 +16,32 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+        MJenisCuti::create([
+           'nama_cuti' => 'TAHUNAN',
+            'kode' => 'YEARLY',
+        ]);
+
+        MJenisCuti::create([
+            'nama_cuti' => 'MENIKAH',
+            'kode' => 'MARRY',
+        ]);
+
+        MJenisCuti::create([
+           'nama_cuti' => 'MELAHIRKAN',
+            'kode' => 'BIRTH',
+        ]);
+
+        MJenisCuti::create([
+           'nama_cuti' => 'POTONG CUTI',
+           'kode' => 'CUT',
+        ]);
+
+        MJenisCuti::create([
+           'nama_cuti' => 'KEDUKAAN',
+           'kode' => 'GRIEF',
+        ]);
+
         // User::factory(10)->create();
 
         // User::factory()->create([
@@ -30,26 +57,26 @@ class DatabaseSeeder extends Seeder
         //     UserRoleSeeder::class
         // ]);
 
-        $totalRecords = 100000; // total data
-        $batchSize = 5000;         // insert per batch
-        $levels = ['HOLDING', 'COMPANY'];
-
-        for ($i = 0; $i < $totalRecords; $i += $batchSize) {
-            $companies = [];
-
-            for ($j = 0; $j < $batchSize; $j++) {
-                $companies[] = [
-                    'company_name' => 'PT Takoma Cemerlang ' . ($i + $j + 1),
-                    'level' => $levels[array_rand($levels)],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-
-            MCompany::insert($companies);
-
-            // echo "Inserted " . min($i + $batchSize, $totalRecords) . " / $totalRecords companies\n";
-        }
+//        $totalRecords = 100000; // total data
+//        $batchSize = 5000;         // insert per batch
+//        $levels = ['HOLDING', 'COMPANY'];
+//
+//        for ($i = 0; $i < $totalRecords; $i += $batchSize) {
+//            $companies = [];
+//
+//            for ($j = 0; $j < $batchSize; $j++) {
+//                $companies[] = [
+//                    'company_name' => 'PT Takoma Cemerlang ' . ($i + $j + 1),
+//                    'level' => $levels[array_rand($levels)],
+//                    'created_at' => now(),
+//                    'updated_at' => now(),
+//                ];
+//            }
+//
+//            MCompany::insert($companies);
+//
+//            // echo "Inserted " . min($i + $batchSize, $totalRecords) . " / $totalRecords companies\n";
+//        }
     }
 }
 
