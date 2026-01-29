@@ -5,6 +5,8 @@ namespace App\Http\Controllers\MasterData\SaldoCuti;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MasterData\SaldoCuti\SaldoCutiStoreFormRequest;
 use App\Http\Requests\MasterData\SaldoCuti\SaldoCutiUpdateFormRequest;
+use App\Models\MCompany;
+use App\Models\MJabatan;
 use App\Models\MSaldoCuti;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -81,6 +83,43 @@ class SaldoCutiController extends Controller
         }
     }
 
+    public function jabatanOptions(Request $request)
+    {
+        try {
+
+            $term    = trim((string) $request->get('q', $request->get('term', '')));
+            $page    = max(1, (int) $request->get('page', 1));
+            $perPage = (int) $request->get('perPage', 20);
+            $perPage = max(1, min($perPage, 50));
+
+            $q = MJabatan::query()
+                ->select('id', 'name');
+
+            if ($term !== '') {
+                $q->where('name', 'like', '%' . $term . '%');
+            }
+
+            $paginator = $q->orderBy('name')
+                ->paginate($perPage, ['*'], 'page', $page);
+
+            $results = $paginator->getCollection()->map(fn ($c) => [
+                'id'   => $c->id,
+                'text' => $c->name,
+            ])->values();
+
+            return response()->json([
+                'results' => $results,
+                'pagination' => [
+                    'more' => $paginator->hasMorePages(),
+                ],
+            ]);
+
+        } catch (\Throwable $e) {
+            Log::error('[SaldoCutiController@jabatanOptions] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->errorResponse(500, 'Failed to load jabatan options');
+        }
+    }
+
     public function show($id)
     {
         try {
@@ -103,8 +142,8 @@ class SaldoCutiController extends Controller
     {
         try {
 
-            $saldoCuti = $this->saldoCuti->findOrFail($id);
-
+            $saldoCuti = $this->saldoCuti->with('jabatan')->findOrFail($id);
+            
             if (!$saldoCuti) {
                 abort(404, 'Saldo cuti not found');
             } else {

@@ -32,6 +32,14 @@
                                     <div class="invalid-feedback" data-error-for="jumlah"></div>
                                 </div>
 
+                                <div class="col-md-6">
+                                    <label class="form-label">Jabatan <span class="text-danger">*</span></label>
+                                    <select id="m_jabatan_id" name="m_jabatan_id" class="form-select">
+                                        {{-- kosong, nanti diisi select2 ajax --}}
+                                    </select>
+                                    <div class="invalid-feedback d-block" data-error-for="m_jabatan_id"></div>
+                                </div>
+
                                 <div class="col-12 d-flex justify-content-end gap-2 mt-3">
                                     <a href="{{ route('admin.master-data.saldo-cuti.index') }}" class="btn btn-light">Cancel</a>
                                     <button type="submit" class="btn btn-primary" id="btnSubmit">
@@ -54,14 +62,63 @@
             const storeUrl = @json(route('admin.master-data.saldo-cuti.store'));
             const indexUrl = @json(route('admin.master-data.saldo-cuti.index'));
 
+            const jabatanOptionsUrl = @json(route('admin.master-data.saldo-cuti.jabatan-options'));
+
+            function initJabatanSelect2() {
+                const $el = $('#m_jabatan_id');
+
+                $el.select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    placeholder: 'Pilih Jabatan...',
+                    allowClear: true,
+                    ajax: {
+                        url: jabatanOptionsUrl,
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term || '',
+                                page: params.page || 1,
+                                perPage: 20
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results || [],
+                                pagination: { more: data.pagination?.more === true }
+                            };
+                        },
+                        cache: true
+                    }
+                });
+
+                // remove error state when changed
+                $el.on('change', function () {
+                    $el.removeClass('is-invalid');
+                    $el.next('.select2-container').find('.select2-selection').removeClass('is-invalid');
+                    $('[data-error-for="m_jabatan_id"]').text('');
+                });
+            }
+
+            initJabatanSelect2();
+
             function resetFieldErrors() {
                 $('#formAddSaldoCuti .is-invalid').removeClass('is-invalid');
                 $('#formAddSaldoCuti [data-error-for]').text('');
+
+                $('#formAddSaldoCuti .select2-selection').removeClass('is-invalid');
             }
 
             function setFieldError(field, message) {
                 const $input = $('#formAddSaldoCuti [name="' + field + '"]');
                 $input.addClass('is-invalid');
+
+                if ($input.is('select')) {
+                    $input.next('.select2-container').find('.select2-selection').addClass('is-invalid');
+                }
+
                 $('#formAddSaldoCuti [data-error-for="' + field + '"]').text(message);
             }
 

@@ -113,6 +113,7 @@ Route::prefix('/')->group(function () {
 
             Route::prefix('saldo-cuti')->group(function () {
                 Route::get('/', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'index'])->name('admin.master-data.saldo-cuti.index');
+                Route::get('/jabatan-options', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'jabatanOptions'])->name('admin.master-data.saldo-cuti.jabatan-options');
                 Route::get('/create', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'create'])->name('admin.master-data.saldo-cuti.create');
                 Route::post('/store', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'store'])->name('admin.master-data.saldo-cuti.store');
                 Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'edit'])->name('admin.master-data.saldo-cuti.edit');

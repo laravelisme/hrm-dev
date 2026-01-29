@@ -26,6 +26,7 @@ class SaldoCutiUpdateFormRequest extends FormRequest
         return [
             'jenis' => 'required|string|max:255',
             'jumlah'     => 'required|integer|min:0',
+            'm_jabatan_id' => 'required|exists:m_jabatans,id',
         ];
     }
 }
