@@ -121,6 +121,20 @@ Route::prefix('/')->group(function () {
                 Route::get('/options/jenis-cuti', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'jenisCutiOptions'])->name('admin.transaksi.cuti-karyawan.jenis-cuti-options');
                 Route::get('/options/companies', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'companyOptions'])->name('admin.transaksi.cuti-karyawan.company-options');
             });
+
+            Route::prefix('izin-karyawan')->group(function () {
+
+                Route::get('/', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'index'])->name('admin.transaksi.izin-karyawan.index');
+                Route::get('/create', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'create'])->name('admin.transaksi.izin-karyawan.create');
+                Route::post('/store', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'store'])->name('admin.transaksi.izin-karyawan.store');
+                Route::get('/{id}/show', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'show'])->name('admin.transaksi.izin-karyawan.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'destroy'])->name('admin.transaksi.izin-karyawan.destroy');
+                Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'karyawanDetail'])->name('admin.transaksi.izin-karyawan.karyawan-detail');
+
+                Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'karyawanOptions'])->name('admin.transaksi.izin-karyawan.karyawan-options');
+                Route::get('/options/jenis-izin', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'jenisIzinOptions'])->name('admin.transaksi.izin-karyawan.jenis-izin-options');
+                Route::get('/options/companies', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'companyOptions'])->name('admin.transaksi.izin-karyawan.company-options');
+            });
         });
 
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {

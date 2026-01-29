@@ -184,6 +184,13 @@
                                     <span>Cuti Karyawan</span>
                                 </a>
                             </li>
+
+                            <li class="submenu-item {{ activeState('admin.transaksi.izin-karyawan.index') }}">
+                                <a href="{{ route('admin.transaksi.izin-karyawan.index') }}" class="sidebar-link">
+                                    <i class="bi bi-person-check"></i>
+                                    <span>Izin Karyawan</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 @endif

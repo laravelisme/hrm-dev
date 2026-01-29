@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\MJenisCuti;
+use App\Models\MJenisIzin;
 use App\Models\User;
 use App\Models\MCompany;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -17,29 +18,49 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        MJenisCuti::create([
-           'nama_cuti' => 'TAHUNAN',
-            'kode' => 'YEARLY',
+//        MJenisCuti::create([
+//           'nama_cuti' => 'TAHUNAN',
+//            'kode' => 'YEARLY',
+//        ]);
+//
+//        MJenisCuti::create([
+//            'nama_cuti' => 'MENIKAH',
+//            'kode' => 'MARRY',
+//        ]);
+//
+//        MJenisCuti::create([
+//           'nama_cuti' => 'MELAHIRKAN',
+//            'kode' => 'BIRTH',
+//        ]);
+//
+//        MJenisCuti::create([
+//           'nama_cuti' => 'POTONG CUTI',
+//           'kode' => 'CUT',
+//        ]);
+//
+//        MJenisCuti::create([
+//           'nama_cuti' => 'KEDUKAAN',
+//           'kode' => 'GRIEF',
+//        ]);
+
+        MJenisIzin::create([
+            'nama_izin' => 'PULANG LEBIH CEPAT',
+            'kode' => 'EARLYOUT'
         ]);
 
-        MJenisCuti::create([
-            'nama_cuti' => 'MENIKAH',
-            'kode' => 'MARRY',
+        MJenisIzin::create([
+           'nama_izin' => 'DATANG TERLAMBAT',
+           'kode' => 'LATEIN'
         ]);
 
-        MJenisCuti::create([
-           'nama_cuti' => 'MELAHIRKAN',
-            'kode' => 'BIRTH',
+        MJenisIzin::create([
+           'nama_izin' => 'SAKIT',
+           'kode' => 'SICK'
         ]);
 
-        MJenisCuti::create([
-           'nama_cuti' => 'POTONG CUTI',
-           'kode' => 'CUT',
-        ]);
-
-        MJenisCuti::create([
-           'nama_cuti' => 'KEDUKAAN',
-           'kode' => 'GRIEF',
+        MJenisIzin::create([
+           'nama_izin' => 'TIDAK MASUK KERJA',
+            'kode' => 'ABSENCE'
         ]);
 
         // User::factory(10)->create();
