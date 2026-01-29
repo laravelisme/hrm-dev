@@ -39,6 +39,88 @@
                 @php($user = auth()->user())
                 @if($user && $user->hasRole('hr'))
 
+                    <li class="sidebar-item has-sub {{ request()->is('admin/transaksi*') ? 'active' : '' }}">
+                        <a href="#" class="sidebar-link">
+                            <i class="bi bi-receipt"></i>
+                            <span>Transaksi</span>
+                        </a>
+                        <ul class="submenu">
+                            <li class="submenu-item {{ activeState('admin.transaksi.saldo-cuti-tahunan.index') }}">
+                                <a href="{{ route('admin.transaksi.saldo-cuti-tahunan.index') }}" class="sidebar-link">
+                                    <i class="bi bi-calendar-check"></i>
+                                    <span>Cuti Tahunan</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="sidebar-item has-sub {{ request()->is('admin/master-data*') ? 'active' : '' }}">
+                        <a href="#" class="sidebar-link">
+                            <i class="bi bi-folder-fill"></i>
+                            <span>Master Data</span>
+                        </a>
+                        <ul class="submenu">
+                            <li class="submenu-item {{ activeState('admin.master-data.jabatan.index') }}">
+                                <a href="{{ route('admin.master-data.jabatan.index') }}" class="sidebar-link">
+                                    <i class="bi bi-person-badge"></i>
+                                    <span>Jabatan</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.master-data.saldo-cuti.index') }}">
+                                <a href="{{ route('admin.master-data.saldo-cuti.index') }}" class="sidebar-link">
+                                    <i class="bi bi-calendar2-check"></i>
+                                    <span>Saldo Cuti</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.master-data.hari-libur.index') }}">
+                                <a href="{{ route('admin.master-data.hari-libur.index') }}" class="sidebar-link">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <span>Hari Libur</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.master-data.lokasi-kerja.index') }}">
+                                <a href="{{ route('admin.master-data.lokasi-kerja.index') }}" class="sidebar-link">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>Lokasi Kerja</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.master-data.company.index') }}">
+                                <a href="{{ route('admin.master-data.company.index') }}" class="sidebar-link">
+                                    <i class="bi bi-buildings"></i>
+                                    <span>Company</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.master-data.department.index') }}">
+                                <a href="{{ route('admin.master-data.department.index') }}" class="sidebar-link">
+                                    <i class="bi bi-diagram-3"></i>
+                                    <span>Department</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.master-data.grup-jam-kerja.index') }}">
+                                <a href="{{ route('admin.master-data.grup-jam-kerja.index') }}" class="sidebar-link">
+                                    <i class="bi bi-clock"></i>
+                                    <span>Grup Jam Kerja</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item {{ activeState('admin.master-data.setting.index') }}">
+                                <a href="{{ route('admin.master-data.setting.index') }}" class="sidebar-link">
+                                    <i class="bi bi-gear"></i>
+                                    <span>Setting</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+
+                @php($user = auth()->user())
+                @if($user && $user->hasRole('hr'))
+
                     <li class="sidebar-item has-sub {{ request()->is('admin/calon-karyawan*') ? 'active' : '' }}">
                         <a href="#" class="sidebar-link">
                             <i class="bi bi-person-plus"></i>

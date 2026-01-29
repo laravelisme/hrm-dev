@@ -11,6 +11,7 @@ use App\Models\MGrupJamKerja;
 use App\Models\MJabatan;
 use App\Models\MKaryawan;
 use App\Models\MLokasiKerja;
+use App\Models\MSaldoCuti;
 use App\Models\TSaldoCuti;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -395,12 +396,14 @@ class KaryawanController extends Controller
                 $karyawan->anaks()->createMany($this->filterRows($data['anak'] ?? []));
                 $karyawan->saudaras()->createMany($this->filterRows($data['saudara'] ?? []));
 
+                $saldoCuti = MSaldoCuti::where('m_jabatan_id', $karyawan->m_jabatan_id)->first();
+
                 TSaldoCuti::create([
                     'm_karyawan_id' => $karyawan->id,
                     'nama_karyawan' => $karyawan->nama_karyawan,
                     'tahun' => Carbon::now()->year,
-                    'saldo' => 0,
-                    'sisa_saldo' => 0,
+                    'saldo' => $saldoCuti->jumlah ?? 0,
+                    'sisa_saldo' => $saldoCuti->jumlah ?? 0,
                     'm_company_id' => $karyawan->m_company_id,
                     'nama_perusahaan' => $karyawan->nama_company,
                     'm_department_id' => $karyawan->m_department_id,
