@@ -143,7 +143,6 @@ class SaldoCutiController extends Controller
         try {
 
             $saldoCuti = $this->saldoCuti->with('jabatan')->findOrFail($id);
-            
             if (!$saldoCuti) {
                 abort(404, 'Saldo cuti not found');
             } else {
