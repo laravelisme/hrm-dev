@@ -187,7 +187,7 @@
 
                             <li class="submenu-item {{ activeState('admin.transaksi.izin-karyawan.index') }}">
                                 <a href="{{ route('admin.transaksi.izin-karyawan.index') }}" class="sidebar-link">
-                                    <i class="bi bi-person-check"></i>
+                                    <i class="bi bi-ticket-perforated"></i>
                                     <span>Izin Karyawan</span>
                                 </a>
                             </li>
