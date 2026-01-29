@@ -35,7 +35,7 @@ class IzinKaryawanController extends Controller
             if ($searchBulanTahun || $searchKaryawan || $searchCompany || $searchJenis || $searchStatus) {
                 $query->where(function ($query) use ($searchBulanTahun, $searchKaryawan, $searchCompany, $searchJenis, $searchStatus) {
                     if ($searchBulanTahun) {
-                        $query->whereRaw("DATE_FORMAT(start_date, '%m-%Y') = ?", [$searchBulanTahun]);
+                        $query->whereRaw("to_char(start_date, 'MM-YYYY') = ?", [$searchBulanTahun]);
                     }
                     if ($searchKaryawan) {
                         $query->where('m_karyawan_id', (int) $searchKaryawan);
