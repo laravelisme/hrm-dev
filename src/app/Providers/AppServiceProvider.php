@@ -16,6 +16,9 @@ class AppServiceProvider extends ServiceProvider
         \App\Events\HariLiburUpdated::class => [
             \App\Listeners\SyncCompaniesToHariLibur::class,
         ],
+        \App\Events\GenerateSaldoCutiTahunan::class => [
+            \App\Listeners\GenerateSaldoCutiTahunanListener::class,
+        ],
     ];
 
 

@@ -101,6 +101,15 @@ Route::prefix('/')->group(function () {
 
         });
 
+        Route::prefix('transaksi')->middleware(['role:hr'])->group(function () {
+            Route::prefix('saldo-cuti-tahunan')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Transaksi\SaldoCutiTahunan\SaldoCutiTahunanController::class, 'index'])->name('admin.transaksi.saldo-cuti-tahunan.index');
+                Route::get('/{id}/edit', [\App\Http\Controllers\Transaksi\SaldoCutiTahunan\SaldoCutiTahunanController::class, 'edit'])->name('admin.transaksi.saldo-cuti-tahunan.edit');
+                Route::put('/{id}', [\App\Http\Controllers\Transaksi\SaldoCutiTahunan\SaldoCutiTahunanController::class, 'update'])->name('admin.transaksi.saldo-cuti-tahunan.update');
+                Route::post('generate', [\App\Http\Controllers\Transaksi\SaldoCutiTahunan\SaldoCutiTahunanController::class, 'generateNewSaldo'])->name('admin.transaksi.saldo-cuti-tahunan.generateNewSaldo');
+            });
+        });
+
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {
             Route::prefix('jabatan')->group(function () {
                 Route::get('/', [JabatanController::class, 'index'])->name('admin.master-data.jabatan.index');

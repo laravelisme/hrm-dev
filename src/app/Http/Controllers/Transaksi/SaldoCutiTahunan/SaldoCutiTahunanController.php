@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Transaksi\SaldoCutiTahunan;
 
+use App\Events\GenerateSaldoCutiTahunan;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Transaksi\SaldoCutiTahunan\SaldoCutiTahunanUpdateFormRequest;
+use App\Models\MKaryawan;
 use App\Models\TSaldoCuti;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -46,17 +50,49 @@ class SaldoCutiTahunanController extends Controller
         }
     }
 
-    public function create()
+    public function edit($id)
     {
         try {
 
-
+            $saldoCuti = $this->saldoCuti->findOrFail($id);
+            return view('pages.transaksi.saldo-cuti-tahunan.edit', compact('saldoCuti'));
 
         } catch (\Throwable $e) {
-            Log::error('[SaldoCutiTahunanController@create] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            abort(500, 'Failed to load create saldo cuti tahunan form');
+            Log::error('[SaldoCutiTahunanController@edit] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            abort(500, 'Failed to load edit saldo cuti tahunan form');
         }
     }
 
+    public function update(SaldoCutiTahunanUpdateFormRequest $request, $id)
+    {
+        $data = $request->validated();
 
+        try {
+            $saldoCuti = $this->saldoCuti->findOrFail($id);
+
+            $saldoCuti->saldo = $data['saldo'];
+            $saldoCuti->sisa_saldo = $data['sisa_saldo'];
+            $saldoCuti->save();
+
+            return $this->successResponse($saldoCuti, 'Saldo cuti tahunan updated successfully.', 200);
+
+        } catch (\Throwable $e) {
+            Log::error('[SaldoCutiTahunanController@update] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->errorResponse('Failed to update saldo cuti tahunan.', 500);
+        }
+    }
+
+    public function generateNewSaldo()
+    {
+        try {
+
+            event(new GenerateSaldoCutiTahunan(Carbon::now()->year));
+
+            return $this->successResponse(null, 'Generate saldo cuti tahunan started.', 200);
+
+        } catch (\Throwable $e) {
+            Log::error('[SaldoCutiTahunanController@generateNewSaldo] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->errorResponse('Failed to generate new saldo cuti tahunan.', 500);
+        }
+    }
 }

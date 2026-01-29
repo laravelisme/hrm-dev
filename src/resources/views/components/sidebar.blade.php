@@ -161,6 +161,26 @@
                     </li>
                 @endif
 
+
+                @php($user = auth()->user())
+                @if($user && $user->hasRole('hr'))
+
+                    <li class="sidebar-item has-sub {{ request()->is('admin/transaksi*') ? 'active' : '' }}">
+                        <a href="#" class="sidebar-link">
+                            <i class="bi bi-receipt"></i>
+                            <span>Transaksi</span>
+                        </a>
+                        <ul class="submenu">
+                            <li class="submenu-item {{ activeState('admin.transaksi.saldo-cuti-tahunan.index') }}">
+                                <a href="{{ route('admin.transaksi.saldo-cuti-tahunan.index') }}" class="sidebar-link">
+                                    <i class="bi bi-calendar-check"></i>
+                                    <span>Cuti Tahunan</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @endif
+
                 <!-- Logout Section -->
                 <li class="sidebar-item">
                     <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" class="d-flex align-items-center">
