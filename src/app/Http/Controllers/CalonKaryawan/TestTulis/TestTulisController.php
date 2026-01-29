@@ -122,8 +122,10 @@ class TestTulisController extends Controller
         try {
 
             $data = $request->validated();
-
-            $testTulis = TTestTulis::findOrFail($id);
+            $testTulis = TTestTulis::where('m_calon_karyawan_id', $id)->first();
+            if (!$testTulis) {
+                return $this->errorResponse('Calon karyawan test not found', 404);
+            }
             $testTulis->deadline_psikologi = $data['deadline_psikologi'];
             $testTulis->deadline_teknikal = $data['deadline_teknikal'];
 

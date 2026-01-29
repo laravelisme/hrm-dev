@@ -123,7 +123,7 @@
                                     <td>{{ $c->nama_perusahaan ?? '-' }}</td>
                                     <td>{{ optional($c->jenisCuti)->name ?? $c->m_jenis_cuti_id }}</td>
                                     <td class="text-muted small">
-                                        {{ optional($c->start_date)->format('Y-m-d') }} → {{ optional($c->end_date)->format('Y-m-d') }}
+                                        {{ $c->start_date }} → {{ $c->end_date }}
                                     </td>
                                     <td class="fw-semibold">{{ $c->jumlah_hari }}</td>
                                     <td>

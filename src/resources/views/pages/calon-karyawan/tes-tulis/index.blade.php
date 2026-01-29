@@ -146,12 +146,27 @@
                                                     data-bs-toggle="dropdown" aria-expanded="false">
                                                 <i class="bi bi-three-dots"></i>
                                             </button>
+
                                             <ul class="dropdown-menu dropdown-menu-end">
                                                 <li>
                                                     <a class="dropdown-item"
                                                        href="{{ route('admin.calon-karyawan.test-tulis.show', $ck->id) }}">
                                                         <i class="bi bi-eye me-2"></i> Show
                                                     </a>
+                                                </li>
+
+                                                {{-- Broadcast WA (wa.me) --}}
+                                                <li>
+                                                    <button type="button"
+                                                            class="dropdown-item btn-wa"
+                                                            data-name="{{ $ck->nama_lengkap }}"
+                                                            data-nik="{{ $ck->nik }}"
+                                                            data-company="{{ $ck->company_name }}"
+                                                            data-department="{{ $ck->department_name }}"
+                                                            data-phone="{{ $ck->no_telp ?? '' }}"
+                                                            data-showtest-url="{{ route('admin.calon-karyawan.test-tulis.showTest', $ck->id) }}">
+                                                        <i class="bi bi-whatsapp me-2"></i> Broadcast WA
+                                                    </button>
                                                 </li>
 
                                                 <li>
@@ -264,6 +279,11 @@
             $searchCompany.on('input', debouncedSubmit);
             $perPage.on('change', () => submitFilter(true));
 
+            // ===== helper cast safe =====
+            function s(v) {
+                return (v === null || v === undefined) ? '' : String(v);
+            }
+
             // ===== Update status =====
             $(document).on('click', '.btn-update-status', function () {
                 const url = $(this).data('url');
@@ -349,6 +369,73 @@
                             Swal.fire({ icon: 'error', title: 'Error', text: msg, confirmButtonText: 'OK' });
                         }
                     });
+                });
+            });
+
+            // ===== WA =====
+            function normalizeWaNumber(input) {
+                if (!input) return '';
+                let p = s(input).trim().replace(/[^\d+]/g, '');
+                if (p.startsWith('+')) p = p.substring(1);
+                if (p.startsWith('0')) p = '62' + p.substring(1); // Indonesia
+                return p;
+            }
+
+            $(document).on('click', '.btn-wa', function () {
+                const $btn = $(this);
+
+                const name       = s($btn.data('name')).trim();
+                const nik        = s($btn.data('nik')).trim();
+                const company    = s($btn.data('company')).trim();
+                const department = s($btn.data('department')).trim();
+                const rawPhone   = s($btn.data('phone')).trim();
+                const showTestUrl = s($btn.data('showtest-url')).trim();
+
+                const phone = normalizeWaNumber(rawPhone);
+
+                if (!phone) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Nomor WA kosong',
+                        text: `No. telp untuk ${name || 'calon karyawan'} belum ada.`
+                    });
+                    return;
+                }
+
+                const msg =
+                    `Halo ${name || '-'},
+
+Terima kasih sudah mengikuti proses rekrutmen.
+Kami informasikan bahwa Anda *LOLOS* ke tahap *TES TULIS*.
+
+Berikut data kandidat:
+• Nama: ${name || '-'}
+• NIK: ${nik || '-'}
+• Company: ${company || '-'}
+• Department: ${department || '-'}
+
+Selanjutnya, kami akan mengirimkan link Tes Tulis (psikologi/teknikal) beserta batas waktu pengerjaannya.
+Apabila ada kendala, silakan membalas pesan ini.
+
+Terima kasih.
+HR Recruitment`;
+
+                const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+
+                Swal.fire({
+                    title: 'Buka WhatsApp?',
+                    html: `
+                        Kirim notifikasi <b>LOLOS TES TULIS</b> ke <b>${name || 'kandidat'}</b><br>
+                        <span class="text-muted small">${rawPhone || '-'}</span>
+                        ${showTestUrl ? `<div class="text-muted small mt-2">Catatan: Anda bisa cek/generate link test di menu <b>Show Test</b>.</div>` : ''}
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Buka WA',
+                    cancelButtonText: 'Batal'
+                }).then((r) => {
+                    if (!r.isConfirmed) return;
+                    window.open(waUrl, '_blank');
                 });
             });
         });
