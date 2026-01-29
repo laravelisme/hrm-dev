@@ -3,7 +3,8 @@
         <div class="sidebar-header position-relative">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="img-fluid d-flex align-items-center">
-                    <h5 class="logo-text ms-3">HRM PT. TAKO ANUGERAH KOPORASI</h5>
+                    <img  width="40" src="{{ asset('assets/static/images/logo.png') }}">
+                    <h6 class="ms-3">HRM Admin</h6>
                 </div>
                 <div class="theme-toggle d-flex gap-2 align-items-center mt-2">
                 </div>
@@ -23,6 +24,17 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
+
+                @php($user = auth()->user())
+
+                @if($user && $user->hasAnyRole(['hr', 'admin']))
+                    <li class="sidebar-item {{ activeState('admin.karyawan.index') }}">
+                        <a href="{{ route('admin.karyawan.index') }}" class="sidebar-link">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Karyawan</span>
+                        </a>
+                    </li>
+                @endif
 
                 @php($user = auth()->user())
                 @if($user && $user->hasRole('hr'))
@@ -51,6 +63,34 @@
                                 <a href="{{ route('admin.calon-karyawan.test-tulis.index') }}" class="sidebar-link">
                                     <i class="bi bi-journal-text"></i>
                                     <span>Test Tulis</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.interview.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.interview.index') }}" class="sidebar-link">
+                                    <i class="bi bi-person-video3"></i>
+                                    <span>Interview</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.talent-pool.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.talent-pool.index') }}" class="sidebar-link">
+                                    <i class="bi bi-people"></i>
+                                    <span>Talent Pool</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.offering.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.offering.index') }}" class="sidebar-link">
+                                    <i class="bi bi-people"></i>
+                                    <span>Offering</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.calon-karyawan.rejected.index') }}">
+                                <a href="{{ route('admin.calon-karyawan.rejected.index') }}" class="sidebar-link">
+                                    <i class="bi bi-person-x"></i>
+                                    <span>Rejected</span>
                                 </a>
                             </li>
 

@@ -9,6 +9,7 @@ Route::get('/', function () {
     return redirect()->route('admin.dashboard');
 });
 
+
 Route::prefix('/')->group(function () {
     // Auth
     Route::get('login', [AuthController::class, 'viewLogin'])->name('admin.login');
@@ -28,6 +29,27 @@ Route::prefix('/')->group(function () {
             return view('pages.dashboard.index');
         })->name('admin.dashboard');
 
+        Route::prefix('/karyawan')->middleware(['role:hr|admin'])->group(function () {
+            Route::get('/', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'index'])->name('admin.karyawan.index');
+
+            Route::get('/options/jabatan', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'jabatanOptions'])->name('admin.karyawan.options.jabatan');
+            Route::get('/options/department', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'departmentOptions'])->name('admin.karyawan.options.department');
+            Route::get('/options/company', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'companyOptions'])->name('admin.karyawan.options.company');
+            Route::get('/options/atasan', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'atasanOptions'])->name('admin.karyawan.options.atasan');
+            Route::get('/options/lokasi-kerja', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'lokasiKerjaOptions'])->name('admin.karyawan.options.lokasi-kerja');
+            Route::get('/options/grup-jam-kerja', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'grupJamKerjaOptions'])->name('admin.karyawan.options.grup_jam_kerja');
+
+
+
+            Route::get('/create', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'create'])->name('admin.karyawan.create');
+            Route::post('/store', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'store'])->name('admin.karyawan.store');
+            Route::put('/{id}/update', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'update'])->name('admin.karyawan.update');
+
+            Route::get('/{id}/show', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'show'])->name('admin.karyawan.show');
+            Route::get('/{id}/edit', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'edit'])->name('admin.karyawan.edit');
+            Route::delete('/{id}/delete', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'destroy'])->name('admin.karyawan.destroy');
+        });
+
         Route::prefix('calon-karyawan')->middleware(['role:hr'])->group(function () {
 
             Route::post('/{id}/update-status-recruitment', [\App\Http\Controllers\CalonKaryawan\ShortlistAdmin\ShortListAdminController::class, 'updateStatus'])->name('admin.calon-karyawan.update-status-recruitment');
@@ -46,9 +68,37 @@ Route::prefix('/')->group(function () {
 
             Route::prefix('/test-tulis')->group(function () {
                 Route::get('/', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'index'])->name('admin.calon-karyawan.test-tulis.index');
+                Route::get('{id}/test', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'edit'])->name('admin.calon-karyawan.test-tulis.showTest');
+                Route::post('{id}/test/generate', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'generateTest'])->name('admin.calon-karyawan.test-tulis.generateTest');
+                Route::put('{id}/test/deadline', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'update'])->name('admin.calon-karyawan.test-tulis.updateDeadline');
                 Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'show'])->name('admin.calon-karyawan.test-tulis.show');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\TestTulis\TestTulisController::class, 'destroy'])->name('admin.calon-karyawan.test-tulis.destroy');
             });
+
+            Route::prefix('/interview')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'index'])->name('admin.calon-karyawan.interview.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'show'])->name('admin.calon-karyawan.interview.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'destroy'])->name('admin.calon-karyawan.interview.destroy');
+            });
+
+            Route::prefix('/talent-pool')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\TalentPool\TalentPoolController::class, 'index'])->name('admin.calon-karyawan.talent-pool.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\TalentPool\TalentPoolController::class, 'show'])->name('admin.calon-karyawan.talent-pool.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\TalentPool\TalentPoolController::class, 'destroy'])->name('admin.calon-karyawan.talent-pool.destroy');
+            });
+
+            Route::prefix('/offering')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\Offering\OfferingController::class, 'index'])->name('admin.calon-karyawan.offering.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\Offering\OfferingController::class, 'show'])->name('admin.calon-karyawan.offering.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\Offering\OfferingController::class, 'destroy'])->name('admin.calon-karyawan.offering.destroy');
+            });
+
+            Route::prefix('/rejected')->group(function () {
+                Route::get('/', [\App\Http\Controllers\CalonKaryawan\Rejected\RejectedController::class, 'index'])->name('admin.calon-karyawan.rejected.index');
+                Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\Rejected\RejectedController::class, 'show'])->name('admin.calon-karyawan.rejected.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\Rejected\RejectedController::class, 'destroy'])->name('admin.calon-karyawan.rejected.destroy');
+            });
+
         });
 
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {
@@ -63,6 +113,7 @@ Route::prefix('/')->group(function () {
 
             Route::prefix('saldo-cuti')->group(function () {
                 Route::get('/', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'index'])->name('admin.master-data.saldo-cuti.index');
+                Route::get('/jabatan-options', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'jabatanOptions'])->name('admin.master-data.saldo-cuti.jabatan-options');
                 Route::get('/create', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'create'])->name('admin.master-data.saldo-cuti.create');
                 Route::post('/store', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'store'])->name('admin.master-data.saldo-cuti.store');
                 Route::get('/{id}/edit', [\App\Http\Controllers\MasterData\SaldoCuti\SaldoCutiController::class, 'edit'])->name('admin.master-data.saldo-cuti.edit');
