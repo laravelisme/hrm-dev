@@ -108,6 +108,65 @@ Route::prefix('/')->group(function () {
                 Route::put('/{id}', [\App\Http\Controllers\Transaksi\SaldoCutiTahunan\SaldoCutiTahunanController::class, 'update'])->name('admin.transaksi.saldo-cuti-tahunan.update');
                 Route::post('generate', [\App\Http\Controllers\Transaksi\SaldoCutiTahunan\SaldoCutiTahunanController::class, 'generateNewSaldo'])->name('admin.transaksi.saldo-cuti-tahunan.generateNewSaldo');
             });
+
+            Route::prefix('cuti-karyawan')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'index'])->name('admin.transaksi.cuti-karyawan.index');
+                Route::get('/create', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'create'])->name('admin.transaksi.cuti-karyawan.create');
+                Route::post('/store', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'store'])->name('admin.transaksi.cuti-karyawan.store');
+                Route::get('/{id}', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'show'])->name('admin.transaksi.cuti-karyawan.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'destroy'])->name('admin.transaksi.cuti-karyawan.destroy');
+                Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'karyawanDetail'])->name('admin.transaksi.cuti-karyawan.karyawan-detail');
+
+                Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'karyawanOptions'])->name('admin.transaksi.cuti-karyawan.karyawan-options');
+                Route::get('/options/jenis-cuti', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'jenisCutiOptions'])->name('admin.transaksi.cuti-karyawan.jenis-cuti-options');
+                Route::get('/options/companies', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'companyOptions'])->name('admin.transaksi.cuti-karyawan.company-options');
+            });
+
+            Route::prefix('izin-karyawan')->group(function () {
+
+                Route::get('/', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'index'])->name('admin.transaksi.izin-karyawan.index');
+                Route::get('/create', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'create'])->name('admin.transaksi.izin-karyawan.create');
+                Route::post('/store', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'store'])->name('admin.transaksi.izin-karyawan.store');
+                Route::get('/{id}/show', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'show'])->name('admin.transaksi.izin-karyawan.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'destroy'])->name('admin.transaksi.izin-karyawan.destroy');
+                Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'karyawanDetail'])->name('admin.transaksi.izin-karyawan.karyawan-detail');
+
+                Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'karyawanOptions'])->name('admin.transaksi.izin-karyawan.karyawan-options');
+                Route::get('/options/jenis-izin', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'jenisIzinOptions'])->name('admin.transaksi.izin-karyawan.jenis-izin-options');
+                Route::get('/options/companies', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'companyOptions'])->name('admin.transaksi.izin-karyawan.company-options');
+            });
+
+            Route::prefix('lembur-karyawan')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'index'])->name('admin.transaksi.lembur-karyawan.index');
+                Route::get('/create', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'create'])->name('admin.transaksi.lembur-karyawan.create');
+                Route::post('/store', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'store'])->name('admin.transaksi.lembur-karyawan.store');
+                Route::get('/{id}/show', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'show'])->name('admin.transaksi.lembur-karyawan.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'destroy'])->name('admin.transaksi.lembur-karyawan.destroy');
+                Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'karyawanDetail'])->name('admin.transaksi.lembur-karyawan.karyawan-detail');
+
+                Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'karyawanOptions'])->name('admin.transaksi.lembur-karyawan.karyawan-options');
+                Route::get('/options/companies', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'companyOptions'])->name('admin.transaksi.lembur-karyawan.company-options');
+            });
+
+            Route::prefix('surat-peringatan')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'index'])->name('admin.transaksi.surat-peringatan.index');
+                Route::get('/create', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'create'])->name('admin.transaksi.surat-peringatan.create');
+                Route::post('/store', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'store'])->name('admin.transaksi.surat-peringatan.store');
+                Route::get('/{id}/show', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'show'])->name('admin.transaksi.surat-peringatan.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'destroy'])->name('admin.transaksi.surat-peringatan.destroy');
+                Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'karyawanDetail'])->name('admin.transaksi.surat-peringatan.karyawan-detail');
+
+                Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'karyawanOptions'])->name('admin.transaksi.surat-peringatan.karyawan-options');
+                Route::get('/options/jenis-sp', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'jenisSPOptions'])->name('admin.transaksi.surat-peringatan.jenis-sp-options');
+                Route::get('/options/companies', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'companyOptions'])->name('admin.transaksi.surat-peringatan.company-options');
+
+            });
+
+            Route::prefix('presensi-karyawan')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Transaksi\Presensi\PresensiController::class, 'index'])->name('admin.transaksi.presensi.index');
+                Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\Presensi\PresensiController::class, 'karyawanOptions'])->name('admin.transaksi.presensi.karyawan-options');
+            });
+
         });
 
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {

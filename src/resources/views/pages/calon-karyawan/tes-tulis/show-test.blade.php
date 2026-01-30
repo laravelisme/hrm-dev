@@ -23,6 +23,15 @@
                     </a>
 
                     <button type="button"
+                            id="btnShareWa"
+                            class="btn btn-success btn-sm"
+                            data-phone="{{ $calonKaryawan->no_telp ?? '' }}"
+                            data-name="{{ $calonKaryawan->nama_lengkap ?? '' }}"
+                            data-nik="{{ $calonKaryawan->nik ?? '' }}">
+                        <i class="bi bi-whatsapp me-1"></i> Share WA
+                    </button>
+
+                    <button type="button"
                             id="btnGenerateLink"
                             class="btn btn-primary btn-sm"
                             data-url="{{ route('admin.calon-karyawan.test-tulis.generateTest', $calonKaryawan->id) }}">
@@ -33,8 +42,8 @@
 
             <div class="card-body">
                 @php
-                    $deadlinePs = optional($testTulis->deadline_psikologi)->format('Y-m-d\TH:i');
-                    $deadlineTk = optional($testTulis->deadline_teknikal)->format('Y-m-d\TH:i');
+                    $deadlinePs = $testTulis->deadline_psikologi;
+                    $deadlineTk = $testTulis->deadline_teknikal;
                 @endphp
 
                 {{-- Info singkat --}}
@@ -195,6 +204,112 @@
 @push('scripts')
     <script>
         $(function () {
+
+            // ===== helper cast safe =====
+            function s(v) {
+                return (v === null || v === undefined) ? '' : String(v);
+            }
+
+            function normalizeWaNumber(input) {
+                if (!input) return '';
+                let p = s(input).trim().replace(/[^\d+]/g, '');
+                if (p.startsWith('+')) p = p.substring(1);
+                if (p.startsWith('0')) p = '62' + p.substring(1); // default Indonesia
+                return p;
+            }
+
+// format datetime-local value => "YYYY-MM-DD HH:mm"
+            function fmtDeadline(dtLocalVal) {
+                const v = s(dtLocalVal).trim();
+                if (!v) return '-';
+                // dtLocal format: "YYYY-MM-DDTHH:mm"
+                return v.replace('T', ' ');
+            }
+
+            $('#btnShareWa').on('click', function () {
+                const name = s($(this).data('name')).trim();
+                const nik  = s($(this).data('nik')).trim();
+                const rawPhone = s($(this).data('phone')).trim();
+                const phone = normalizeWaNumber(rawPhone);
+
+                if (!phone) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Nomor WA kosong',
+                        text: `No. telp untuk ${name || 'kandidat'} belum ada.`
+                    });
+                    return;
+                }
+
+                const linkPs = s($('#linkPsikologi').val()).trim();
+                const linkTk = s($('#linkTeknikal').val()).trim();
+
+                const dlPs = fmtDeadline($('#deadlinePsikologi').val());
+                const dlTk = fmtDeadline($('#deadlineTeknikal').val());
+
+                if (!linkPs && !linkTk) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Link test belum ada',
+                        text: 'Silakan generate link terlebih dahulu sebelum share ke kandidat.'
+                    });
+                    return;
+                }
+
+                // === Pesan WA (hanya link + deadline) ===
+                let msg =
+                    `Halo ${name || 'Kandidat'},
+
+Selamat! Anda *LOLOS* ke tahap *TES TULIS*.
+
+Data kandidat:
+• Nama: ${name || '-'}
+• NIK: ${nik || '-'}
+
+Berikut link tes dan deadline pengerjaan:`;
+
+                if (linkPs) {
+                    msg += `
+
+*Tes Psikologi*
+Link: ${linkPs}
+Deadline: ${dlPs}`;
+                }
+
+                if (linkTk) {
+                    msg += `
+
+*Tes Teknikal*
+Link: ${linkTk}
+Deadline: ${dlTk}`;
+                }
+
+                msg += `
+
+Silakan dikerjakan sebelum deadline.
+Jika ada kendala, silakan balas pesan ini.
+
+Terima kasih.
+HR Recruitment`;
+
+                const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+
+                Swal.fire({
+                    title: 'Buka WhatsApp?',
+                    html: `
+            Kirim link tes & deadline ke <b>${name || 'kandidat'}</b><br>
+            <span class="text-muted small">${rawPhone || '-'}</span>
+        `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Buka WA',
+                    cancelButtonText: 'Batal'
+                }).then((r) => {
+                    if (!r.isConfirmed) return;
+                    window.open(waUrl, '_blank');
+                });
+            });
+
             const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();
 
             // ===== Copy helper =====

@@ -61,6 +61,7 @@ services:
     build: ./php
     container_name: php_laravel_1
     hostname: php1
+    user: "1000:1000"
     volumes:
       - ./src:/var/www/html
       - ./php/www.conf:/usr/local/etc/php-fpm.d/www.conf
@@ -75,6 +76,7 @@ services:
     build: ./php
     container_name: php_laravel_2
     hostname: php2
+    user: "1000:1000"
     volumes:
       - ./src:/var/www/html
       - ./php/www.conf:/usr/local/etc/php-fpm.d/www.conf
@@ -91,6 +93,7 @@ services:
   laravel_queue:
     build: ./php
     container_name: laravel_queue
+    user: "1000:1000"
     volumes:
       - ./src:/var/www/html
     working_dir: /var/www/html

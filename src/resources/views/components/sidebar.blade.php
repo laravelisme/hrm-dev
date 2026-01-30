@@ -177,6 +177,42 @@
                                     <span>Cuti Tahunan</span>
                                 </a>
                             </li>
+
+                            <li class="submenu-item {{ activeState('admin.transaksi.presensi.index') }}">
+                                <a href="{{ route('admin.transaksi.presensi.index') }}" class="sidebar-link">
+                                    <i class="bi bi-calendar-date"></i>
+                                    <span>Presensi</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.transaksi.cuti-karyawan.index') }}">
+                                <a href="{{ route('admin.transaksi.cuti-karyawan.index') }}" class="sidebar-link">
+                                    <i class="bi bi-person-check"></i>
+                                    <span>Cuti</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.transaksi.izin-karyawan.index') }}">
+                                <a href="{{ route('admin.transaksi.izin-karyawan.index') }}" class="sidebar-link">
+                                    <i class="bi bi-ticket-perforated"></i>
+                                    <span>Izin</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.transaksi.lembur-karyawan.index') }}">
+                                <a href="{{ route('admin.transaksi.lembur-karyawan.index') }}" class="sidebar-link">
+                                    <i class="bi bi-clock-history"></i>
+                                    <span>Lembur</span>
+                                </a>
+                            </li>
+
+                            <li class="submenu-item {{ activeState('admin.transaksi.surat-peringatan.index') }}">
+                                <a href="{{ route('admin.transaksi.surat-peringatan.index') }}" class="sidebar-link">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    <span>SP</span>
+                                </a>
+                            </li>
+
                         </ul>
                     </li>
                 @endif
