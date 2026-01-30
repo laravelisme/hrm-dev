@@ -142,7 +142,7 @@ Route::prefix('/')->group(function () {
                 Route::post('/store', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'store'])->name('admin.transaksi.lembur-karyawan.store');
                 Route::get('/{id}/show', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'show'])->name('admin.transaksi.lembur-karyawan.show');
                 Route::delete('/{id}/delete', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'destroy'])->name('admin.transaksi.lembur-karyawan.destroy');
-                Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'karyawanDetail)'])->name('admin.transaksi.lembur-karyawan.karyawan-detail');
+                Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'karyawanDetail'])->name('admin.transaksi.lembur-karyawan.karyawan-detail');
 
                 Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'karyawanOptions'])->name('admin.transaksi.lembur-karyawan.karyawan-options');
                 Route::get('/options/companies', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'companyOptions'])->name('admin.transaksi.lembur-karyawan.company-options');

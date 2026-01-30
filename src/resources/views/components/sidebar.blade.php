@@ -174,28 +174,28 @@
                             <li class="submenu-item {{ activeState('admin.transaksi.saldo-cuti-tahunan.index') }}">
                                 <a href="{{ route('admin.transaksi.saldo-cuti-tahunan.index') }}" class="sidebar-link">
                                     <i class="bi bi-calendar-check"></i>
-                                    <span>Saldo Cuti Karyawan</span>
+                                    <span>Cuti Tahunan</span>
                                 </a>
                             </li>
 
                             <li class="submenu-item {{ activeState('admin.transaksi.cuti-karyawan.index') }}">
                                 <a href="{{ route('admin.transaksi.cuti-karyawan.index') }}" class="sidebar-link">
                                     <i class="bi bi-person-check"></i>
-                                    <span>Cuti Karyawan</span>
+                                    <span>Cuti</span>
                                 </a>
                             </li>
 
                             <li class="submenu-item {{ activeState('admin.transaksi.izin-karyawan.index') }}">
                                 <a href="{{ route('admin.transaksi.izin-karyawan.index') }}" class="sidebar-link">
                                     <i class="bi bi-ticket-perforated"></i>
-                                    <span>Izin Karyawan</span>
+                                    <span>Izin</span>
                                 </a>
                             </li>
 
                             <li class="submenu-item {{ activeState('admin.transaksi.lembur-karyawan.index') }}">
                                 <a href="{{ route('admin.transaksi.lembur-karyawan.index') }}" class="sidebar-link">
-                                    <i class="bi bi-ticket-perforated"></i>
-                                    <span>Lembur Karyawan</span>
+                                    <i class="bi bi-clock-history"></i>
+                                    <span>Lembur</span>
                                 </a>
                             </li>
                         </ul>

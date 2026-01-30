@@ -1,156 +1,153 @@
 @extends('layouts.master')
 
-@section('title', 'Transaksi - Detail Lembur Karyawan')
-@section('subtitle', 'Detail Lembur Karyawan')
+@section('title', 'Lembur Karyawan - Detail')
+@section('subtitle', 'Transaksi')
 
 @section('content')
     <section class="section">
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Detail Pengajuan Lembur</h4>
-                <a href="{{ route('admin.transaksi.lembur-karyawan.index') }}" class="btn btn-light btn-sm">
-                    <i class="bi bi-arrow-left"></i> Back
-                </a>
+            <div class="card-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2">
+                <div>
+                    <h4 class="mb-0">Detail Lembur Karyawan</h4>
+                    <p class="text-muted mb-0">
+                        {{ $lembur->nama_karyawan ?? optional($lembur->karyawan)->nama_karyawan ?? '-' }}
+                        <span class="ms-2 text-muted small">
+                            ID Lembur: <span class="font-monospace">{{ $lembur->id }}</span>
+                        </span>
+                    </p>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="{{ route('admin.transaksi.lembur-karyawan.index') }}" class="btn btn-light btn-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Back
+                    </a>
+
+                    <button type="button"
+                            class="btn btn-danger btn-sm"
+                            id="btnDelete"
+                            data-url="{{ route('admin.transaksi.lembur-karyawan.destroy', $lembur->id) }}"
+                            data-name="{{ $lembur->nama_karyawan ?? 'lembur ini' }}">
+                        <i class="bi bi-trash me-1"></i> Delete
+                    </button>
+                </div>
             </div>
 
             <div class="card-body">
+                {{-- Badges --}}
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge bg-light-primary text-dark">
+                        Status: {{ $lembur->status ?? '-' }}
+                    </span>
+                    <span class="badge bg-light-secondary text-dark">
+                        Company: {{ $lembur->nama_company ?? '-' }}
+                    </span>
+                    <span class="badge bg-light-secondary text-dark">
+                        Tanggal: {{ $lembur->date ?? '-' }}
+                    </span>
+                </div>
+
                 <div class="row g-3">
-
                     <div class="col-md-6">
-                        <label class="form-label text-muted">Nama Karyawan</label>
-                        <div class="fw-semibold">{{ $lembur->nama_karyawan }}</div>
-                    </div>
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-muted small">Karyawan</div>
+                            <div class="fw-semibold">
+                                {{ $lembur->nama_karyawan ?? optional($lembur->karyawan)->nama_karyawan ?? '-' }}
+                            </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label text-muted">Perusahaan</label>
-                        <div class="fw-semibold">{{ $lembur->nama_perusahaan }}</div>
-                    </div>
+                            <div class="text-muted small mt-2">Company</div>
+                            <div class="fw-semibold">{{ $lembur->nama_company ?? '-' }}</div>
 
-                    <div class="col-md-6">
-                        <label class="form-label text-muted">Tanggal Lembur</label>
-                        <div class="fw-semibold">
-                            {{ \Carbon\Carbon::parse($lembur->date)->translatedFormat('d F Y') }}
+                            <div class="text-muted small mt-2">Atasan 1</div>
+                            <div class="fw-semibold">
+                                {{ $lembur->nama_atasan1 ?? '-' }}
+                                @if(!empty($lembur->atasan1_id))
+                                    <span class="text-muted small">(ID: {{ $lembur->atasan1_id }})</span>
+                                @endif
+                            </div>
+
+                            <div class="text-muted small mt-2">Atasan 2</div>
+                            <div class="fw-semibold">
+                                {{ $lembur->nama_atasan2 ?? '-' }}
+                                @if(!empty($lembur->atasan2_id))
+                                    <span class="text-muted small">(ID: {{ $lembur->atasan2_id }})</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label text-muted">Durasi Diajukan</label>
-                        <div class="fw-semibold">
-                            {{ $lembur->durasi_diajukan_menit }} menit
-                            ({{ round($lembur->durasi_diajukan_menit / 60, 2) }} jam)
+                        <div class="border rounded p-3 h-100">
+                            <div class="text-muted small">Tanggal Lembur</div>
+                            <div class="fw-semibold">{{ $lembur->date ?? '-' }}</div>
+
+                            <div class="text-muted small mt-2">Durasi Diajukan</div>
+                            <div class="fw-semibold">
+                                {{ (int)($lembur->durasi_diajukan_menit ?? 0) }} menit
+                            </div>
+
+                            <div class="text-muted small mt-2">Created At</div>
+                            <div class="text-muted small">{{ optional($lembur->created_at)->format('Y-m-d H:i') }}</div>
+
+                            <div class="text-muted small mt-2">Updated At</div>
+                            <div class="text-muted small">{{ optional($lembur->updated_at)->format('Y-m-d H:i') }}</div>
                         </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label text-muted">Atasan 1</label>
-                        <div class="fw-semibold">{{ $lembur->nama_atasan1 ?? '-' }}</div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label text-muted">Atasan 2</label>
-                        <div class="fw-semibold">{{ $lembur->nama_atasan2 ?? '-' }}</div>
                     </div>
 
                     <div class="col-12">
-                        <label class="form-label text-muted">Catatan</label>
-                        <div class="fw-semibold">{{ $lembur->note ?? '-' }}</div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label text-muted">Status Pengajuan</label>
-                        <div>
-                            @if($lembur->status == 'pending')
-                                <span class="badge bg-warning text-dark">Pending</span>
-                            @elseif($lembur->status == 'approved')
-                                <span class="badge bg-success">Approved</span>
-                            @elseif($lembur->status == 'rejected')
-                                <span class="badge bg-danger">Rejected</span>
-                            @else
-                                <span class="badge bg-secondary">{{ ucfirst($lembur->status) }}</span>
-                            @endif
+                        <div class="border rounded p-3">
+                            <h5 class="mb-2">Catatan</h5>
+                            <div class="text-muted" style="white-space: pre-wrap;">
+                                {{ $lembur->note ?? '-' }}
+                            </div>
                         </div>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label text-muted">Dibuat Pada</label>
-                        <div class="fw-semibold">
-                            {{ $lembur->created_at->translatedFormat('d F Y H:i') }}
-                        </div>
-                    </div>
-
                 </div>
+
             </div>
         </div>
-
-        {{-- OPTIONAL: APPROVAL ACTION --}}
-        @if($lembur->status === 'pending')
-            <div class="card mt-3">
-                <div class="card-body d-flex justify-content-end gap-2">
-                    <button class="btn btn-danger btnReject" data-id="{{ $lembur->id }}">
-                        <i class="bi bi-x-circle"></i> Reject
-                    </button>
-                    <button class="btn btn-success btnApprove" data-id="{{ $lembur->id }}">
-                        <i class="bi bi-check-circle"></i> Approve
-                    </button>
-                </div>
-            </div>
-        @endif
     </section>
 @endsection
-
 
 @push('scripts')
     <script>
         $(function () {
-            const approveUrl = id => `/admin/transaksi/lembur-karyawan/${id}/approve`;
-            const rejectUrl  = id => `/admin/transaksi/lembur-karyawan/${id}/reject`;
-            const csrf = $('meta[name="csrf-token"]').attr('content');
+            const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();
+            const indexUrl = @json(route('admin.transaksi.lembur-karyawan.index'));
 
-            $('.btnApprove').click(function () {
-                const id = $(this).data('id');
-
-                Swal.fire({
-                    title: 'Approve lembur ini?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, Approve'
-                }).then(result => {
-                    if (!result.isConfirmed) return;
-
-                    $.post({
-                        url: approveUrl(id),
-                        headers: { 'X-CSRF-TOKEN': csrf },
-                        success: res => {
-                            Swal.fire('Berhasil', res.message, 'success')
-                                .then(() => location.reload());
-                        },
-                        error: err => {
-                            Swal.fire('Error', err.responseJSON?.message || 'Terjadi kesalahan', 'error');
-                        }
-                    });
-                });
-            });
-
-            $('.btnReject').click(function () {
-                const id = $(this).data('id');
+            $('#btnDelete').on('click', function () {
+                const url  = $(this).data('url');
+                const name = $(this).data('name') || 'lembur ini';
 
                 Swal.fire({
-                    title: 'Reject lembur ini?',
+                    title: 'Delete lembur?',
+                    html: `Yakin hapus lembur <b>${name}</b>?<br><small class="text-muted">Data yang dihapus tidak bisa dikembalikan.</small>`,
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Ya, Reject'
-                }).then(result => {
-                    if (!result.isConfirmed) return;
+                    confirmButtonText: 'Yes, delete',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#d33'
+                }).then((r) => {
+                    if (!r.isConfirmed) return;
 
-                    $.post({
-                        url: rejectUrl(id),
-                        headers: { 'X-CSRF-TOKEN': csrf },
-                        success: res => {
-                            Swal.fire('Berhasil', res.message, 'success')
-                                .then(() => location.reload());
+                    $.ajax({
+                        url: url,
+                        method: 'POST',
+                        data: { _token: csrf, _method: 'DELETE' },
+                        success: function (res) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted',
+                                text: res?.message || 'Lembur deleted successfully',
+                                confirmButtonText: 'OK'
+                            }).then(() => window.location.href = indexUrl);
                         },
-                        error: err => {
-                            Swal.fire('Error', err.responseJSON?.message || 'Terjadi kesalahan', 'error');
+                        error: function (xhr) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: xhr.responseJSON?.message || 'Failed to delete lembur',
+                                confirmButtonText: 'OK'
+                            });
                         }
                     });
                 });

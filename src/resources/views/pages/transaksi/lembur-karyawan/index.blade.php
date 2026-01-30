@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title', 'Transaksi - Lembur Karyawan')
-@section('subtitle', 'Transaksi Lembur Karyawan')
+@section('subtitle', 'Transaksi')
 
 @section('content')
     <section class="section">
@@ -23,35 +23,39 @@
                                 <input type="hidden" name="page" value="{{ request('page') }}">
                             @endif
 
-                            {{-- Bulan Tahun --}}
-                            <input type="hidden" name="searchBulanTahun" id="searchBulanTahun" value="{{ request('searchBulanTahun') }}">
+                            {{-- bulan-tahun: input month (YYYY-MM) -> hidden searchBulanTahun (MM-YYYY) --}}
+                            <input type="hidden" name="searchBulanTahun" id="searchBulanTahun"
+                                   value="{{ request('searchBulanTahun') }}">
 
                             <div class="input-group input-group-sm" style="min-width: 170px; max-height: 40px;">
                                 <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
-                                <input id="bulanTahunPicker" type="month" class="form-control" title="Bulan-Tahun">
+                                <input id="bulanTahunPicker" type="month" class="form-control" value=""
+                                       title="Bulan-Tahun">
                             </div>
 
-                            {{-- Karyawan --}}
-                            <select id="searchKaryawan" name="searchKaryawan" class="form-select form-select-sm" style="min-width: 220px;">
+                            {{-- Karyawan (select2) --}}
+                            <select id="searchKaryawan" name="searchKaryawan" class="form-select form-select-sm"
+                                    style="min-width: 220px;">
                                 @if(request()->filled('searchKaryawan'))
                                     <option value="{{ request('searchKaryawan') }}" selected>Selected Karyawan</option>
                                 @endif
                             </select>
 
-                            {{-- Company --}}
-                            <select id="searchCompany" name="searchCompany" class="form-select form-select-sm" style="min-width: 220px;">
+                            {{-- Company (select2) --}}
+                            <select id="searchCompany" name="searchCompany" class="form-select form-select-sm"
+                                    style="min-width: 220px;">
                                 @if(request()->filled('searchCompany'))
                                     <option value="{{ request('searchCompany') }}" selected>Selected Company</option>
                                 @endif
                             </select>
 
-                            {{-- Status --}}
-                            <select id="searchStatus" name="searchStatus" class="form-select form-select-sm" style="min-width: 170px;">
-                                <option value="">All Status</option>
-                                @foreach(['SUBMITED','PENDING_APPROVED','APPROVED','REJECTED'] as $st)
-                                    <option value="{{ $st }}" @selected(request('searchStatus')===$st)>{{ $st }}</option>
-                                @endforeach
-                            </select>
+                            {{-- Status (text biar sama kyk izin) --}}
+                            <div class="input-group input-group-sm" style="min-width: 180px; max-height: 40px;">
+                                <span class="input-group-text"><i class="bi bi-flag"></i></span>
+                                <input id="searchStatus" type="text" class="form-control"
+                                       name="searchStatus" placeholder="Status..."
+                                       value="{{ request('searchStatus') }}" autocomplete="off">
+                            </div>
 
                             @php
                                 $hasFilter =
@@ -68,9 +72,10 @@
                                 </a>
                             @endif
 
-                            <select id="perPage" name="perPage" class="form-select form-select-sm" style="min-width: 110px; max-height: 40px;">
-                                @foreach([10,20,50,100] as $n)
-                                    <option value="{{ $n }}" @selected((int)request('perPage',10)===$n)>{{ $n }}/page</option>
+                            <select id="perPage" name="perPage" class="form-select form-select-sm"
+                                    style="min-width: 110px; max-height: 40px;">
+                                @foreach([10, 20, 50, 100] as $n)
+                                    <option value="{{ $n }}" @selected((int)request('perPage', 10) === $n)>{{ $n }}/page</option>
                                 @endforeach
                             </select>
 
@@ -89,42 +94,72 @@
             <div class="card-body">
                 @if($lemburs->count() === 0)
                     <div class="alert alert-light-primary mb-0">
-                        <i class="bi bi-info-circle me-1"></i> No lembur found.
+                        <i class="bi bi-info-circle me-1"></i> Tidak ada data lembur.
                     </div>
                 @else
                     <div class="table-responsive">
                         <table class="table table-lg align-middle">
                             <thead>
                             <tr>
-                                <th style="width: 70px;">No</th>
+                                <th style="width:70px;">No</th>
                                 <th>Karyawan</th>
                                 <th>Company</th>
                                 <th>Tanggal</th>
                                 <th>Durasi</th>
                                 <th>Status</th>
-                                <th>Created</th>
-                                <th class="text-end" style="width: 140px;">Action</th>
+                                <th class="text-end" style="width:120px;">Action</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($lemburs as $i => $lembur)
+                            @foreach($lemburs as $i => $l)
                                 <tr>
                                     <td class="text-muted">{{ $lemburs->firstItem() + $i }}</td>
+
                                     <td class="fw-semibold">
-                                        {{ $lembur->nama_karyawan ?? '-' }}
-                                        <div class="text-muted small">ID: <span class="font-monospace">{{ $lembur->m_karyawan_id }}</span></div>
+                                        {{ $l->nama_karyawan ?? '-' }}
+                                        <div class="text-muted small">
+                                            ID: <span class="font-monospace">{{ $l->m_karyawan_id }}</span>
+                                        </div>
                                     </td>
-                                    <td>{{ $lembur->nama_perusahaan ?? '-' }}</td>
-                                    <td class="text-muted small">{{ $lembur->date }}</td>
-                                    <td class="fw-semibold">{{ $lembur->durasi_diajukan_menit }} menit</td>
+
+                                    <td>{{ $l->nama_company ?? '-' }}</td>
+
+                                    <td class="text-muted small">{{ $l->date ?? '-' }}</td>
+
                                     <td>
-                                        <span class="badge bg-light-primary text-dark">{{ $lembur->status }}</span>
+                                        @php($m = (int)($l->durasi_diajukan_menit ?? 0))
+                                        <span class="fw-semibold">{{ $m }}</span>
+                                        <span class="text-muted small">menit</span>
                                     </td>
-                                    <td class="text-muted small">{{ optional($lembur->created_at)->format('Y-m-d H:i') }}</td>
+
+                                    <td>
+                                        <span class="badge bg-light-primary text-dark">{{ $l->status ?? '-' }}</span>
+                                    </td>
+
                                     <td class="text-end">
-                                        <a href="{{ route('admin.transaksi.lembur-karyawan.show', $lembur->id) }}" class="btn btn-sm btn-light">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-light dropdown-toggle" type="button"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                       href="{{ route('admin.transaksi.lembur-karyawan.show', $l->id) }}">
+                                                        <i class="bi bi-eye me-2"></i> Show
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <button type="button"
+                                                            class="dropdown-item text-danger btn-delete-lembur"
+                                                            data-url="{{ route('admin.transaksi.lembur-karyawan.destroy', $l->id) }}"
+                                                            data-name="{{ $l->nama_karyawan ?? 'lembur ini' }}">
+                                                        <i class="bi bi-trash me-2"></i> Delete
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -148,42 +183,49 @@
 @push('scripts')
     <script>
         $(function () {
+            const indexUrl = @json(route('admin.transaksi.lembur-karyawan.index'));
+            const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();
+
             const $form = $('#filterForm');
 
             function debounce(fn, wait) {
-                let t; return function (...args) {
+                let t;
+                return function (...args) {
                     clearTimeout(t);
                     t = setTimeout(() => fn.apply(this, args), wait);
                 };
             }
 
             function submitFilter(resetPage = true) {
+                if (!$form.length) return;
                 if (resetPage) $form.find('input[name="page"]').remove();
                 $form.trigger('submit');
             }
 
             const debouncedSubmit = debounce(() => submitFilter(true), 400);
 
-            // Month picker
+            // ===== Bulan-Tahun (month -> MM-YYYY) =====
             const $hiddenBulanTahun = $('#searchBulanTahun');
             const $picker = $('#bulanTahunPicker');
 
-            const raw = String($hiddenBulanTahun.val() || '').trim();
+            const raw = String($hiddenBulanTahun.val() || '').trim(); // MM-YYYY
             if (raw) {
                 const [mm, yyyy] = raw.split('-');
                 if (mm && yyyy) $picker.val(`${yyyy}-${String(mm).padStart(2,'0')}`);
             }
 
             $picker.on('change', function () {
-                const v = $(this).val();
-                if (!v) $hiddenBulanTahun.val('');
-                else {
+                const v = $(this).val(); // YYYY-MM
+                if (!v) {
+                    $hiddenBulanTahun.val('');
+                } else {
                     const [yyyy, mm] = v.split('-');
-                    $hiddenBulanTahun.val(`${mm}-${yyyy}`);
+                    $hiddenBulanTahun.val(`${mm}-${yyyy}`); // MM-YYYY (sesuai controller)
                 }
                 debouncedSubmit();
             });
 
+            // ===== Select2 AJAX setup =====
             function initSelect2Ajax($el, url, placeholder) {
                 $el.select2({
                     theme: 'bootstrap-5',
@@ -191,14 +233,24 @@
                     placeholder: placeholder,
                     allowClear: true,
                     ajax: {
-                        url: url,
+                        url,
                         dataType: 'json',
                         delay: 250,
-                        data: params => ({ q: params.term || '', page: params.page || 1 }),
-                        processResults: (data, params) => ({
-                            results: data.results || [],
-                            pagination: { more: data.pagination?.more === true }
-                        })
+                        data: function (params) {
+                            return {
+                                q: params.term || '',
+                                page: params.page || 1,
+                                perPage: 20
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results || [],
+                                pagination: { more: data.pagination?.more === true }
+                            };
+                        },
+                        cache: true
                     }
                 });
 
@@ -206,10 +258,41 @@
             }
 
             initSelect2Ajax($('#searchKaryawan'), @json(route('admin.transaksi.lembur-karyawan.karyawan-options')), 'Karyawan...');
-            initSelect2Ajax($('#searchCompany'),  @json(route('admin.transaksi.lembur-karyawan.company-options')), 'Company...');
+            initSelect2Ajax($('#searchCompany'),  @json(route('admin.transaksi.lembur-karyawan.company-options')),  'Company...');
 
-            $('#searchStatus').on('change', debouncedSubmit);
+            $('#searchStatus').on('input', debouncedSubmit);
             $('#perPage').on('change', () => submitFilter(true));
+
+            // ===== Delete =====
+            $(document).on('click', '.btn-delete-lembur', function () {
+                const url  = $(this).data('url');
+                const name = $(this).data('name') || 'lembur ini';
+
+                Swal.fire({
+                    title: 'Delete lembur?',
+                    html: `Yakin hapus lembur <b>${name}</b>?<br><small class="text-muted">Tidak bisa dikembalikan.</small>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#d33'
+                }).then((r) => {
+                    if (!r.isConfirmed) return;
+
+                    $.ajax({
+                        url: url,
+                        method: 'POST',
+                        data: { _token: csrf, _method: 'DELETE' },
+                        success: function (res) {
+                            Swal.fire({ icon: 'success', title: 'Deleted', text: res?.message || 'Deleted' })
+                                .then(() => window.location.href = indexUrl);
+                        },
+                        error: function (xhr) {
+                            Swal.fire({ icon: 'error', title: 'Error', text: xhr.responseJSON?.message || 'Failed' });
+                        }
+                    });
+                });
+            });
         });
     </script>
 @endpush
