@@ -178,6 +178,13 @@
                                 </a>
                             </li>
 
+                            <li class="submenu-item {{ activeState('admin.transaksi.presensi.index') }}">
+                                <a href="{{ route('admin.transaksi.presensi.index') }}" class="sidebar-link">
+                                    <i class="bi bi-calendar-date"></i>
+                                    <span>Presensi</span>
+                                </a>
+                            </li>
+
                             <li class="submenu-item {{ activeState('admin.transaksi.cuti-karyawan.index') }}">
                                 <a href="{{ route('admin.transaksi.cuti-karyawan.index') }}" class="sidebar-link">
                                     <i class="bi bi-person-check"></i>

@@ -162,6 +162,11 @@ Route::prefix('/')->group(function () {
 
             });
 
+            Route::prefix('presensi-karyawan')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Transaksi\Presensi\PresensiController::class, 'index'])->name('admin.transaksi.presensi.index');
+                Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\Presensi\PresensiController::class, 'karyawanOptions'])->name('admin.transaksi.presensi.karyawan-options');
+            });
+
         });
 
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {
