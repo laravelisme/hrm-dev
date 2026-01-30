@@ -198,6 +198,14 @@
                                     <span>Lembur</span>
                                 </a>
                             </li>
+
+                            <li class="submenu-item {{ activeState('admin.transaksi.surat-peringatan.index') }}">
+                                <a href="{{ route('admin.transaksi.surat-peringatan.index') }}" class="sidebar-link">
+                                    <i class="bi bi-exclamation-circle"></i>
+                                    <span>SP</span>
+                                </a>
+                            </li>
+
                         </ul>
                     </li>
                 @endif

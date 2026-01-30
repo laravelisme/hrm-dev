@@ -147,6 +147,21 @@ Route::prefix('/')->group(function () {
                 Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'karyawanOptions'])->name('admin.transaksi.lembur-karyawan.karyawan-options');
                 Route::get('/options/companies', [\App\Http\Controllers\Transaksi\LemburKaryawan\LemburKaryawanController::class, 'companyOptions'])->name('admin.transaksi.lembur-karyawan.company-options');
             });
+
+            Route::prefix('surat-peringatan')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'index'])->name('admin.transaksi.surat-peringatan.index');
+                Route::get('/create', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'create'])->name('admin.transaksi.surat-peringatan.create');
+                Route::post('/store', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'store'])->name('admin.transaksi.surat-peringatan.store');
+                Route::get('/{id}/show', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'show'])->name('admin.transaksi.surat-peringatan.show');
+                Route::delete('/{id}/delete', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'destroy'])->name('admin.transaksi.surat-peringatan.destroy');
+                Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'karyawanDetail'])->name('admin.transaksi.surat-peringatan.karyawan-detail');
+
+                Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'karyawanOptions'])->name('admin.transaksi.surat-peringatan.karyawan-options');
+                Route::get('/options/jenis-sp', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'jenisSPOptions'])->name('admin.transaksi.surat-peringatan.jenis-sp-options');
+                Route::get('/options/companies', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'companyOptions'])->name('admin.transaksi.surat-peringatan.company-options');
+
+            });
+
         });
 
         Route::prefix('master-data')->middleware(['role:hr'])->group(function () {
