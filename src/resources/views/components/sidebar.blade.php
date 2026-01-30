@@ -191,6 +191,13 @@
                                     <span>Izin Karyawan</span>
                                 </a>
                             </li>
+
+                            <li class="submenu-item {{ activeState('admin.transaksi.lembur-karyawan.index') }}">
+                                <a href="{{ route('admin.transaksi.lembur-karyawan.index') }}" class="sidebar-link">
+                                    <i class="bi bi-ticket-perforated"></i>
+                                    <span>Lembur Karyawan</span>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 @endif

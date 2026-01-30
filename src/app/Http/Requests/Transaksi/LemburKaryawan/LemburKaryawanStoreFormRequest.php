@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Requests\Transaksi\LemburKaryawan;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class LemburKaryawanStoreFormRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        $user = $this->user();
+
+        return $user && $user->hasRole('hr');
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'm_karyawan_id' => 'required|exists:m_karyawans,id',
+            'nama_karyawan' => 'required|string|max:255',
+            'nama_perusahaan' => 'required|string|max:255',
+            'm_company_id' => 'required|exists:m_companies,id',
+            'date' => 'required|date',
+            'note' => 'nullable|string|max:500',
+            'atasan1_id' => 'nullable|exists:m_karyawans,id',
+            'atasan2_id' => 'nullable|exists:m_karyawans,id',
+            'nama_atasan1' => 'nullable|string|max:255',
+            'nama_atasan2' => 'nullable|string|max:255',
+            'durasi_diajukan_menit' => 'required|integer|min:1',
+        ];
+    }
+}
