@@ -7,9 +7,10 @@ use App\Models\MKaryawan;
 use App\Models\MSaldoCuti;
 use App\Models\TSaldoCuti;
 use Carbon\Carbon;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
-class GenerateSaldoCutiTahunanListener
+class GenerateSaldoCutiTahunanListener implements ShouldQueue
 {
     public function handle(GenerateSaldoCutiTahunan $event): void
     {
