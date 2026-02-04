@@ -8,6 +8,13 @@
         /* keep layout consistent with other pages */
         .filter-form { flex-wrap: wrap; }
         .filter-form .input-group { flex: 1 1 220px; min-width: 0; }
+
+        /* Ensure select and buttons don't force the input below them (left-right layout) */
+        .filter-form > .form-select,
+        .filter-form > .btn,
+        .filter-form > a.btn {
+            flex: 0 0 auto;
+        }
     </style>
 @endpush
 
@@ -31,7 +38,7 @@
                                 <input type="hidden" name="page" value="{{ request('page') }}">
                             @endif
 
-                            <div class="input-group input-group-sm" style="min-width:220px;">
+                            <div class="input-group input-group-sm" style="min-width:160px;">
                                 <span class="input-group-text"><i class="bi bi-globe"></i></span>
                                 <input type="text" id="searchDomain" name="domain" class="form-control"
                                        placeholder="Search domain..." value="{{ request('domain') }}">

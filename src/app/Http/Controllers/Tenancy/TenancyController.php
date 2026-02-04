@@ -40,7 +40,7 @@ class TenancyController extends Controller
         }
     }
 
-    // New: store a new domain (supports AJAX and normal POST)
+    // Added: store a new domain (supports AJAX and normal POST)
     public function store(Request $request)
     {
         try {
@@ -71,7 +71,7 @@ class TenancyController extends Controller
         }
     }
 
-    // New: delete a domain (supports AJAX and normal DELETE)
+    // Added: delete a domain (supports AJAX and normal DELETE)
     public function destroy(Request $request, $id)
     {
         try {
