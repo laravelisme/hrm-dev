@@ -42,5 +42,6 @@ class AppServiceProvider extends ServiceProvider
         if (app()->environment('local')) {
             URL::forceRootUrl(config('app.url'));
         }
+
     }
 }

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\MJenisCuti;
 use App\Models\MJenisIzin;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Models\MCompany;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -73,10 +74,10 @@ class DatabaseSeeder extends Seeder
         //     'user_token' => Hash::make('test@example.com')
         // ]);
 
-        // $this->call([
-        //     RolePermissionSeeder::class,
-        //     UserRoleSeeder::class
-        // ]);
+         $this->call([
+             RolePermissionSeeder::class,
+             UserRoleSeeder::class
+         ]);
 
 //        $totalRecords = 100000; // total data
 //        $batchSize = 5000;         // insert per batch
@@ -97,6 +98,29 @@ class DatabaseSeeder extends Seeder
 //            MCompany::insert($companies);
 //
 //            // echo "Inserted " . min($i + $batchSize, $totalRecords) . " / $totalRecords companies\n";
+//        }
+
+//        $perusahaans = [
+//            ['nama_perusahaan' => 'PT Alpha', 'subdomain' => 'alpha'],
+//        ];
+//
+//        $appDomain = env('APP_DOMAIN');
+//
+//        $appDomain = preg_replace('#^https?://#', '', $appDomain);
+//
+//        foreach ($perusahaans as $data) {
+//
+//            // 2. Buat Tenant
+//            $tenant = Tenant::create([
+//                'id' => $data['subdomain'],
+//            ]);
+//
+//            $customDomain = $data['subdomain'] . '.' . $appDomain;
+//
+//            $tenant->domains()->create([
+//                'domain' => $customDomain,
+//            ]);
+//
 //        }
     }
 }

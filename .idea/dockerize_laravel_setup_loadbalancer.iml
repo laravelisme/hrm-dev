@@ -124,6 +124,13 @@
       <excludeFolder url="file://$MODULE_DIR$/src/storage/app" />
       <excludeFolder url="file://$MODULE_DIR$/src/storage/framework" />
       <excludeFolder url="file://$MODULE_DIR$/src/vendor/laravel/sanctum" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/facade/ignition-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/lcobucci/clock" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/lcobucci/jwt" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/stancl/jobpipeline" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/stancl/tenancy" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/stancl/virtualcolumn" />
+      <excludeFolder url="file://$MODULE_DIR$/src/vendor/tymon/jwt-auth" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

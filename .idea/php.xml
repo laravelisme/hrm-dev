@@ -131,6 +131,13 @@
       <path value="$PROJECT_DIR$/src/vendor/laravolt/indonesia" />
       <path value="$PROJECT_DIR$/src/vendor/spatie/laravel-permission" />
       <path value="$PROJECT_DIR$/src/vendor/laravel/sanctum" />
+      <path value="$PROJECT_DIR$/src/vendor/tymon/jwt-auth" />
+      <path value="$PROJECT_DIR$/src/vendor/lcobucci/clock" />
+      <path value="$PROJECT_DIR$/src/vendor/lcobucci/jwt" />
+      <path value="$PROJECT_DIR$/src/vendor/facade/ignition-contracts" />
+      <path value="$PROJECT_DIR$/src/vendor/stancl/virtualcolumn" />
+      <path value="$PROJECT_DIR$/src/vendor/stancl/tenancy" />
+      <path value="$PROJECT_DIR$/src/vendor/stancl/jobpipeline" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />
