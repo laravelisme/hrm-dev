@@ -10,6 +10,7 @@ use App\Models\MCompany;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,6 +19,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+        Role::firstOrCreate(['name' => 'super-admin']);
+        $user = User::find(1);
+
+        if ($user) {
+            $user->assignRole('super-admin');
+            $user->assignRole('hr');
+        }
 
 //        MJenisCuti::create([
 //           'nama_cuti' => 'TAHUNAN',
@@ -44,25 +53,25 @@ class DatabaseSeeder extends Seeder
 //           'kode' => 'GRIEF',
 //        ]);
 
-        MJenisIzin::create([
-            'nama_izin' => 'PULANG LEBIH CEPAT',
-            'kode' => 'EARLYOUT'
-        ]);
-
-        MJenisIzin::create([
-           'nama_izin' => 'DATANG TERLAMBAT',
-           'kode' => 'LATEIN'
-        ]);
-
-        MJenisIzin::create([
-           'nama_izin' => 'SAKIT',
-           'kode' => 'SICK'
-        ]);
-
-        MJenisIzin::create([
-           'nama_izin' => 'TIDAK MASUK KERJA',
-            'kode' => 'ABSENCE'
-        ]);
+//        MJenisIzin::create([
+//            'nama_izin' => 'PULANG LEBIH CEPAT',
+//            'kode' => 'EARLYOUT'
+//        ]);
+//
+//        MJenisIzin::create([
+//           'nama_izin' => 'DATANG TERLAMBAT',
+//           'kode' => 'LATEIN'
+//        ]);
+//
+//        MJenisIzin::create([
+//           'nama_izin' => 'SAKIT',
+//           'kode' => 'SICK'
+//        ]);
+//
+//        MJenisIzin::create([
+//           'nama_izin' => 'TIDAK MASUK KERJA',
+//            'kode' => 'ABSENCE'
+//        ]);
 
         // User::factory(10)->create();
 
@@ -74,10 +83,10 @@ class DatabaseSeeder extends Seeder
         //     'user_token' => Hash::make('test@example.com')
         // ]);
 
-         $this->call([
-             RolePermissionSeeder::class,
-             UserRoleSeeder::class
-         ]);
+//         $this->call([
+//             RolePermissionSeeder::class,
+//             UserRoleSeeder::class
+//         ]);
 
 //        $totalRecords = 100000; // total data
 //        $batchSize = 5000;         // insert per batch

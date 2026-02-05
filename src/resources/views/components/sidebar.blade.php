@@ -27,6 +27,15 @@
 
                 @php($user = auth()->user())
 
+                @if($user && $user->hasAnyRole(['super-admin']))
+                    <li class="sidebar-item {{ activeState('tenancy.domain.index') }}">
+                        <a href="{{ route('tenancy.domain.index') }}" class="sidebar-link">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Tenants</span>
+                        </a>
+                    </li>
+                @endif
+
                 @if($user && $user->hasAnyRole(['hr', 'admin']))
                     <li class="sidebar-item {{ activeState('admin.karyawan.index') }}">
                         <a href="{{ route('admin.karyawan.index') }}" class="sidebar-link">
