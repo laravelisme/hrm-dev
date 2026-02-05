@@ -3,59 +3,77 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>{{ $global_setting['app_name'] ?? 'Admin Login' }}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         body {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #f8f9fa;
-        }
+            background:
+                @if(!empty($global_setting['app_background']))
+                    url("{{ asset('storage/' . $global_setting['app_background']) }}") no-repeat center center/cover;
+            @else
+#f8f9fa;
+        @endif
+}
+
         .form-container {
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(6px);
             padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+        }
+
+        .brand-logo {
+            max-height: 70px;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
 <body>
 
 <div class="form-container">
-    <h1 class="text-center">Panel Admin</h1>
-    <p class="text-center mb-4">Admin Login</p>
-    <form action="{{ route('admin.login.post') }}" method="POST">
-        @method('POST')
-        @csrf
-        @if(session('error'))
-            <div class="alert alert-danger" role="alert">
-                {{ session('error') }}
-            </div>
+    <div class="text-center">
+        @if(!empty($global_setting['app_logo']))
+            <img src="{{ asset('storage/' . $global_setting['app_logo']) }}" class="brand-logo" alt="Logo">
         @endif
-        <!-- Email input -->
-        <div class="form-outline mb-4">
-            <label class="form-label" for="email">Email</label>
-            <input type="email" id="email" class="form-control" name="email" />
+        <h4 class="mb-0">{{ $global_setting['app_name'] ?? 'Panel Admin' }}</h4>
+        <p class="text-muted mb-4">Admin Login</p>
+    </div>
+
+    <form action="{{ route('admin.login.post') }}" method="POST">
+        @csrf
+
+        @if(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" required>
         </div>
 
-        <!-- Password input -->
-        <div class="form-outline mb-4">
-            <label class="form-label" for="password">Password</label>
-            <input type="password" id="password" class="form-control" name="password" />
+        <div class="mb-4">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" required>
         </div>
 
-        <!-- Submit button -->
-        <button type="submit"  class="btn btn-primary btn-block mb-4 w-100">Sign in</button>
+        <button type="submit" class="btn btn-primary w-100">Sign in</button>
     </form>
-    <footer class="text-center mt-4">
-        <p>&copy; <script>document.write(new Date().getFullYear())</script> <a href="https://sudutweb.com">PT TAKO ANUGERAH KORPORASI</a></p>
+
+    <footer class="text-center mt-4 small text-muted">
+        &copy; <script>document.write(new Date().getFullYear())</script>
+        {{ $global_setting['app_name'] ?? 'Company' }}
     </footer>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

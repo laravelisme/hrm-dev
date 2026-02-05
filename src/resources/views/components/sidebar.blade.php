@@ -3,7 +3,7 @@
         <div class="sidebar-header position-relative">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="img-fluid d-flex align-items-center">
-                    <img  width="40" src="{{ asset('assets/static/images/logo.png') }}">
+                    <img  width="40" src="{{ asset('storage/' . $global_setting['app_logo']) }}">
                     <h6 class="ms-3">HRM Admin</h6>
                 </div>
                 <div class="theme-toggle d-flex gap-2 align-items-center mt-2">

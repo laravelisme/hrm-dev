@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenancy\Domain\DomainStoreFormRequest;
+use App\Models\MSettingApp;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -57,6 +59,8 @@ class TenancyController extends Controller
                 $generatedPassword = $rawPassword;
             }
 
+            DB::beginTransaction();
+
             $tenant = Tenant::create([
                 'id' => $data['domain'],
                 'nama_company' => $data['nama_company'] ?? $data['domain'],
@@ -76,6 +80,21 @@ class TenancyController extends Controller
                 'password' => Hash::make($rawPassword),
             ];
 
+            if ($request->hasFile('logo')) {
+                $path = $request->file('logo')->store('logos', 'public');
+                $data['logo'] = $path;
+            }
+
+            if ($request->hasFile('background')) {
+                $path = $request->file('background')->store('backgrounds', 'public');
+                $data['background'] = $path;
+            }
+
+            if ($request->hasFile('favicon')) {
+                $path = $request->file('favicon')->store('favicons', 'public');
+                $data['favicon'] = $path;
+            }
+
             tenancy()->initialize($tenant);
 
             $user = User::create($adminAttributes);
@@ -84,11 +103,22 @@ class TenancyController extends Controller
             Role::firstOrCreate(['name' => 'admin']);
             $user->syncRoles(['hr']);
 
+
             tenancy()->end();
+            MSettingApp::create([
+                'app_name' => 'App HRM - ' . ($data['nama_company'] ?? $data['domain']),
+                'app_logo' => $data['logo'] ?? null,
+                'app_background' => $data['background'] ?? null,
+                'app_favicon' => $data['favicon'] ?? null,
+                'tenant_id' => $tenant->id,
+            ]);
+
+            DB::commit();
 
             return $this->successResponse(null, 'Domain created successfully', 201);
 
         } catch (\Throwable $e) {
+            DB::rollBack();
             Log::error('[TenancyController@store] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return $this->errorResponse('Failed to create domain and tenant', 500);
         }

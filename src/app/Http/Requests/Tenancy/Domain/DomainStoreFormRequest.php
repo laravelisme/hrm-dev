@@ -29,6 +29,9 @@ class DomainStoreFormRequest extends FormRequest
             'password' => 'nullable|string|max:255',
             'nama_company' => 'nullable|string|max:255',
             'email' => 'nullable|string|email|max:255|unique:tenants,email',
+            'logo' => 'nullable|image|max:2048',
+            'background' => 'nullable|image|max:4096',
+            'favicon' => 'nullable|image|max:1024',
         ];
     }
 }

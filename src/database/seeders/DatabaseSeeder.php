@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\MJenisCuti;
 use App\Models\MJenisIzin;
+use App\Models\MSettingApp;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\MCompany;
@@ -20,13 +21,20 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        Role::firstOrCreate(['name' => 'super-admin']);
-        $user = User::find(1);
+        MSettingApp::create([
+            'app_name' => 'APP HRM - TAKO',
+            'app_logo' => 'logos/logo.png',
+            'app_favicon' => 'favicons/logo.png',
+            'app_background' => 'backgrounds/hero-banner.jpg',
+        ]);
 
-        if ($user) {
-            $user->assignRole('super-admin');
-            $user->assignRole('hr');
-        }
+//        Role::firstOrCreate(['name' => 'super-admin']);
+//        $user = User::find(1);
+//
+//        if ($user) {
+//            $user->assignRole('super-admin');
+//            $user->assignRole('hr');
+//        }
 
 //        MJenisCuti::create([
 //           'nama_cuti' => 'TAHUNAN',

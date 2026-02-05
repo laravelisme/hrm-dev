@@ -6,7 +6,7 @@
 @section('content')
     <section class="section">
         <div class="row">
-            <div class="col-12 col-lg-12">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">Create New Tenant Domain</h4>
@@ -16,7 +16,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form id="formCreateDomain">
+                        <form id="formCreateDomain" enctype="multipart/form-data">
                             @csrf
                             <div class="row g-3">
 
@@ -34,26 +34,47 @@
                                     <div class="invalid-feedback" data-error-for="nama_company"></div>
                                 </div>
 
-                                {{-- ADMIN USERNAME --}}
+                                {{-- USERNAME --}}
                                 <div class="col-md-6">
                                     <label class="form-label">Admin Username</label>
                                     <input type="text" class="form-control" name="username" placeholder="admin">
                                     <div class="invalid-feedback" data-error-for="username"></div>
                                 </div>
 
-                                {{-- ADMIN EMAIL --}}
+                                {{-- EMAIL --}}
                                 <div class="col-md-6">
                                     <label class="form-label">Admin Email</label>
                                     <input type="email" class="form-control" name="email" placeholder="admin@company.com">
                                     <div class="invalid-feedback" data-error-for="email"></div>
                                 </div>
 
-                                {{-- ADMIN PASSWORD --}}
+                                {{-- PASSWORD --}}
                                 <div class="col-md-6">
                                     <label class="form-label">Admin Password</label>
                                     <input type="text" class="form-control" name="password" placeholder="Kosongkan untuk auto-generate">
+                                    <small class="text-muted">Jika kosong, sistem akan generate otomatis</small>
                                     <div class="invalid-feedback" data-error-for="password"></div>
-                                    <small class="text-muted">Jika dikosongkan, sistem akan generate password otomatis</small>
+                                </div>
+
+                                {{-- LOGO --}}
+                                <div class="col-md-4">
+                                    <label class="form-label">Company Logo</label>
+                                    <input type="file" class="form-control" name="logo" accept="image/*">
+                                    <div class="invalid-feedback" data-error-for="logo"></div>
+                                </div>
+
+                                {{-- BACKGROUND --}}
+                                <div class="col-md-4">
+                                    <label class="form-label">Login Background</label>
+                                    <input type="file" class="form-control" name="background" accept="image/*">
+                                    <div class="invalid-feedback" data-error-for="background"></div>
+                                </div>
+
+                                {{-- FAVICON --}}
+                                <div class="col-md-4">
+                                    <label class="form-label">Favicon</label>
+                                    <input type="file" class="form-control" name="favicon" accept="image/*">
+                                    <div class="invalid-feedback" data-error-for="favicon"></div>
                                 </div>
 
                                 <div class="col-12 d-flex justify-content-end gap-2 mt-3">
@@ -72,7 +93,6 @@
     </section>
 @endsection
 
-
 @push('scripts')
     <script>
         $(function () {
@@ -86,8 +106,8 @@
             }
 
             function setFieldError(field, message) {
-                const $input = $('#formCreateDomain [name="' + field + '"]');
-                $input.addClass('is-invalid');
+                const input = $('#formCreateDomain [name="' + field + '"]');
+                input.addClass('is-invalid');
                 $('#formCreateDomain [data-error-for="' + field + '"]').text(message);
             }
 
@@ -95,13 +115,16 @@
                 e.preventDefault();
                 resetFieldErrors();
 
-                const formData = $(this).serialize();
+                let formData = new FormData(this);
+
                 $('#btnSubmit').prop('disabled', true);
 
                 $.ajax({
                     url: storeUrl,
                     method: 'POST',
                     data: formData,
+                    processData: false,
+                    contentType: false,
                     headers: { 'X-CSRF-TOKEN': $('input[name="_token"]').val() },
 
                     success: function (res) {
@@ -110,8 +133,7 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Success',
-                            text: res?.message || 'Tenant created successfully',
-                            confirmButtonText: 'OK'
+                            text: res?.message || 'Tenant created successfully'
                         }).then(() => window.location.href = indexUrl);
                     },
 
@@ -119,14 +141,13 @@
                         $('#btnSubmit').prop('disabled', false);
 
                         if (xhr.status === 422) {
-                            const errors = xhr.responseJSON?.errors || {};
+                            const errors = xhr.responseJSON.errors || {};
                             Object.keys(errors).forEach(key => setFieldError(key, errors[key][0]));
 
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Validation Error',
-                                text: 'Please check the highlighted fields.',
-                                confirmButtonText: 'OK'
+                                text: 'Please check the highlighted fields.'
                             });
                             return;
                         }
@@ -134,8 +155,7 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: xhr.responseJSON?.message || 'Failed to create tenant',
-                            confirmButtonText: 'OK'
+                            text: xhr.responseJSON?.message || 'Failed to create tenant'
                         });
                     }
                 });
