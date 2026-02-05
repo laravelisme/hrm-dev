@@ -3,8 +3,16 @@
 namespace App\Http\Controllers\Tenancy;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tenancy\Domain\DomainStoreFormRequest;
+use App\Models\MSettingApp;
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 use Stancl\Tenancy\Database\Models\Domain;
 
 class TenancyController extends Controller
@@ -19,18 +27,17 @@ class TenancyController extends Controller
     public function index(Request $request)
     {
         try {
+            $searchDomain = $request->query('domain');
+            $perPage = (int) $request->query('perPage', 10);
+            $perPage = max(1, min($perPage, 100));
 
-            $searchDomain = $request->query('domain', null);
-            $perPage    = (int) $request->query('perPage', 10);
-            $perPage    = max(1, min($perPage, 100));
-
-            $query = $this->domain->newQuery();
+            $query = $this->domain->newQuery()->with('tenant');
 
             if ($searchDomain) {
-                $query->where('domain', 'like', '%' . $searchDomain . '%');
+                $query->where('domain', 'like', "%{$searchDomain}%");
             }
 
-            $domains = $query->paginate($perPage);
+            $domains = $query->paginate($perPage)->withQueryString();
 
             return view('pages.tenancy.domain.index', compact('domains'));
 
@@ -40,55 +47,114 @@ class TenancyController extends Controller
         }
     }
 
-    // New: store a new domain (supports AJAX and normal POST)
-    public function store(Request $request)
+    public function store(DomainStoreFormRequest $request)
     {
         try {
-            $data = $request->validate([
-                'domain' => ['required', 'string', 'max:255', 'unique:domains,domain']
-            ]);
+            $data = $request->validated();
 
-            $domain = $this->domain->create([
-                'domain' => trim($data['domain'])
-            ]);
-
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['message' => 'Domain added', 'data' => $domain]);
+            $generatedPassword = null;
+            $rawPassword = $data['password'] ?? null;
+            if (empty($rawPassword)) {
+                $rawPassword = Str::random(12);
+                $generatedPassword = $rawPassword;
             }
 
-            return redirect()->back()->with('success', 'Domain added');
-        } catch (\Illuminate\Validation\ValidationException $ve) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['message' => 'Validation failed', 'errors' => $ve->errors()], 422);
+            DB::beginTransaction();
+
+            $tenant = Tenant::create([
+                'id' => $data['domain'],
+                'nama_company' => $data['nama_company'] ?? $data['domain'],
+                'username' => $data['username'] ?? null,
+                'password' => $rawPassword ?? null,
+                'email' => $data['email'] ?? null,
+            ]);
+
+            $tenant->domains()->create([
+                'domain' => $data['domain'],
+            ]);
+
+            $adminAttributes = [
+                'name' => $data['username'] ?? 'Admin',
+                'email' => $data['email'] ?? ('admin@' . $data['domain']),
+                'username' => $data['username'] ?? 'admin',
+                'password' => Hash::make($rawPassword),
+            ];
+
+            if ($request->hasFile('logo')) {
+                $path = $request->file('logo')->store('logos', 'public');
+                $data['logo'] = $path;
             }
-            throw $ve;
+
+            if ($request->hasFile('background')) {
+                $path = $request->file('background')->store('backgrounds', 'public');
+                $data['background'] = $path;
+            }
+
+            if ($request->hasFile('favicon')) {
+                $path = $request->file('favicon')->store('favicons', 'public');
+                $data['favicon'] = $path;
+            }
+
+            tenancy()->initialize($tenant);
+
+            $user = User::create($adminAttributes);
+
+            Role::firstOrCreate(['name' => 'hr']);
+            Role::firstOrCreate(['name' => 'admin']);
+            $user->syncRoles(['hr']);
+
+
+            tenancy()->end();
+            MSettingApp::create([
+                'app_name' => 'App HRM - ' . ($data['nama_company'] ?? $data['domain']),
+                'app_logo' => $data['logo'] ?? null,
+                'app_background' => $data['background'] ?? null,
+                'app_favicon' => $data['favicon'] ?? null,
+                'tenant_id' => $tenant->id,
+            ]);
+
+            DB::commit();
+
+            return $this->successResponse(null, 'Domain created successfully', 201);
+
         } catch (\Throwable $e) {
+            DB::rollBack();
             Log::error('[TenancyController@store] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['message' => 'Failed to add domain'], 500);
-            }
-            abort(500, 'Failed to add domain');
+            return $this->errorResponse('Failed to create domain and tenant', 500);
         }
     }
 
-    // New: delete a domain (supports AJAX and normal DELETE)
-    public function destroy(Request $request, $id)
+    public function create()
     {
         try {
-            $domain = $this->domain->newQuery()->findOrFail($id);
+
+            return view('pages.tenancy.domain.create');
+
+        } catch (\Throwable $e) {
+            Log::error('[TenancyController@create] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            abort(500, 'Failed to load create domain form');
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $domain = Domain::findOrFail($id);
+
+            if ($domain->tenant) {
+                $domain->tenant->delete();
+            }
+
             $domain->delete();
 
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['message' => 'Domain deleted']);
-            }
-
-            return redirect()->back()->with('success', 'Domain deleted');
+            return response()->json([
+                'message' => 'Domain deleted successfully'
+            ]);
         } catch (\Throwable $e) {
-            Log::error('[TenancyController@destroy] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json(['message' => 'Failed to delete domain'], 500);
-            }
-            abort(500, 'Failed to delete domain');
+            Log::error('[TenancyController@destroy] ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to delete domain'
+            ], 500);
         }
     }
 }

@@ -3,7 +3,7 @@
         <div class="sidebar-header position-relative">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="img-fluid d-flex align-items-center">
-                    <img  width="40" src="{{ asset('assets/static/images/logo.png') }}">
+                    <img  width="40" src="{{ asset('storage/' . $global_setting['app_logo']) }}">
                     <h6 class="ms-3">HRM Admin</h6>
                 </div>
                 <div class="theme-toggle d-flex gap-2 align-items-center mt-2">
@@ -26,6 +26,15 @@
                 </li>
 
                 @php($user = auth()->user())
+
+                @if($user && $user->hasAnyRole(['super-admin']))
+                    <li class="sidebar-item {{ activeState('tenancy.domain.index') }}">
+                        <a href="{{ route('tenancy.domain.index') }}" class="sidebar-link">
+                            <i class="bi bi-globe2"></i>
+                            <span>Tenants</span>
+                        </a>
+                    </li>
+                @endif
 
                 @if($user && $user->hasAnyRole(['hr', 'admin']))
                     <li class="sidebar-item {{ activeState('admin.karyawan.index') }}">

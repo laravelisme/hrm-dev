@@ -2,9 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\MSettingApp;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use Stancl\Tenancy\Facades\Tenancy;
+use Stancl\Tenancy\Events\TenancyInitialized;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -43,5 +48,34 @@ class AppServiceProvider extends ServiceProvider
             URL::forceRootUrl(config('app.url'));
         }
 
+        View::composer('*', function ($view) {
+            $view->with('global_setting', $this->resolveAppSetting());
+        });
     }
+
+    private function resolveAppSetting(): array
+    {
+        try {
+            if (tenant()) {
+                $setting = MSettingApp::first();
+            } else {
+                $setting = MSettingApp::on('central')->first();
+            }
+
+            return [
+                'app_name'       => $setting->app_name ?? config('app.name'),
+                'app_logo'       => $setting->app_logo ?? null,
+                'app_favicon'    => $setting->app_favicon ?? null,
+                'app_background' => $setting->app_background ?? null,
+            ];
+        } catch (\Throwable $e) {
+            return [
+                'app_name'       => config('app.name'),
+                'app_logo'       => null,
+                'app_favicon'    => null,
+                'app_background' => null,
+            ];
+        }
+    }
+
 }
