@@ -30,7 +30,7 @@
                 @if($user && $user->hasAnyRole(['super-admin']))
                     <li class="sidebar-item {{ activeState('tenancy.domain.index') }}">
                         <a href="{{ route('tenancy.domain.index') }}" class="sidebar-link">
-                            <i class="bi bi-people-fill"></i>
+                            <i class="bi bi-globe2"></i>
                             <span>Tenants</span>
                         </a>
                     </li>
