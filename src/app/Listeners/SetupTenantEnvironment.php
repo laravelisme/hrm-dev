@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
-class SetupTenantEnvironment
+class SetupTenantEnvironment implements ShouldQueue
 {
     public function handle(TenantCreated $event): void
     {
