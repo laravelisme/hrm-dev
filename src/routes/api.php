@@ -26,5 +26,11 @@ Route::prefix('v2')->group(function () {
        Route::get('list-city', [\App\Http\Controllers\Api\Master\MasterController::class, 'getWorkLocation']);
     });
 
+    Route::prefix('izin')->middleware('auth:api')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\Izin\IzinController::class, 'index']);
+        Route::post('/submit', [\App\Http\Controllers\Api\Izin\IzinController::class, 'submitIzin']);
+        Route::get('/history', [\App\Http\Controllers\Api\Izin\IzinController::class, 'izinHistory']);
+    });
+
 });
 
