@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenancy;
 
+use App\Events\TenantCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenancy\Domain\DomainStoreFormRequest;
 use App\Models\MSettingApp;
@@ -95,23 +96,7 @@ class TenancyController extends Controller
                 $data['favicon'] = $path;
             }
 
-            tenancy()->initialize($tenant);
-
-            $user = User::create($adminAttributes);
-
-            Role::firstOrCreate(['name' => 'hr']);
-            Role::firstOrCreate(['name' => 'admin']);
-            $user->syncRoles(['hr']);
-
-
-            tenancy()->end();
-            MSettingApp::create([
-                'app_name' => 'App HRM - ' . ($data['nama_company'] ?? $data['domain']),
-                'app_logo' => $data['logo'] ?? null,
-                'app_background' => $data['background'] ?? null,
-                'app_favicon' => $data['favicon'] ?? null,
-                'tenant_id' => $tenant->id,
-            ]);
+            event(new TenantCreated($tenant, $data, $rawPassword));
 
             DB::commit();
 
