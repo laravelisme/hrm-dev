@@ -138,6 +138,29 @@
       <path value="$PROJECT_DIR$/src/vendor/stancl/virtualcolumn" />
       <path value="$PROJECT_DIR$/src/vendor/stancl/tenancy" />
       <path value="$PROJECT_DIR$/src/vendor/stancl/jobpipeline" />
+      <path value="$PROJECT_DIR$/src/vendor/grpc/grpc" />
+      <path value="$PROJECT_DIR$/src/vendor/kreait/firebase-tokens" />
+      <path value="$PROJECT_DIR$/src/vendor/kreait/laravel-firebase" />
+      <path value="$PROJECT_DIR$/src/vendor/kreait/firebase-php" />
+      <path value="$PROJECT_DIR$/src/vendor/firebase/php-jwt" />
+      <path value="$PROJECT_DIR$/src/vendor/mtdowling/jmespath.php" />
+      <path value="$PROJECT_DIR$/src/vendor/psr/cache" />
+      <path value="$PROJECT_DIR$/src/vendor/symfony/cache-contracts" />
+      <path value="$PROJECT_DIR$/src/vendor/symfony/cache" />
+      <path value="$PROJECT_DIR$/src/vendor/symfony/var-exporter" />
+      <path value="$PROJECT_DIR$/src/vendor/google/longrunning" />
+      <path value="$PROJECT_DIR$/src/vendor/google/cloud-core" />
+      <path value="$PROJECT_DIR$/src/vendor/google/protobuf" />
+      <path value="$PROJECT_DIR$/src/vendor/google/auth" />
+      <path value="$PROJECT_DIR$/src/vendor/google/grpc-gcp" />
+      <path value="$PROJECT_DIR$/src/vendor/google/cloud-storage" />
+      <path value="$PROJECT_DIR$/src/vendor/google/gax" />
+      <path value="$PROJECT_DIR$/src/vendor/google/common-protos" />
+      <path value="$PROJECT_DIR$/src/vendor/fig/http-message-util" />
+      <path value="$PROJECT_DIR$/src/vendor/beste/json" />
+      <path value="$PROJECT_DIR$/src/vendor/beste/in-memory-cache" />
+      <path value="$PROJECT_DIR$/src/vendor/beste/clock" />
+      <path value="$PROJECT_DIR$/src/vendor/rize/uri-template" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />

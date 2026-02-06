@@ -255,11 +255,13 @@ class KaryawanController extends Controller
 
             DB::transaction(function () use ($data) {
 
+                $passwordPlain = strlen($data['nik']) >= 6 ? substr($data['nik'], -6) : $data['nik'];
+
                 $userId = DB::table('p_users')->insertGetId([
                     'username' => $data['nama_karyawan'],
                     'name' => $data['nama_karyawan'],
                     'email' => $data['email'],
-                    'password' => Hash::make($data['nik']),
+                    'password' => Hash::make($passwordPlain),
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
