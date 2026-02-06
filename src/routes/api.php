@@ -23,6 +23,7 @@ Route::prefix('v2')->group(function () {
        Route::get('/sp-type', [\App\Http\Controllers\Api\Master\MasterController::class, 'getJenisSP']);
        Route::get('/list-bawahan', [\App\Http\Controllers\Api\Master\MasterController::class, 'getListBawahan']);
        Route::get('/jabatan-type', [\App\Http\Controllers\Api\Master\MasterController::class, 'getJenisJabatan']);
+       Route::get('list-city', [\App\Http\Controllers\Api\Master\MasterController::class, 'getWorkLocation']);
     });
 
 });

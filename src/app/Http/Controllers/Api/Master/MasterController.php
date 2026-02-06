@@ -8,6 +8,7 @@ use App\Models\MJenisCuti;
 use App\Models\MJenisIzin;
 use App\Models\MJenisSp;
 use App\Models\MKaryawan;
+use App\Models\MLokasiKerja;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -102,6 +103,32 @@ class MasterController extends Controller
         } catch (\Exception $e) {
             Log::error('[MasterController@getJenisJabatan] '.$e->getMessage());
             return $this->errorResponse('Failed to fetch Jenis Jabatan', 500);
+        }
+    }
+
+    public function getWorkLocation(Request $request)
+    {
+        try {
+
+            $searchName = trim((string) $request->query('searchName', ''));
+            $perPage    = (int) $request->query('perPage', 10);
+            $perPage    = max(1, min($perPage, 100));
+
+            $query = MLokasiKerja::query();
+
+            if ($searchName !== '') {
+                $query->where('nama_lokasi_kerja', 'like', "%{$searchName}%");
+            }
+
+            $workLocations = $query->select('id', 'name')
+                ->paginate($perPage)
+                ->withQueryString();
+
+            return $this->successResponse($workLocations, 'Work locations fetched successfully', 200);
+
+        } catch (\Throwable $e) {
+            Log::error('[MasterController@getWorkLocation] '.$e->getMessage());
+            return $this->errorResponse('Failed to fetch work location', 500);
         }
     }
 }
