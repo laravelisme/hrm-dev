@@ -13,7 +13,7 @@ pipeline {
                 dir(APP_PATH) {
                     git branch: 'main',
                         url: 'https://github.com/laravelisme/hrm-dev.git',
-                        credentialsId: 'github-hrm'
+                        credentialsId: 'github-https'
                 }
             }
         }
