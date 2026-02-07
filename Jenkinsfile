@@ -22,7 +22,7 @@ pipeline {
             steps {
                 dir(APP_PATH) {
                     // Sesuaikan path .env jika beda
-                    sh "cp src/.env.example .env"
+                    sh "cp src/.env.example src/.env"
                 }
             }
         }
