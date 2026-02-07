@@ -8,12 +8,17 @@ pipeline {
 
     stages {
 
-        stage('Pull Latest Code') {
+        stage('Clone or Pull Repo') {
             steps {
                 dir(APP_PATH) {
                     sh """
-                    git fetch origin main
-                    git reset --hard origin/main
+                    # Jika repo belum ada, clone
+                    if [ ! -d ".git" ]; then
+                        git clone git@github.com:laravelisme/hrm-dev.git .
+                    else
+                        git fetch origin main
+                        git reset --hard origin/main
+                    fi
                     """
                 }
             }
@@ -22,6 +27,7 @@ pipeline {
         stage('Rebuild & Start Containers') {
             steps {
                 dir(APP_PATH) {
+                    // Down dulu, tapi jangan hapus volume biar DB aman
                     sh "docker compose down"
                     sh "docker compose up -d --build"
                 }
@@ -31,7 +37,7 @@ pipeline {
         stage('Setup Laravel in Container') {
             steps {
                 dir(APP_PATH) {
-                    // Copy .env, generate key, migrate
+                    // Masuk container php_laravel_1 untuk setup Laravel
                     sh """
                     docker compose exec php_laravel_1 bash -c '
                         cp .env.example .env || true
