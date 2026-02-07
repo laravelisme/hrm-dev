@@ -21,18 +21,23 @@ pipeline {
         stage('Copy .env') {
             steps {
                 dir(APP_PATH) {
-                    // Sesuaikan path .env jika beda
-                    sh "cp src/.env.example src/.env"
+                    sh "cp src/.env.example src/.env || true"
                 }
             }
         }
 
-        stage('Rebuild & Start Containers') {
+        stage('Install Composer Dependencies') {
             steps {
                 dir(APP_PATH) {
-                    // Down dulu, jangan hapus volume biar DB aman
-                    sh "docker compose down"
-                    sh "docker compose up -d --build"
+                    sh "docker run --rm -v \$(pwd):/app -w /app composer install --no-interaction --prefer-dist --optimize-autoloader"
+                }
+            }
+        }
+
+        stage('Generate App Key') {
+            steps {
+                dir(APP_PATH) {
+                    sh "docker run --rm -v \$(pwd):/app -w /app php:8.2-cli php artisan key:generate"
                 }
             }
         }
@@ -40,7 +45,16 @@ pipeline {
         stage('Run Migration') {
             steps {
                 dir(APP_PATH) {
-                    sh "docker compose exec php_laravel_1 php artisan migrate --force"
+                    sh "docker run --rm -v \$(pwd):/app -w /app php:8.2-cli php artisan migrate --force"
+                }
+            }
+        }
+
+        stage('Rebuild & Start Containers') {
+            steps {
+                dir(APP_PATH) {
+                    sh "docker compose down"
+                    sh "docker compose up -d --build"
                 }
             }
         }
