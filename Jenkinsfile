@@ -21,8 +21,28 @@ pipeline {
         stage('Build PHP Image') {
             steps {
                 dir(APP_PATH) {
+                    sh "docker compose build php_laravel_1 php_laravel_2 laravel_queue"
+                }
+            }
+        }
+
+        stage('Start Containers') {
+            steps {
+                dir(APP_PATH) {
+                    sh "docker compose up -d postgres_master"
+                }
+            }
+        }
+
+        stage('Wait DB') {
+            steps {
+                dir(APP_PATH) {
                     sh """
-                    docker compose build php_laravel_1 php_laravel_2 laravel_queue
+                    echo "Menunggu PostgreSQL ready..."
+                    until docker compose exec -T postgres_master pg_isready -U user123 -d test; do
+                      sleep 2
+                    done
+                    echo "PostgreSQL siap!"
                     """
                 }
             }
@@ -31,9 +51,7 @@ pipeline {
         stage('Run Migration') {
             steps {
                 dir(APP_PATH) {
-                    sh """
-                    docker compose run --rm php_laravel_1 php artisan migrate --force
-                    """
+                    sh "docker compose run --rm php_laravel_1 php artisan migrate --force"
                 }
             }
         }
@@ -41,9 +59,7 @@ pipeline {
         stage('Restart Laravel Containers') {
             steps {
                 dir(APP_PATH) {
-                    sh """
-                    docker compose up -d --no-deps php_laravel_1 php_laravel_2 laravel_queue
-                    """
+                    sh "docker compose up -d --no-deps php_laravel_1 php_laravel_2 laravel_queue"
                 }
             }
         }
