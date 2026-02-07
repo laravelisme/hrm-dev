@@ -83,18 +83,18 @@ class DatabaseSeeder extends Seeder
 
         // User::factory(10)->create();
 
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        //     'username' => 'test',
-        //     'password' => Hash::make('password'),
-        //     'user_token' => Hash::make('test@example.com')
-        // ]);
+         User::factory()->create([
+             'name' => 'Test User',
+             'email' => 'test@example.com',
+             'username' => 'test',
+             'password' => Hash::make('password'),
+             'user_token' => Hash::make('test@example.com')
+         ]);
 
-//         $this->call([
-//             RolePermissionSeeder::class,
-//             UserRoleSeeder::class
-//         ]);
+         $this->call([
+             RolePermissionSeeder::class,
+             UserRoleSeeder::class
+         ]);
 
 //        $totalRecords = 100000; // total data
 //        $batchSize = 5000;         // insert per batch

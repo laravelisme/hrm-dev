@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_PROJECT_NAME = "html"
-        APP_PATH = "/var/www/html"
+        COMPOSE_PROJECT_NAME = "hrm-dev"
+        APP_PATH = "/var/www/hrm-dev"
     }
 
     stages {
