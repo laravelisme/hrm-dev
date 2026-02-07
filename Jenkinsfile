@@ -18,32 +18,21 @@ pipeline {
             }
         }
 
-        stage('Build PHP Image') {
+        stage('Copy .env') {
             steps {
                 dir(APP_PATH) {
-                    sh "docker compose build php_laravel_1 php_laravel_2 laravel_queue"
+                    // Sesuaikan path .env jika beda
+                    sh "cp .env.example .env"
                 }
             }
         }
 
-        stage('Start Containers') {
+        stage('Rebuild & Start Containers') {
             steps {
                 dir(APP_PATH) {
-                    sh "docker compose up -d postgres_master"
-                }
-            }
-        }
-
-        stage('Wait DB') {
-            steps {
-                dir(APP_PATH) {
-                    sh """
-                    echo "Menunggu PostgreSQL ready..."
-                    until docker compose exec -T postgres_master pg_isready -U user123 -d test; do
-                      sleep 2
-                    done
-                    echo "PostgreSQL siap!"
-                    """
+                    // Down dulu, jangan hapus volume biar DB aman
+                    sh "docker compose down"
+                    sh "docker compose up -d --build"
                 }
             }
         }
@@ -51,27 +40,7 @@ pipeline {
         stage('Run Migration') {
             steps {
                 dir(APP_PATH) {
-                    sh "docker compose run --rm php_laravel_1 php artisan migrate --force"
-                }
-            }
-        }
-
-        stage('Restart Laravel Containers') {
-            steps {
-                dir(APP_PATH) {
-                    sh "docker compose up -d --no-deps php_laravel_1 php_laravel_2 laravel_queue"
-                }
-            }
-        }
-
-        stage('Reload Nginx') {
-            steps {
-                dir(APP_PATH) {
-                    sh """
-                    docker compose exec nginx_laravel_1 nginx -s reload || true
-                    docker compose exec nginx_laravel_2 nginx -s reload || true
-                    docker compose exec nginx_loadbalancer nginx -s reload || true
-                    """
+                    sh "docker compose exec php_laravel_1 php artisan migrate --force"
                 }
             }
         }
