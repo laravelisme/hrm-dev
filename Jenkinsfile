@@ -1,43 +1,72 @@
 pipeline {
     agent any
 
+    environment {
+        COMPOSE_PROJECT_NAME = "laravel_prod"
+        APP_PATH = "/var/www/laravel-prod"
+    }
+
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                checkout scm
+                dir(APP_PATH) {
+                    git branch: 'main',
+                        url: 'https://github.com/laravelisme/hrm-dev',
+                        credentialsId: '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'
+                }
             }
         }
 
-        stage('Build') {
+        stage('Build PHP Image') {
             steps {
-                sh 'docker compose build'
+                dir(APP_PATH) {
+                    sh """
+                    docker compose build php_laravel_1 php_laravel_2 laravel_queue
+                    """
+                }
             }
         }
 
-        stage('Deploy') {
+        stage('Run Migration') {
             steps {
-                sh 'docker compose up -d'
+                dir(APP_PATH) {
+                    sh """
+                    docker compose run --rm php_laravel_1 php artisan migrate --force
+                    """
+                }
             }
         }
 
-        stage('Laravel Setup') {
+        stage('Restart Laravel Containers') {
             steps {
-                sh '''
-                docker compose exec -T php_laravel_1 php artisan key:generate --force || true
-                docker compose exec -T php_laravel_1 php artisan migrate --force
-                docker compose exec -T php_laravel_1 php artisan optimize
-                '''
+                dir(APP_PATH) {
+                    sh """
+                    docker compose up -d --no-deps php_laravel_1 php_laravel_2 laravel_queue
+                    """
+                }
+            }
+        }
+
+        stage('Reload Nginx') {
+            steps {
+                dir(APP_PATH) {
+                    sh """
+                    docker compose exec nginx_laravel_1 nginx -s reload || true
+                    docker compose exec nginx_laravel_2 nginx -s reload || true
+                    docker compose exec nginx_loadbalancer nginx -s reload || true
+                    """
+                }
             }
         }
     }
 
     post {
         success {
-            echo "✅ Deploy sukses"
+            echo "🚀 DEPLOY SUKSES - Laravel Prod Updated"
         }
         failure {
-            echo "❌ Deploy gagal"
+            echo "❌ DEPLOY GAGAL - CEK LOG JENKINS"
         }
     }
 }
