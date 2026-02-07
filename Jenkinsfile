@@ -12,8 +12,8 @@ pipeline {
             steps {
                 dir(APP_PATH) {
                     git branch: 'main',
-                        url: 'https://github.com/laravelisme/hrm-dev.git',
-                        credentialsId: 'github-https'
+                        url: 'git@github.com:laravelisme/hrm-dev.git',
+                        credentialsId: 'github-ssh'
                 }
             }
         }
