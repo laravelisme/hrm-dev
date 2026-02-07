@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        COMPOSE_PROJECT_NAME = "laravel_prod"
-        APP_PATH = "/var/www/laravel-prod"
+        COMPOSE_PROJECT_NAME = "html"
+        APP_PATH = "/var/www/html"
     }
 
     stages {
