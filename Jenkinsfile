@@ -27,7 +27,6 @@ pipeline {
         stage('Rebuild & Start Containers') {
             steps {
                 dir(APP_PATH) {
-                    // Down dulu, tapi jangan hapus volume biar DB aman
                     sh "docker compose down"
                     sh "docker compose up -d --build"
                 }
@@ -37,7 +36,6 @@ pipeline {
         stage('Setup Laravel in Container') {
             steps {
                 dir(APP_PATH) {
-                    // Masuk container php_laravel_1 untuk setup Laravel
                     sh """
                     docker compose exec php_laravel_1 bash -c '
                         cp .env.example .env || true

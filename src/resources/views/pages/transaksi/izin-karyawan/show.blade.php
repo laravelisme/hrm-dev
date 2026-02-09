@@ -28,13 +28,15 @@
                         <div class="border rounded p-3 h-100">
                             <div class="text-muted small">Status</div>
                             <div class="mt-1">
-                                @php($st = $izin->status)
-                                <span class="badge
-                                    {{ $st==='APPROVED' ? 'bg-light-success text-dark' :
-                                       ($st==='REJECTED' ? 'bg-light-danger text-dark' :
-                                       ($st==='PENDING_APPROVED' ? 'bg-light-warning text-dark' : 'bg-light-primary text-dark')) }}">
-                                    {{ $st ?: '-' }}
-                                </span>
+                                @php
+                                    $st = $izin->status
+                                @endphp
+                                    <span class="badge
+                                        {{ $st==='APPROVED' ? 'bg-light-success text-dark' :
+                                           ($st==='REJECTED' ? 'bg-light-danger text-dark' :
+                                           ($st==='PENDING_APPROVED' ? 'bg-light-warning text-dark' : 'bg-light-primary text-dark')) }}">
+                                        {{ $st ?: '-' }}
+                                    </span>
                             </div>
 
                             <div class="text-muted small mt-3">Jenis Izin</div>
@@ -87,6 +89,32 @@
                             </div>
                         </div>
                     </div>
+
+                    @if($izin->file)
+                        @php
+                            $ext = strtolower(pathinfo($izin->file, PATHINFO_EXTENSION));
+                            $isImage = in_array($ext, ['jpg','jpeg','png']);
+                        @endphp
+
+                        <div class="col-12">
+                            <div class="border rounded p-3">
+                                <h5 class="mb-3">Lampiran</h5>
+
+                                @if($isImage)
+                                    <a href="{{ asset($izin->file) }}" target="_blank">
+                                        <img src="{{ asset($izin->file) }}"
+                                             alt="Lampiran Izin"
+                                             style="max-width:300px; border-radius:8px;">
+                                    </a>
+                                @else
+                                    <a href="{{ asset($izin->file) }}" target="_blank" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-file-earmark-pdf"></i> Lihat File
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
 
                     {{-- Approval (optional) -> hanya tampil kalau kolomnya ada di tabel --}}
                     @php($attrs = method_exists($izin,'getAttributes') ? $izin->getAttributes() : [])
@@ -161,9 +189,9 @@
                                     </div>
 
                                     <div class="col-12 mt-2">
-                    <span class="badge bg-light-success text-dark">
-                        HR Verified
-                    </span>
+                                        <span class="badge bg-light-success text-dark">
+                                            HR Verified
+                                        </span>
                                     </div>
                                 </div>
                             </div>
