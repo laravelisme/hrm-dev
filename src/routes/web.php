@@ -171,6 +171,7 @@ foreach (config('tenancy.central_domains') as $domain) {
                         Route::get('/{id}/show', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'show'])->name('admin.transaksi.surat-peringatan.show');
                         Route::delete('/{id}/delete', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'destroy'])->name('admin.transaksi.surat-peringatan.destroy');
                         Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'karyawanDetail'])->name('admin.transaksi.surat-peringatan.karyawan-detail');
+                        Route::post('approve/{id}', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'approveHr'])->name('admin.transaksi.surat-peringatan.approve-sp');
 
                         Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'karyawanOptions'])->name('admin.transaksi.surat-peringatan.karyawan-options');
                         Route::get('/options/jenis-sp', [\App\Http\Controllers\Transaksi\SuratPeringatan\SuratPeringatanController::class, 'jenisSPOptions'])->name('admin.transaksi.surat-peringatan.jenis-sp-options');

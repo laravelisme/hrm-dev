@@ -6,150 +6,146 @@
 @section('content')
     <section class="section">
         <div class="card">
-            <div class="card-header d-flex flex-column flex-lg-row justify-content-between gap-2">
+
+            {{-- HEADER --}}
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="mb-0">Detail Surat Peringatan</h4>
-                    <p class="text-muted mb-0">
-                        {{ $sp->nama_karyawan ?? '-' }}
-                        <span class="ms-2 text-muted">Company: <b>{{ $sp->nama_perusahaan ?? '-' }}</b></span>
-                    </p>
+                    <small class="text-muted">
+                        {{ $sp->nama_karyawan }} — {{ $sp->nama_perusahaan }}
+                    </small>
                 </div>
 
-                <div class="d-flex gap-2">
-                    <a href="{{ route('admin.transaksi.surat-peringatan.index') }}" class="btn btn-light btn-sm">
-                        <i class="bi bi-arrow-left me-1"></i> Back
-                    </a>
-
-                    <button type="button"
-                            class="btn btn-danger btn-sm"
-                            id="btnDelete"
-                            data-url="{{ route('admin.transaksi.surat-peringatan.destroy', $sp->id) }}"
-                            data-name="{{ $sp->nama_karyawan ?? 'surat ini' }}">
-                        <i class="bi bi-trash me-1"></i> Delete
-                    </button>
-                </div>
+                <a href="{{ route('admin.transaksi.surat-peringatan.index') }}" class="btn btn-light btn-sm">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
             </div>
 
+            {{-- BODY --}}
             <div class="card-body">
                 <div class="row g-3">
+
+                    {{-- INFO --}}
                     <div class="col-md-4">
                         <div class="border rounded p-3 h-100">
-                            <div class="text-muted small">Status</div>
-                            <div class="mt-1">
-                                @php($st = $sp->status)
+                            <div class="mb-2">
+                                <small class="text-muted">Status</small><br>
                                 <span class="badge
-                                    {{ $st==='APPROVED' ? 'bg-light-success text-dark' :
-                                       ($st==='REJECTED' ? 'bg-light-danger text-dark' :
-                                       ($st==='PENDING_APPROVED' ? 'bg-light-warning text-dark' : 'bg-light-primary text-dark')) }}">
-                                    {{ $st }}
-                                </span>
+                                {{ $sp->status === 'APPROVED' ? 'bg-success' :
+                                   ($sp->status === 'REJECTED' ? 'bg-danger' : 'bg-warning') }}">
+                                {{ $sp->status }}
+                            </span>
                             </div>
 
-                            <div class="text-muted small mt-3">Nomor</div>
-                            <div class="fw-semibold">{{ $sp->nomor ?? '-' }}</div>
+                            <div class="mb-2">
+                                <small class="text-muted">Periode</small><br>
+                                {{ $sp->tanggal_start }} → {{ $sp->tanggal_end }}
+                            </div>
 
-                            <div class="text-muted small mt-3">Tanggal Surat</div>
-                            <div class="fw-semibold">{{ $sp->tanggal_surat ?? '-' }}</div>
+                            <div class="mb-2">
+                                <small class="text-muted">Atasan</small><br>
+                                {{ $sp->nama_atasan }}
+                            </div>
 
-                            <div class="text-muted small mt-3">Created At</div>
-                            <div class="fw-semibold">{{ optional($sp->created_at)->format('Y-m-d H:i') }}</div>
+                            <div>
+                                <small class="text-muted">Catatan Atasan</small><br>
+                                {{ $sp->atasan_note ?? '-' }}
+                            </div>
                         </div>
                     </div>
 
+                    {{-- DETAIL --}}
                     <div class="col-md-8">
                         <div class="border rounded p-3 h-100">
-                            <div class="row g-2">
-                                <div class="col-md-6">
-                                    <div class="text-muted small">Periode</div>
-                                    <div class="fw-semibold">
-                                        {{ $sp->tanggal_start ?? '-' }} → {{ $sp->tanggal_end ?? '-' }}
+                            <h6>Detail Pelanggaran</h6>
+                            <table class="table table-sm">
+                                <thead>
+                                <tr>
+                                    <th>Jenis</th>
+                                    <th>Keterangan</th>
+                                    <th>File</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($sp->details as $d)
+                                    <tr>
+                                        <td>{{ $d->jenis }}</td>
+                                        <td>{{ $d->keterangan }}</td>
+                                        <td>
+                                            @if($d->file_pendukung)
+                                                <a href="{{ Storage::url($d->file_pendukung) }}" target="_blank">
+                                                    Lihat
+                                                </a>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {{-- HR APPROVAL FORM --}}
+                    @if(!$sp->hr_approved)
+                        <div class="col-12">
+                            <div class="border rounded p-3">
+                                <h5 class="mb-3">HR Approval</h5>
+
+                                <form id="formHrApprove"
+                                      action="{{ route('admin.transaksi.surat-peringatan.approve-sp', $sp->id) }}"
+                                      method="POST"
+                                      enctype="multipart/form-data">
+                                    @csrf
+
+                                    <div class="row g-2">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Nomor Surat</label>
+                                            <input type="text" name="nomor" class="form-control">
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label">Tanggal Surat</label>
+                                            <input type="date" name="tanggal_surat" class="form-control">
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label">File Surat</label>
+                                            <input type="file" name="file_surat" class="form-control">
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label class="form-label">Catatan HR</label>
+                                            <textarea name="hr_note" class="form-control"></textarea>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="col-md-6">
-                                    <div class="text-muted small">Atasan</div>
-                                    <div class="fw-semibold">{{ $sp->nama_atasan ?? '-' }}</div>
-                                </div>
+                                    <input type="hidden" name="status_approval" id="statusApproval">
 
-                                <div class="col-12 mt-2">
-                                    <div class="text-muted small">Catatan Atasan</div>
-                                    <div class="fw-semibold">{{ $sp->atasan_note ?? '-' }}</div>
-                                </div>
+                                    <div class="mt-3 d-flex gap-2">
+                                        <button type="button" class="btn btn-success" id="btnApprove">
+                                            <i class="bi bi-check"></i> Approve
+                                        </button>
 
-                                <div class="col-12 mt-2">
-                                    <div class="text-muted small">File Surat</div>
-                                    <div class="fw-semibold">
-                                        @if($sp->file_surat)
-                                            <a href="{{ \Illuminate\Support\Facades\Storage::url($sp->file_surat) }}" target="_blank">
-                                                <i class="bi bi-file-earmark-text me-1"></i> Lihat File
-                                            </a>
-                                        @else
-                                            -
-                                        @endif
+                                        <button type="button" class="btn btn-danger" id="btnReject">
+                                            <i class="bi bi-x"></i> Reject
+                                        </button>
                                     </div>
-                                </div>
-
-                                <div class="col-12 mt-2">
-                                    <div class="text-muted small">HR Approved</div>
-                                    <div class="fw-semibold">
-                                        <span class="badge {{ $sp->hr_approved ? 'bg-light-success text-dark' : 'bg-light-secondary text-dark' }}">
-                                            {{ $sp->hr_approved ? 'Approved' : 'Not Approved' }}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6 mt-2">
-                                    <div class="text-muted small">HR Note</div>
-                                    <div class="fw-semibold">{{ $sp->hr_note ?? '-' }}</div>
-                                </div>
-
-                                <div class="col-md-6 mt-2">
-                                    <div class="text-muted small">HR Approval Date</div>
-                                    <div class="fw-semibold">{{ $sp->hr_approval_date ?? '-' }}</div>
-                                </div>
+                                </form>
                             </div>
                         </div>
-                    </div>
-
-                    {{-- Details --}}
-                    <div class="col-12">
-                        <div class="border rounded p-3">
-                            <h5 class="mb-3">Detail SP</h5>
-
-                            @if(($sp->details ?? collect())->count() === 0)
-                                <div class="text-muted">Tidak ada detail.</div>
-                            @else
-                                <div class="table-responsive">
-                                    <table class="table table-sm align-middle">
-                                        <thead>
-                                        <tr>
-                                            <th style="width: 200px;">Jenis</th>
-                                            <th>Keterangan</th>
-                                            <th style="width: 200px;">File</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        @foreach($sp->details as $d)
-                                            <tr>
-                                                <td class="fw-semibold">{{ $d->jenis }}</td>
-                                                <td>{{ $d->keterangan }}</td>
-                                                <td>
-                                                    @if($d->file_pendukung)
-                                                        <a href="{{ \Illuminate\Support\Facades\Storage::url($d->file_pendukung) }}" target="_blank">
-                                                            <i class="bi bi-paperclip me-1"></i> Lihat
-                                                        </a>
-                                                    @else
-                                                        -
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @endif
+                    @else
+                        {{-- SUDAH APPROVED --}}
+                        <div class="col-12">
+                            <div class="alert alert-success">
+                                <b>Sudah disetujui HR</b><br>
+                                Nomor: {{ $sp->nomor }}<br>
+                                Tanggal: {{ $sp->tanggal_surat }}<br>
+                                Catatan: {{ $sp->hr_note ?? '-' }}
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                 </div>
             </div>
@@ -159,38 +155,54 @@
 
 @push('scripts')
     <script>
-        $(function () {
-            const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();
-            const indexUrl = @json(route('admin.transaksi.surat-peringatan.index'));
+        function submitHr(status)
+        {
+            $('#statusApproval').val(status);
 
-            $('#btnDelete').on('click', function () {
-                const url  = $(this).data('url');
-                const name = $(this).data('name') || 'surat ini';
+            let form = document.getElementById('formHrApprove');
+            let formData = new FormData(form);
 
-                Swal.fire({
-                    title: 'Delete surat peringatan?',
-                    html: `Yakin hapus <b>${name}</b>?<br><small class="text-muted">Data yang dihapus tidak bisa dikembalikan.</small>`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, delete',
-                    cancelButtonText: 'Cancel',
-                    confirmButtonColor: '#d33'
-                }).then((r) => {
-                    if (!r.isConfirmed) return;
+            $.ajax({
+                url: form.action,
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    Swal.fire('Berhasil', 'Data berhasil disimpan', 'success')
+                        .then(() => location.reload());
+                },
+                error: function (xhr) {
+                    Swal.fire(
+                        'Gagal',
+                        xhr.responseJSON?.message || 'Terjadi kesalahan',
+                        'error'
+                    );
+                }
+            });
+        }
 
-                    $.ajax({
-                        url: url,
-                        method: 'POST',
-                        data: { _token: csrf, _method: 'DELETE' },
-                        success: function (res) {
-                            Swal.fire({ icon:'success', title:'Deleted', text: res?.message || 'Deleted' })
-                                .then(() => window.location.href = indexUrl);
-                        },
-                        error: function (xhr) {
-                            Swal.fire({ icon:'error', title:'Error', text: xhr.responseJSON?.message || 'Failed to delete' });
-                        }
-                    });
-                });
+        $('#btnApprove').click(function () {
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: 'Surat peringatan akan disetujui HR',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Approve'
+            }).then(r => {
+                if (r.isConfirmed) submitHr('APPROVED');
+            });
+        });
+
+        $('#btnReject').click(function () {
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: 'Surat peringatan akan ditolak HR',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Reject'
+            }).then(r => {
+                if (r.isConfirmed) submitHr('REJECTED');
             });
         });
     </script>

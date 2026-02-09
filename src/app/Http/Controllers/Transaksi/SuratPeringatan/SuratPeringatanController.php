@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Transaksi\SuratPeringatan;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Transaksi\SuratPeringatan\SuratPeringatanApproveFormRequest;
 use App\Http\Requests\Transaksi\SuratPeringatan\SuratPeringatanStoreFormRequest;
 use App\Models\MKaryawan;
 use App\Models\TSp;
@@ -308,6 +309,41 @@ class SuratPeringatanController extends Controller
         } catch (\Throwable $e) {
             Log::error('[SuratPeringatanController@jenisSpOptions] '.$e->getMessage(), ['trace'=>$e->getTraceAsString()]);
             return $this->errorResponse('Failed to load jenis sp options', 500);
+        }
+    }
+
+    public function approveHr(SuratPeringatanApproveFormRequest $request, $id)
+    {
+        try {
+
+            $data = $request->validated();
+            $sp = $this->sp->findOrFail($id);
+
+            $karyawan = MKaryawan::findOrFail($sp->m_karyawan_id);
+
+            if ($request->hasFile('file_surat')) {
+                $file = $data['file_surat'];
+                $folder = 'sp_files_report/' . $karyawan->kode_karyawan;
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs($folder, $fileName, 'public');
+                $data['file_surat'] = $filePath;
+            }
+
+            $sp->hr_note     = $data['hr_note'] ?? null;
+            $sp->hr_approved = $data['status_approval'] === 'APPROVED' ? true : false;
+            $sp->hr_approval_date = now();
+            $sp->status = $data['status_approval'];
+            $sp->nomor = $data['nomor'] ?? $sp->nomor;
+            $sp->file_surat = $data['file_surat'] ?? $sp->file_surat;
+            $sp->tanggal_surat = $data['tanggal_surat'] ?? $sp->tanggal_surat;
+
+            $sp->save();
+
+            return $this->successResponse($sp, 'Surat peringatan HR approval updated successfully.', 200);
+
+        } catch (\Throwable $e) {
+            Log::error('[SuratPeringatanController@approveHr] '.$e->getMessage(), ['trace'=>$e->getTraceAsString()]);
+            return $this->errorResponse('Failed to approve surat peringatan', 500);
         }
     }
 }

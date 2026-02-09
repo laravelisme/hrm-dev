@@ -90,7 +90,7 @@ class SPController extends Controller
                 'atasan_id' => $karyawan->id,
                 'nama_atasan' => $karyawan->nama_karyawan,
                 'atasan_note' => $data['atasan_note'] ?? null,
-                'created_by' => $user->name,
+                'create_by' => $karyawan->nama_karyawan,
             ]);
 
             foreach ($data['details'] as $detail) {
