@@ -34,5 +34,13 @@ Route::prefix('v2')->group(function () {
         Route::post('/approval/{id}', [\App\Http\Controllers\Api\Izin\IzinController::class, 'approvalIzin']);
     });
 
+    Route::prefix('cuti')->middleware('auth:api')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\Cuti\CutiController::class, 'index']);
+        Route::post('/submit', [\App\Http\Controllers\Api\Cuti\CutiController::class, 'store']);
+        Route::get('/list-approval', [\App\Http\Controllers\Api\Cuti\CutiController::class, 'getListApproval']);
+        Route::get('/{id}', [\App\Http\Controllers\Api\Cuti\CutiController::class, 'showCuti']);
+        Route::post('/approval/{id}', [\App\Http\Controllers\Api\Cuti\CutiController::class, 'approvalCuti']);
+    });
+
 });
 

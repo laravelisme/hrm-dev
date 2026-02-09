@@ -37,10 +37,10 @@ class IzinController extends Controller
                 $query->where('m_karyawan_id', $karyawan->id);
             }
             if ($searchStartDate) {
-                $query->whereDate('tanggal_izin', '>=', $searchStartDate);
+                $query->whereDate('start_date', '>=', $searchStartDate);
             }
             if ($searchEndDate) {
-                $query->whereDate('tanggal_izin', '<=', $searchEndDate);
+                $query->whereDate('end_date', '<=', $searchEndDate);
             }
 
             $izins = $query->orderByDesc('id')->paginate($perPage)->withQueryString();
