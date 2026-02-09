@@ -49,5 +49,13 @@ Route::prefix('v2')->group(function () {
         Route::get('/{id}', [\App\Http\Controllers\Api\SP\SPController::class, 'showSP']);
     });
 
+    Route::prefix('lembur')->middleware('auth:api')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\Lembur\LemburController::class, 'index']);
+        Route::post('/submit', [\App\Http\Controllers\Api\Lembur\LemburController::class, 'store']);
+        Route::get('/list-approval', [\App\Http\Controllers\Api\Lembur\LemburController::class, 'getListApproval']);
+        Route::get('/{id}', [\App\Http\Controllers\Api\Lembur\LemburController::class, 'showLembur']);
+        Route::post('/approval/{id}', [\App\Http\Controllers\Api\Lembur\LemburController::class, 'approvalLembur']);
+    });
+
 });
 

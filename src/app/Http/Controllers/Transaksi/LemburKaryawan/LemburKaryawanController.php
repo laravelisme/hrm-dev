@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Transaksi\LemburKaryawan;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Transaksi\LemburKaryawan\LemburHrApproveFormRequest;
 use App\Http\Requests\Transaksi\LemburKaryawan\LemburKaryawanStoreFormRequest;
 use App\Models\MKaryawan;
 use App\Models\TLembur;
@@ -220,6 +221,51 @@ class LemburKaryawanController extends Controller
         } catch (\Throwable $e) {
             Log::error('[CutiKaryawanController@karyawanOptions] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return $this->errorResponse('Failed to load karyawan options', 500);
+        }
+    }
+
+    public function approveHr(LemburHrApproveFormRequest $request, $id)
+    {
+        try {
+            $data = $request->validated();
+
+            $lembur = $this->lembur->findOrFail($id);
+
+            if ($lembur->status !== 'APPROVED_PENDING') {
+                return $this->errorResponse(
+                    'Lembur belum siap diverifikasi HR',
+                    422
+                );
+            }
+
+
+            $lembur->status = $data['status_approval'];
+            $lembur->durasi_verifikasi_menit = $data['durasi_verifikasi_menit'];
+            $lembur->nama_hr_approval = auth()->user()->name;
+            $lembur->hr_verify_date = now();
+
+            if ($data['status_approval'] === 'REJECTED') {
+                $lembur->is_approved_atasan1 = false;
+                $lembur->is_approved_atasan2 = false;
+            }
+
+            $lembur->save();
+
+            return $this->successResponse(
+                $lembur,
+                'Lembur berhasil diverifikasi HR',
+                200
+            );
+
+        } catch (\Throwable $e) {
+            Log::error('[LemburKaryawanController@approveHr] '.$e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return $this->errorResponse(
+                'Failed to approve lembur by HR',
+                500
+            );
         }
     }
 }

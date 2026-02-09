@@ -6,102 +6,135 @@
 @section('content')
     <section class="section">
         <div class="card">
-            <div class="card-header d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-2">
+
+            {{-- HEADER --}}
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="mb-0">Detail Lembur Karyawan</h4>
-                    <p class="text-muted mb-0">
-                        {{ $lembur->nama_karyawan ?? optional($lembur->karyawan)->nama_karyawan ?? '-' }}
-                        <span class="ms-2 text-muted small">
-                            ID Lembur: <span class="font-monospace">{{ $lembur->id }}</span>
-                        </span>
-                    </p>
+                    <small class="text-muted">
+                        {{ $lembur->nama_karyawan }} • ID {{ $lembur->id }}
+                    </small>
                 </div>
 
                 <div class="d-flex gap-2">
-                    <a href="{{ route('admin.transaksi.lembur-karyawan.index') }}" class="btn btn-light btn-sm">
-                        <i class="bi bi-arrow-left me-1"></i> Back
+                    <a href="{{ route('admin.transaksi.lembur-karyawan.index') }}"
+                       class="btn btn-light btn-sm">
+                        <i class="bi bi-arrow-left"></i> Back
                     </a>
 
-                    <button type="button"
-                            class="btn btn-danger btn-sm"
-                            id="btnDelete"
-                            data-url="{{ route('admin.transaksi.lembur-karyawan.destroy', $lembur->id) }}"
-                            data-name="{{ $lembur->nama_karyawan ?? 'lembur ini' }}">
-                        <i class="bi bi-trash me-1"></i> Delete
-                    </button>
+                    @if(!in_array($lembur->status, ['APPROVED','REJECTED']))
+                        <button id="btnDelete"
+                                class="btn btn-danger btn-sm"
+                                data-url="{{ route('admin.transaksi.lembur-karyawan.destroy', $lembur->id) }}"
+                                data-name="{{ $lembur->nama_karyawan }}">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    @endif
                 </div>
             </div>
 
+            {{-- BODY --}}
             <div class="card-body">
-                {{-- Badges --}}
-                <div class="d-flex flex-wrap gap-2 mb-3">
-                    <span class="badge bg-light-primary text-dark">
-                        Status: {{ $lembur->status ?? '-' }}
-                    </span>
-                    <span class="badge bg-light-secondary text-dark">
-                        Company: {{ $lembur->nama_company ?? '-' }}
-                    </span>
-                    <span class="badge bg-light-secondary text-dark">
-                        Tanggal: {{ $lembur->date ?? '-' }}
-                    </span>
+
+                {{-- STATUS BADGE --}}
+                <div class="mb-3">
+                <span class="badge
+                    @if($lembur->status === 'APPROVED') bg-success
+                    @elseif($lembur->status === 'REJECTED') bg-danger
+                    @elseif($lembur->status === 'APPROVED_PENDING') bg-warning
+                    @else bg-secondary @endif">
+                    {{ $lembur->status }}
+                </span>
                 </div>
 
+                {{-- INFO --}}
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="border rounded p-3 h-100">
-                            <div class="text-muted small">Karyawan</div>
-                            <div class="fw-semibold">
-                                {{ $lembur->nama_karyawan ?? optional($lembur->karyawan)->nama_karyawan ?? '-' }}
-                            </div>
-
-                            <div class="text-muted small mt-2">Company</div>
-                            <div class="fw-semibold">{{ $lembur->nama_company ?? '-' }}</div>
-
-                            <div class="text-muted small mt-2">Atasan 1</div>
-                            <div class="fw-semibold">
-                                {{ $lembur->nama_atasan1 ?? '-' }}
-                                @if(!empty($lembur->atasan1_id))
-                                    <span class="text-muted small">(ID: {{ $lembur->atasan1_id }})</span>
-                                @endif
-                            </div>
-
-                            <div class="text-muted small mt-2">Atasan 2</div>
-                            <div class="fw-semibold">
-                                {{ $lembur->nama_atasan2 ?? '-' }}
-                                @if(!empty($lembur->atasan2_id))
-                                    <span class="text-muted small">(ID: {{ $lembur->atasan2_id }})</span>
-                                @endif
-                            </div>
+                        <div class="border rounded p-3">
+                            <div><b>Karyawan</b>: {{ $lembur->nama_karyawan }}</div>
+                            <div><b>Company</b>: {{ $lembur->nama_company }}</div>
+                            <div><b>Atasan 1</b>: {{ $lembur->nama_atasan1 ?? '-' }}</div>
+                            <div><b>Atasan 2</b>: {{ $lembur->nama_atasan2 ?? '-' }}</div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
-                        <div class="border rounded p-3 h-100">
-                            <div class="text-muted small">Tanggal Lembur</div>
-                            <div class="fw-semibold">{{ $lembur->date ?? '-' }}</div>
-
-                            <div class="text-muted small mt-2">Durasi Diajukan</div>
-                            <div class="fw-semibold">
-                                {{ (int)($lembur->durasi_diajukan_menit ?? 0) }} menit
-                            </div>
-
-                            <div class="text-muted small mt-2">Created At</div>
-                            <div class="text-muted small">{{ optional($lembur->created_at)->format('Y-m-d H:i') }}</div>
-
-                            <div class="text-muted small mt-2">Updated At</div>
-                            <div class="text-muted small">{{ optional($lembur->updated_at)->format('Y-m-d H:i') }}</div>
+                        <div class="border rounded p-3">
+                            <div><b>Tanggal</b>: {{ $lembur->date }}</div>
+                            <div><b>Durasi Diajukan</b>: {{ $lembur->durasi_diajukan_menit }} menit</div>
+                            <div><b>Created</b>: {{ $lembur->created_at }}</div>
                         </div>
                     </div>
 
                     <div class="col-12">
                         <div class="border rounded p-3">
-                            <h5 class="mb-2">Catatan</h5>
-                            <div class="text-muted" style="white-space: pre-wrap;">
-                                {{ $lembur->note ?? '-' }}
-                            </div>
+                            <b>Catatan</b>
+                            <div class="text-muted">{{ $lembur->note ?? '-' }}</div>
                         </div>
                     </div>
                 </div>
+
+                <hr>
+
+                {{-- ======================= --}}
+                {{-- HR APPROVAL SECTION --}}
+                {{-- ======================= --}}
+
+                @if($lembur->status === 'APPROVED_PENDING')
+                    {{-- FORM HR --}}
+                    <div class="border rounded p-3">
+                        <h5 class="mb-3">Verifikasi HR</h5>
+
+                        <form id="formApprove"
+                              method="POST"
+                              action="{{ route('admin.transaksi.lembur-karyawan.approve-lembur', $lembur->id) }}">
+                            @csrf
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label>Status</label>
+                                    <select name="status_approval" class="form-select" required>
+                                        <option value="">-- Pilih --</option>
+                                        <option value="APPROVED">APPROVED</option>
+                                        <option value="REJECTED">REJECTED</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label>Durasi Verifikasi (menit)</label>
+                                    <input type="number"
+                                           name="durasi_verifikasi_menit"
+                                           min="1"
+                                           class="form-control"
+                                           required>
+                                </div>
+
+                                <div class="col-md-4 d-flex align-items-end">
+                                    <button type="button"
+                                            id="btnApproveSubmit"
+                                            class="btn btn-success w-100">
+                                        <i class="bi bi-check-circle"></i> Submit
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                @else
+                    {{-- RESULT HR --}}
+                    <div class="alert
+                    @if($lembur->status === 'APPROVED') alert-success
+                    @else alert-danger @endif">
+                        <h5 class="mb-2">Hasil Verifikasi HR</h5>
+
+                        <ul class="mb-0">
+                            <li><b>Status</b>: {{ $lembur->status }}</li>
+                            <li><b>Durasi Disetujui</b>: {{ $lembur->durasi_verifikasi_menit }} menit</li>
+                            <li><b>HR</b>: {{ $lembur->nama_hr_approval }}</li>
+                            <li><b>Tanggal</b>: {{ $lembur->hr_verify_date }}</li>
+                        </ul>
+                    </div>
+                @endif
 
             </div>
         </div>
@@ -111,47 +144,99 @@
 @push('scripts')
     <script>
         $(function () {
-            const csrf = $('meta[name="csrf-token"]').attr('content') || $('input[name="_token"]').val();
-            const indexUrl = @json(route('admin.transaksi.lembur-karyawan.index'));
 
+            const csrf = $('meta[name="csrf-token"]').attr('content');
+
+            /* =====================
+             DELETE LEMBUR
+            ====================== */
             $('#btnDelete').on('click', function () {
-                const url  = $(this).data('url');
-                const name = $(this).data('name') || 'lembur ini';
+                const url = $(this).data('url');
 
                 Swal.fire({
-                    title: 'Delete lembur?',
-                    html: `Yakin hapus lembur <b>${name}</b>?<br><small class="text-muted">Data yang dihapus tidak bisa dikembalikan.</small>`,
+                    title: 'Hapus lembur?',
+                    text: 'Data tidak bisa dikembalikan',
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, delete',
-                    cancelButtonText: 'Cancel',
-                    confirmButtonColor: '#d33'
-                }).then((r) => {
-                    if (!r.isConfirmed) return;
+                    confirmButtonText: 'Ya, hapus'
+                }).then(res => {
+                    if (!res.isConfirmed) return;
 
                     $.ajax({
                         url: url,
-                        method: 'POST',
-                        data: { _token: csrf, _method: 'DELETE' },
-                        success: function (res) {
+                        type: 'POST',
+                        data: {
+                            _token: csrf,
+                            _method: 'DELETE'
+                        },
+                        success: function () {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Deleted',
-                                text: res?.message || 'Lembur deleted successfully',
-                                confirmButtonText: 'OK'
-                            }).then(() => window.location.href = indexUrl);
-                        },
-                        error: function (xhr) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: xhr.responseJSON?.message || 'Failed to delete lembur',
-                                confirmButtonText: 'OK'
+                                title: 'Berhasil dihapus',
+                                timer: 1200,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.href = "{{ route('admin.transaksi.lembur-karyawan.index') }}";
                             });
+                        },
+                        error: function () {
+                            Swal.fire('Error', 'Gagal menghapus data', 'error');
                         }
                     });
                 });
             });
+
+            /* =====================
+             APPROVE / REJECT HR
+            ====================== */
+            $('#btnApproveSubmit').on('click', function () {
+
+                Swal.fire({
+                    title: 'Konfirmasi Verifikasi',
+                    text: 'Keputusan HR tidak dapat diubah',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, submit'
+                }).then(res => {
+                    if (!res.isConfirmed) return;
+
+                    const form = $('#formApprove');
+
+                    $.ajax({
+                        url: form.attr('action'),
+                        type: 'POST',
+                        data: form.serialize(),
+                        beforeSend: function () {
+                            Swal.fire({
+                                title: 'Memproses...',
+                                allowOutsideClick: false,
+                                didOpen: () => Swal.showLoading()
+                            });
+                        },
+                        success: function (res) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: res.message ?? 'Verifikasi berhasil',
+                                timer: 1200,
+                                showConfirmButton: false
+                            }).then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function (xhr) {
+                            let msg = 'Terjadi kesalahan';
+
+                            if (xhr.responseJSON?.message) {
+                                msg = xhr.responseJSON.message;
+                            }
+
+                            Swal.fire('Gagal', msg, 'error');
+                        }
+                    });
+                });
+            });
+
         });
     </script>
 @endpush
+
