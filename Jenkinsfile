@@ -43,6 +43,7 @@ pipeline {
                         cp .env.example .env || true
                         composer install --no-interaction --prefer-dist
                         php artisan key:generate
+                        php artisan migrate:rollback --force || true
                         php artisan migrate --force
                     '
                     """
