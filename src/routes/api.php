@@ -42,5 +42,12 @@ Route::prefix('v2')->group(function () {
         Route::post('/approval/{id}', [\App\Http\Controllers\Api\Cuti\CutiController::class, 'approvalCuti']);
     });
 
+    Route::prefix('sp')->middleware('auth:api')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\SP\SPController::class, 'index']);
+        Route::post('/submit', [\App\Http\Controllers\Api\SP\SPController::class, 'store']);
+        Route::get('/list-approval', [\App\Http\Controllers\Api\SP\SPController::class, 'listSpApproval']);
+        Route::get('/{id}', [\App\Http\Controllers\Api\SP\SPController::class, 'showSP']);
+    });
+
 });
 
