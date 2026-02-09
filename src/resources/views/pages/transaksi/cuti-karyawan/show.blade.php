@@ -139,7 +139,7 @@
                         </button>
                     @endif
 
-                    {{-- Saldo info --}}
+
                     <div class="col-12">
                         <div class="border rounded p-3 bg-light">
                             <h6 class="mb-2">Saldo</h6>
