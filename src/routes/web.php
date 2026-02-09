@@ -144,6 +144,7 @@ foreach (config('tenancy.central_domains') as $domain) {
                         Route::get('/{id}/show', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'show'])->name('admin.transaksi.izin-karyawan.show');
                         Route::delete('/{id}/delete', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'destroy'])->name('admin.transaksi.izin-karyawan.destroy');
                         Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'karyawanDetail'])->name('admin.transaksi.izin-karyawan.karyawan-detail');
+                        Route::post('/approve/{id}', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'approveHr'])->name('admin.transaksi.izin-karyawan.approve-izin');
 
                         Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'karyawanOptions'])->name('admin.transaksi.izin-karyawan.karyawan-options');
                         Route::get('/options/jenis-izin', [\App\Http\Controllers\Transaksi\IzinKaryawan\IzinKaryawanController::class, 'jenisIzinOptions'])->name('admin.transaksi.izin-karyawan.jenis-izin-options');

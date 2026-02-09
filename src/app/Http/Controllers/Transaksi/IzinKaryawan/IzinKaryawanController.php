@@ -267,4 +267,22 @@ class IzinKaryawanController extends Controller
         }
     }
 
+    public function approveHr($id)
+    {
+        try {
+
+            $izin = $this->ijin->findOrFail($id);
+            $izin->status = 'APPROVED';
+            $izin->hr_verify_date = now();
+            $izin->nama_hr_approval = auth()->user()->name;
+            $izin->save();
+
+            return $this->successResponse($izin, 'Izin karyawan approved by HR successfully.', 200);
+
+        } catch (\Throwable $e) {
+            Log::error('[IzinKaryawanController@approveHr] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->errorResponse('Failed to approve izin karyawan by HR.', 500);
+        }
+    }
+
 }

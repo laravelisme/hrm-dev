@@ -28,8 +28,10 @@ Route::prefix('v2')->group(function () {
 
     Route::prefix('izin')->middleware('auth:api')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\Izin\IzinController::class, 'index']);
-        Route::post('/submit', [\App\Http\Controllers\Api\Izin\IzinController::class, 'submitIzin']);
-        Route::get('/history', [\App\Http\Controllers\Api\Izin\IzinController::class, 'izinHistory']);
+        Route::post('/submit', [\App\Http\Controllers\Api\Izin\IzinController::class, 'store']);
+        Route::get('/list-approval', [\App\Http\Controllers\Api\Izin\IzinController::class, 'getListApproval']);
+        Route::get('/{id}', [\App\Http\Controllers\Api\Izin\IzinController::class, 'showIzin']);
+        Route::post('/approval/{id}', [\App\Http\Controllers\Api\Izin\IzinController::class, 'approvalIzin']);
     });
 
 });

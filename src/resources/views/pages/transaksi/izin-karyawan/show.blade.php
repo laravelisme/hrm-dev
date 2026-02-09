@@ -129,6 +129,45 @@
                                 </div>
                             </div>
                         </div>
+
+                        @if($izin->status === 'PENDING_APPROVED')
+                            <button
+                                class="btn btn-success btn-sm"
+                                id="btnVerifyHr"
+                                data-id="{{ $izin->id }}">
+                                <i class="bi bi-check-circle me-1"></i> Verify HR
+                            </button>
+                        @endif
+                    @endif
+
+                    @if($izin->hr_verify_date || $izin->nama_hr_approval)
+                        <div class="col-12">
+                            <div class="border rounded p-3">
+                                <h5 class="mb-3">HR Verification</h5>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="text-muted small">Verified By</div>
+                                        <div class="fw-semibold">
+                                            {{ $izin->nama_hr_approval ?? '-' }}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="text-muted small">Verify Date</div>
+                                        <div class="fw-semibold">
+                                            {{ $izin->hr_verify_date ?? '-' }}
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 mt-2">
+                    <span class="badge bg-light-success text-dark">
+                        HR Verified
+                    </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @endif
 
                 </div>
@@ -136,3 +175,51 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).on('click', '#btnVerifyHr', function(){
+
+            let id = $(this).data('id');
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: 'Data izin akan diverifikasi oleh HR.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Verifikasi',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: '/transaksi/izin-karyawan/approve/' + id,
+                        type: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(){
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Izin berhasil diverifikasi.'
+                            }).then(() => {
+                                location.reload();
+                            });
+
+                        },
+                        error: function(){
+                            Swal.fire('Gagal', 'Verifikasi gagal dilakukan.', 'error');
+                        }
+                    });
+
+                }
+
+            });
+
+        });
+    </script>
+@endpush
