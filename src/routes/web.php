@@ -130,6 +130,7 @@ foreach (config('tenancy.central_domains') as $domain) {
                         Route::get('/{id}', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'show'])->name('admin.transaksi.cuti-karyawan.show');
                         Route::delete('/{id}/delete', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'destroy'])->name('admin.transaksi.cuti-karyawan.destroy');
                         Route::get('/karyawans/{id}/detail', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'karyawanDetail'])->name('admin.transaksi.cuti-karyawan.karyawan-detail');
+                        Route::post('/approve/{id}', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'approveHr'])->name('admin.transaksi.cuti-karyawan.approve-cuti');
 
                         Route::get('/options/karyawans', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'karyawanOptions'])->name('admin.transaksi.cuti-karyawan.karyawan-options');
                         Route::get('/options/jenis-cuti', [\App\Http\Controllers\Transaksi\CutiKaryawan\CutiKaryawanController::class, 'jenisCutiOptions'])->name('admin.transaksi.cuti-karyawan.jenis-cuti-options');

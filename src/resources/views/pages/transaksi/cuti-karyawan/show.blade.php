@@ -130,6 +130,15 @@
                         </div>
                     </div>
 
+                    @if($cuti->status === 'PENDING_APPROVED')
+                        <button
+                            class="btn btn-success btn-sm"
+                            id="btnVerifyHr"
+                            data-id="{{ $cuti->id }}">
+                            <i class="bi bi-check-circle me-1"></i> Verify HR
+                        </button>
+                    @endif
+
                     {{-- Saldo info --}}
                     <div class="col-12">
                         <div class="border rounded p-3 bg-light">
@@ -156,3 +165,51 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).on('click', '#btnVerifyHr', function(){
+
+            let id = $(this).data('id');
+
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: 'Data izin akan diverifikasi oleh HR.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Verifikasi',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        url: '/transaksi/cuti-karyawan/approve/' + id,
+                        type: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(){
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Cuti berhasil diverifikasi.'
+                            }).then(() => {
+                                location.reload();
+                            });
+
+                        },
+                        error: function(){
+                            Swal.fire('Gagal', 'Verifikasi gagal dilakukan.', 'error');
+                        }
+                    });
+
+                }
+
+            });
+
+        });
+    </script>
+@endpush

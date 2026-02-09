@@ -282,4 +282,23 @@ class CutiKaryawanController extends Controller
         }
     }
 
+    public function approveHr($id)
+    {
+        try {
+
+            $cuti = $this->cuti->findOrFail($id);
+            $cuti->status = 'APPROVED';
+            $cuti->hr_verify_date = now();
+            $cuti->nama_hr_approval = auth()->user()->name;
+            $cuti->is_hr_verified = true;
+            $cuti->save();
+
+            return $this->successResponse($cuti, 'Cuti karyawan approved by HR successfully.', 200);
+
+        } catch (\Throwable $e) {
+            Log::error('[CutiKaryawanController@approveHr] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return $this->errorResponse('Failed to approve cuti karyawan by HR.', 500);
+        }
+    }
+
 }
