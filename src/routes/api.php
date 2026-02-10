@@ -57,5 +57,13 @@ Route::prefix('v2')->group(function () {
         Route::post('/approval/{id}', [\App\Http\Controllers\Api\Lembur\LemburController::class, 'approvalLembur']);
     });
 
+    Route::prefix('presensi')->middleware('auth:api')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'index']);
+        Route::post('/submit', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'store']);
+        Route::post('checkout', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'checkout']);
+        Route::get('/current-presensi', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'getCurrentPresensi']);
+        Route::get('/history', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'history']);
+    });
+
 });
 

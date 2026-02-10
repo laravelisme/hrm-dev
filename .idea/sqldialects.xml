@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/src/database/migrations/2026_02_10_102836_change_check_times_to_time_in_t_presensis_table.php" dialect="PostgreSQL" />
+  </component>
+</project>
