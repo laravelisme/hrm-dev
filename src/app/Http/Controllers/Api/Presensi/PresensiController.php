@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api\Presensi;
 
+use App\Events\PresensiOfflineBulkEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Presensi\PresensiCheckoutFormRequest;
+use App\Http\Requests\Api\Presensi\PresensiOfflineModeFormRequest;
 use App\Http\Requests\Api\Presensi\PresensiStoreFormRequest;
 use App\Models\MGrupJamKerja;
 use App\Models\MKaryawan;
@@ -11,6 +13,7 @@ use App\Models\TLembur;
 use App\Models\TPresensi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PresensiController extends Controller
@@ -116,7 +119,43 @@ class PresensiController extends Controller
                 ->where('is_active', true)
                 ->first();
 
-            return $this->successResponse($presensi, 'Current presensi fetched successfully', 200);
+            $grupKerja = MGrupJamKerja::findOrFail($karyawan->m_group_kerja_id);
+
+            $day = strtolower(
+                Carbon::parse(now()->format('l'))
+            );
+
+            $minCheckIn = $grupKerja->{$day . '_min_check_in'};
+            $maxCheckIn = $grupKerja->{$day . '_max_check_in'};
+
+            $minCheckOut = $grupKerja->{$day . '_min_check_out'};
+            $maxCheckOut = $grupKerja->{$day . '_max_check_out'};
+
+            if ($presensi) {
+                $day = strtolower(
+                    Carbon::parse($presensi->check_in_date)->format('l')
+                );
+                $maxCheckOut = $grupKerja->{$day . '_max_check_out'};
+                $minCheckOut = $grupKerja->{$day . '_min_check_out'};
+            }
+
+            if ($minCheckIn == null || $maxCheckIn == null) {
+                $minCheckIn = $grupKerja->min_check_in;
+                $maxCheckIn = $grupKerja->max_check_in;
+            }
+
+            if ($minCheckOut == null || $maxCheckOut == null) {
+                $minCheckOut = $grupKerja->min_check_out;
+                $maxCheckOut = $grupKerja->max_check_out;
+            }
+
+            $data = [
+                'presensi' => $presensi,
+                'is_on_check_in' => now()->greaterThanOrEqualTo($minCheckIn) && now()->lessThanOrEqualTo($maxCheckIn),
+                'is_on_check_out' => now()->greaterThanOrEqualTo($minCheckOut) && now()->lessThanOrEqualTo($maxCheckOut),
+            ];
+
+            return $this->successResponse($data, 'Current presensi fetched successfully', 200);
 
         }
         catch (\Throwable $e) {
@@ -295,4 +334,83 @@ class PresensiController extends Controller
             return $this->errorResponse('Failed to load presensi history', 500);
         }
     }
+
+    public function offlineMode(PresensiOfflineModeFormRequest $request)
+    {
+        try {
+
+            $data = $request->validated();
+
+            $user = auth('api')->user();
+            $karyawan = MKaryawan::where('user_id', $user->id)->first();
+
+            if (!$karyawan) {
+                return $this->errorResponse('Karyawan not found', 404);
+            }
+
+            $activePresensi = $this->presensi->where('m_karyawan_id', $karyawan->id)
+                ->where('is_active', true)
+                ->first();
+
+            if ($activePresensi) {
+                $activePresensi->delete();
+            }
+
+            $preparedData = [];
+
+            foreach ($data['data'] as $index => $presensi) {
+
+                $filePathCheckIn = null;
+                $filePathCheckOut = null;
+
+                if ($request->hasFile("data.$index.check_in_img")) {
+                    $file = $request->file("data.$index.check_in_img");
+
+                    $filePathCheckIn = $file->store(
+                        'presensi',
+                        'public'
+                    );
+                }
+
+                if ($request->hasFile("data.$index.check_out_img")) {
+                    $file = $request->file("data.$index.check_out_img");
+
+                    $filePathCheckOut = $file->store(
+                        'presensi',
+                        'public'
+                    );
+                }
+
+                $preparedData[] = [
+                    'm_karyawan_id' => $karyawan->id,
+                    'check_in_time' => $presensi['check_in_time'],
+                    'check_in_latitude' => $presensi['check_in_latitude'] ?? null,
+                    'check_in_longitude' => $presensi['check_in_longitude'] ?? null,
+                    'check_in_img' => $filePathCheckIn,
+                    'check_in_info' => $presensi['check_in_info'] ?? null,
+                    'check_in_date' => $presensi['check_in_date'],
+                    'check_out_date' => $presensi['check_out_date'] ?? null,
+                    'is_active' => $presensi['is_active'],
+                    'check_out_time' => $presensi['check_out_time'] ?? null,
+                    'check_out_latitude' => $presensi['check_out_latitude'] ?? null,
+                    'check_out_longitude' => $presensi['check_out_longitude'] ?? null,
+                    'check_out_img' => $filePathCheckOut,
+                    'check_out_info' => $presensi['check_out_info'] ?? null,
+                    'check_in_timezone' => $presensi['check_in_timezone'] ?? null,
+                    'check_out_timezone' => $presensi['check_out_timezone'] ?? null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            event(new PresensiOfflineBulkEvent($preparedData));
+
+            return $this->successResponse(null, 'Offline mode presensi data stored successfully', 201);
+
+        } catch (\Throwable $e) {
+            Log::error('[PresensiController@offlineMode] '.$e->getMessage());
+            return $this->errorResponse('Failed to load offline mode data', 500);
+        }
+    }
+
 }

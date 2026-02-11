@@ -27,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
         \App\Events\TenantCreated::class => [
             \App\Listeners\SetupTenantEnvironment::class,
         ],
+        \App\Events\PresensiOfflineBulkEvent::class => [
+            \App\Listeners\HandlePresensiOfflineBulk::class,
+        ],
     ];
 
 

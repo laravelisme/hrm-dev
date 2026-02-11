@@ -63,6 +63,7 @@ Route::prefix('v2')->group(function () {
         Route::post('checkout', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'checkout']);
         Route::get('/current-presensi', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'getCurrentPresensi']);
         Route::get('/history', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'history']);
+        Route::post('/offline-mode', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'offlineMode']);
     });
 
 });
