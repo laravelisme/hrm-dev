@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CalonKaryawan\UpdateStatusRecruitment\UpdateStatusRecruitmentFormRequest;
 use App\Models\MCalonKaryawan;
 use App\Models\MStatusRecruitment;
+use App\Models\TInterview;
 use App\Models\TTestTulis;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -118,6 +119,27 @@ class ShortListAdminController extends Controller
 
                     break;
 
+                case 'INTERVIEW':
+
+                    $interview = TInterview::firstOrCreate([
+                        'm_calon_karyawan_id' => $id,
+                    ]);
+
+                    $interview->interview_date_hr = null;
+                    $interview->interview_time_hr = null;
+                    $interview->interview_date_user = null;
+                    $interview->interview_time_user = null;
+                    $interview->interview_hr_location = null;
+                    $interview->interview_user_location = null;
+                    $interview->interview_user_notes = null;
+                    $interview->interview_hr_notes = null;
+                    $interview->interview_hr_status = 'WAITING';
+                    $interview->interview_user_status = 'WAITING';
+
+                    $interview->save();
+
+                    break;
+
                 default :
                     break;
             }
@@ -128,6 +150,7 @@ class ShortListAdminController extends Controller
 
         } catch (\Throwable $e) {
             DB::rollBack();
+            dd($e->getMessage());
             Log::error('[ShortlistAdminController@updateStatus] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return $this->errorResponse('Failed to update calon karyawan status', 500);
         }

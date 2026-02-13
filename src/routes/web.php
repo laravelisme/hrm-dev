@@ -93,6 +93,8 @@ foreach (config('tenancy.central_domains') as $domain) {
                         Route::get('/', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'index'])->name('admin.calon-karyawan.interview.index');
                         Route::get('/{id}/show', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'show'])->name('admin.calon-karyawan.interview.show');
                         Route::delete('/{id}/delete', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'destroy'])->name('admin.calon-karyawan.interview.destroy');
+                        Route::post('/{id}/generate-link-zoom', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'generateLinkZoom'])->name('admin.calon-karyawan.interview.generate-link-zoom');
+                        Route::get('/{id}/show-link-zoom', [\App\Http\Controllers\CalonKaryawan\Interview\InterviewController::class, 'showLinkZoom'])->name('admin.calon-karyawan.interview.show-link-zoom');
                     });
 
                     Route::prefix('/talent-pool')->group(function () {
