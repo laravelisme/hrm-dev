@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Auth\CheckNikFormRequest;
 use App\Http\Requests\Api\Auth\LoginFormRequest;
 use App\Models\MKaryawan;
 use App\Models\MRefreshToken;
@@ -217,6 +218,30 @@ class AuthController extends Controller
         } catch (\Throwable $e) {
             Log::error('[AuthController@changePassword] '.$e->getMessage());
             return $this->errorResponse('Failed to change password', 500);
+        }
+    }
+
+    public function checkNIK(CheckNikFormRequest $request)
+    {
+        try {
+
+            $data = $request->validated();
+
+            $karyawan = $this->mkaryawan->where('nik', $data['nik'])->first();
+            if ($karyawan) {
+                return $this->successResponse([
+                    'exists' => true,
+                    'karyawan_id' => $karyawan->id,
+                ], 'NIK exists', 200);
+            } else {
+                return $this->successResponse([
+                    'exists' => false,
+                ], 'NIK does not exist', 200);
+            }
+
+        } catch (\Throwable $e) {
+                Log::error('[AuthController@checkNIK] '.$e->getMessage());
+                return $this->errorResponse('Failed to check NIK', 500);
         }
     }
 

@@ -10,6 +10,7 @@ Route::get('/host-check', fn () => request()->getHost());
 Route::prefix('v2')->group(function () {
 
     Route::prefix('auth')->group(function () {
+        Route::post('/check-nik', [\App\Http\Controllers\Api\Auth\AuthController::class, 'checkNik']);
         Route::post('/login', [\App\Http\Controllers\Api\Auth\AuthController::class, 'login']);
         Route::post('/refresh-token', [\App\Http\Controllers\Api\Auth\AuthController::class, 'refreshToken']);
         Route::get('/me', [\App\Http\Controllers\Api\Auth\AuthController::class, 'me'])->middleware('auth:api');
