@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
 
 class KaryawanController extends Controller
 {
@@ -114,6 +115,19 @@ class KaryawanController extends Controller
             'saudaras',
         ])->findOrFail($id);
 
+        // determine selected role for the linked user (if any)
+        $selectedRole = 'normal';
+        if (!empty($karyawan->user_id)) {
+            $user = User::find($karyawan->user_id);
+            if ($user) {
+                $roles = $user->getRoleNames();
+                if ($roles->count() > 0) {
+                    // take first role name as selected
+                    $selectedRole = $roles->first();
+                }
+            }
+        }
+
         $existing = [
             'jabatans' => ($karyawan->jabatans ?? collect())->map(function ($r) {
                 return [
@@ -202,7 +216,7 @@ class KaryawanController extends Controller
             ? \App\Models\MGrupJamKerja::select('id','name')->find($karyawan->m_group_kerja_id)
             : null;
 
-        return view('pages.karyawan.edit', compact('karyawan', 'existing', 'selectedGroupKerja'));
+        return view('pages.karyawan.edit', compact('karyawan', 'existing', 'selectedGroupKerja', 'selectedRole'));
     }
 
     public function store(KaryawanStoreFormRequest $request)
@@ -265,6 +279,14 @@ class KaryawanController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
+                // assign role if provided on store (optional) - if role set and not 'normal', sync roles
+                if (!empty($data['role']) && $data['role'] !== 'normal') {
+                    $user = User::find($userId);
+                    if ($user) {
+                        $user->syncRoles([$data['role']]);
+                    }
+                }
 
                 // 2) Lookup master
                 $jabatan    = !empty($data['m_jabatan_id']) ? MJabatan::find($data['m_jabatan_id']) : null;
@@ -493,6 +515,19 @@ class KaryawanController extends Controller
                         'email' => $data['email'],
                         'updated_at' => now(),
                     ]);
+
+                // sync role on linked user (if any): 'normal' => no roles (remove all)
+                if (!empty($karyawan->user_id)) {
+                    $user = User::find($karyawan->user_id);
+                    if ($user) {
+                        if (!empty($data['role']) && $data['role'] !== 'normal') {
+                            $user->syncRoles([$data['role']]);
+                        } else {
+                            // remove all roles
+                            $user->syncRoles([]);
+                        }
+                    }
+                }
 
                 $kode = !empty($data['kode_karyawan']) ? $data['kode_karyawan'] : $karyawan->kode_karyawan;
 

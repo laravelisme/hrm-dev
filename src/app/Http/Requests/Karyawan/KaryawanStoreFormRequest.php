@@ -180,12 +180,12 @@ class KaryawanStoreFormRequest extends FormRequest
             'saudara.*.tanggal_lahir' => ['nullable','date'],
             'saudara.*.pendidikan_terakhir' => ['nullable','string','max:255'],
             'saudara.*.pekerjaan' => ['nullable','string','max:255'],
+            'role' => ['nullable','in:normal,admin,hr,super-admin'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
-        // cast checkbox -> boolean default false
         $bools = [
             'is_active','is_active_organisasi','is_active_daerah_lain','is_perjalanan_dinas',
             'is_presensi','is_cuti','is_izin','is_lembur','is_pembaruan_data','is_resign','is_data_benar',

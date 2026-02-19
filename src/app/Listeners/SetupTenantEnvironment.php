@@ -18,10 +18,8 @@ class SetupTenantEnvironment implements ShouldQueue
         $data = $event->data;
         $rawPassword = $event->rawPassword;
 
-        // Masuk ke context tenant
         tenancy()->initialize($tenant);
 
-        // Buat admin user tenant
         $user = User::create([
             'name' => $data['username'] ?? 'Admin',
             'email' => $data['email'] ?? ('admin@' . $tenant->id),
@@ -29,7 +27,6 @@ class SetupTenantEnvironment implements ShouldQueue
             'password' => Hash::make($rawPassword),
         ]);
 
-        // Buat role default
         Role::firstOrCreate(['name' => 'hr']);
         Role::firstOrCreate(['name' => 'admin']);
 

@@ -113,6 +113,20 @@
                                             <div class="invalid-feedback"></div>
                                         </div>
 
+                                        {{-- Role selector (Spatie) --}}
+                                        <div class="col-md-4">
+                                            <label class="form-label">Role Hak Akses</label>
+                                            <select name="role" class="form-select">
+                                                @php $selRole = $selectedRole ?? 'normal'; @endphp
+                                                <option value="normal" {{ $selRole === 'normal' ? 'selected' : '' }}>Normal (no role)</option>
+                                                <option value="admin" {{ $selRole === 'admin' ? 'selected' : '' }}>Admin</option>
+                                                <option value="hr" {{ $selRole === 'hr' ? 'selected' : '' }}>HR</option>
+                                                <option value="super-admin" {{ $selRole === 'super-admin' ? 'selected' : '' }}>Super Admin</option>
+                                            </select>
+                                            <div class="form-text small text-muted">Pilih role untuk user yang terkait; pilih "Normal" untuk tidak memberikan role (menghapus semua role).</div>
+                                            <div class="invalid-feedback"></div>
+                                        </div>
+
                                         <div class="col-md-4 d-flex align-items-end">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" name="is_active" value="1" id="is_active"

@@ -183,6 +183,7 @@ class KaryawanUpdateFormRequest extends FormRequest
             'saudara.*.tanggal_lahir' => ['nullable','date'],
             'saudara.*.pendidikan_terakhir' => ['nullable','string','max:255'],
             'saudara.*.pekerjaan' => ['nullable','string','max:255'],
+            'role' => ['nullable','in:normal,admin,hr,super-admin'],
         ];
     }
 
