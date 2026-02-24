@@ -21,80 +21,79 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-//        MSettingApp::create([
-//            'app_name' => 'APP HRM - TAKO',
-//            'app_logo' => 'logos/logo.png',
-//            'app_favicon' => 'favicons/logo.png',
-//            'app_background' => 'backgrounds/hero-banner.jpg',
-//        ]);
+        MSettingApp::create([
+            'app_name' => 'APP HRM - TAKO',
+            'app_logo' => 'logos/logo.png',
+            'app_favicon' => 'favicons/logo.png',
+            'app_background' => 'backgrounds/hero-banner.jpg',
+        ]);
 
-//        Role::firstOrCreate(['name' => 'super-admin']);
-//        $user = User::find(1);
-//
-//        if ($user) {
-//            $user->assignRole('super-admin');
-//            $user->assignRole('hr');
-//        }
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'username' => 'test',
+            'password' => Hash::make('password'),
+            'user_token' => Hash::make('test@example.com')
+        ]);
 
-//        MJenisCuti::create([
-//           'nama_cuti' => 'TAHUNAN',
-//            'kode' => 'YEARLY',
-//        ]);
-//
-//        MJenisCuti::create([
-//            'nama_cuti' => 'MENIKAH',
-//            'kode' => 'MARRY',
-//        ]);
-//
-//        MJenisCuti::create([
-//           'nama_cuti' => 'MELAHIRKAN',
-//            'kode' => 'BIRTH',
-//        ]);
-//
-//        MJenisCuti::create([
-//           'nama_cuti' => 'POTONG CUTI',
-//           'kode' => 'CUT',
-//        ]);
-//
-//        MJenisCuti::create([
-//           'nama_cuti' => 'KEDUKAAN',
-//           'kode' => 'GRIEF',
-//        ]);
+        $this->call([
+            RolePermissionSeeder::class,
+            UserRoleSeeder::class
+        ]);
 
-//        MJenisIzin::create([
-//            'nama_izin' => 'PULANG LEBIH CEPAT',
-//            'kode' => 'EARLYOUT'
-//        ]);
-//
-//        MJenisIzin::create([
-//           'nama_izin' => 'DATANG TERLAMBAT',
-//           'kode' => 'LATEIN'
-//        ]);
-//
-//        MJenisIzin::create([
-//           'nama_izin' => 'SAKIT',
-//           'kode' => 'SICK'
-//        ]);
-//
-//        MJenisIzin::create([
-//           'nama_izin' => 'TIDAK MASUK KERJA',
-//            'kode' => 'ABSENCE'
-//        ]);
+        Role::firstOrCreate(['name' => 'super-admin']);
+        $user = User::find(1);
 
-        // User::factory(10)->create();
+        if ($user) {
+            $user->assignRole('super-admin');
+            $user->assignRole('hr');
+        }
 
-//         User::factory()->create([
-//             'name' => 'Test User',
-//             'email' => 'test@example.com',
-//             'username' => 'test',
-//             'password' => Hash::make('password'),
-//             'user_token' => Hash::make('test@example.com')
-//         ]);
-//
-//         $this->call([
-//             RolePermissionSeeder::class,
-//             UserRoleSeeder::class
-//         ]);
+        MJenisCuti::create([
+           'nama_cuti' => 'TAHUNAN',
+            'kode' => 'YEARLY',
+        ]);
+
+        MJenisCuti::create([
+            'nama_cuti' => 'MENIKAH',
+            'kode' => 'MARRY',
+        ]);
+
+        MJenisCuti::create([
+           'nama_cuti' => 'MELAHIRKAN',
+            'kode' => 'BIRTH',
+        ]);
+
+        MJenisCuti::create([
+           'nama_cuti' => 'POTONG CUTI',
+           'kode' => 'CUT',
+        ]);
+
+        MJenisCuti::create([
+           'nama_cuti' => 'KEDUKAAN',
+           'kode' => 'GRIEF',
+        ]);
+
+        MJenisIzin::create([
+            'nama_izin' => 'PULANG LEBIH CEPAT',
+            'kode' => 'EARLYOUT'
+        ]);
+
+        MJenisIzin::create([
+           'nama_izin' => 'DATANG TERLAMBAT',
+           'kode' => 'LATEIN'
+        ]);
+
+        MJenisIzin::create([
+           'nama_izin' => 'SAKIT',
+           'kode' => 'SICK'
+        ]);
+
+        MJenisIzin::create([
+           'nama_izin' => 'TIDAK MASUK KERJA',
+            'kode' => 'ABSENCE'
+        ]);
+
 
 //        $totalRecords = 100000; // total data
 //        $batchSize = 5000;         // insert per batch
