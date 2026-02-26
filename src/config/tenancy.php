@@ -19,7 +19,8 @@ return [
     'central_domains' => [
         '127.0.0.1',
         'localhost',
-        'hrm-dev-tako.local'
+        'hrm-dev-tako.local',
+        'hrmdev.tako.co.id'
     ],
 
     /**
