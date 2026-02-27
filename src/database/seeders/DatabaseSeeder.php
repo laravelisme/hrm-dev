@@ -38,7 +38,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             RolePermissionSeeder::class,
-            UserRoleSeeder::class
+            UserRoleSeeder::class,
+            GrupJamKerjaSeeder::class,
         ]);
 
         Role::firstOrCreate(['name' => 'super-admin']);
@@ -94,50 +95,6 @@ class DatabaseSeeder extends Seeder
             'kode' => 'ABSENCE'
         ]);
 
-
-//        $totalRecords = 100000; // total data
-//        $batchSize = 5000;         // insert per batch
-//        $levels = ['HOLDING', 'COMPANY'];
-//
-//        for ($i = 0; $i < $totalRecords; $i += $batchSize) {
-//            $companies = [];
-//
-//            for ($j = 0; $j < $batchSize; $j++) {
-//                $companies[] = [
-//                    'company_name' => 'PT Takoma Cemerlang ' . ($i + $j + 1),
-//                    'level' => $levels[array_rand($levels)],
-//                    'created_at' => now(),
-//                    'updated_at' => now(),
-//                ];
-//            }
-//
-//            MCompany::insert($companies);
-//
-//            // echo "Inserted " . min($i + $batchSize, $totalRecords) . " / $totalRecords companies\n";
-//        }
-
-//        $perusahaans = [
-//            ['nama_perusahaan' => 'PT Alpha', 'subdomain' => 'alpha'],
-//        ];
-//
-//        $appDomain = env('APP_DOMAIN');
-//
-//        $appDomain = preg_replace('#^https?://#', '', $appDomain);
-//
-//        foreach ($perusahaans as $data) {
-//
-//            // 2. Buat Tenant
-//            $tenant = Tenant::create([
-//                'id' => $data['subdomain'],
-//            ]);
-//
-//            $customDomain = $data['subdomain'] . '.' . $appDomain;
-//
-//            $tenant->domains()->create([
-//                'domain' => $customDomain,
-//            ]);
-//
-//        }
     }
 }
 

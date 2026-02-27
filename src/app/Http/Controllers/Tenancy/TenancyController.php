@@ -74,13 +74,6 @@ class TenancyController extends Controller
                 'domain' => $data['domain'],
             ]);
 
-            $adminAttributes = [
-                'name' => $data['username'] ?? 'Admin',
-                'email' => $data['email'] ?? ('admin@' . $data['domain']),
-                'username' => $data['username'] ?? 'admin',
-                'password' => Hash::make($rawPassword),
-            ];
-
             if ($request->hasFile('logo')) {
                 $path = $request->file('logo')->store('logos', 'public');
                 $data['logo'] = $path;
@@ -96,9 +89,9 @@ class TenancyController extends Controller
                 $data['favicon'] = $path;
             }
 
-            event(new TenantCreated($tenant, $data, $rawPassword));
-
             DB::commit();
+
+            event(new TenantCreated($tenant, $data, $rawPassword));
 
             return $this->successResponse(null, 'Domain created successfully', 201);
 

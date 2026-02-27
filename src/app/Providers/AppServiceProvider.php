@@ -50,9 +50,9 @@ class AppServiceProvider extends ServiceProvider
         Paginator::currentPathResolver(function () {
             return url()->current();
         });
-        if (app()->environment('local')) {
-            URL::forceRootUrl(config('app.url'));
-        }
+//        if (app()->environment('local')) {
+//            URL::forceRootUrl(config('app.url'));
+//        }
 
         View::composer('*', function ($view) {
             $view->with('global_setting', $this->resolveAppSetting());

@@ -18,6 +18,6 @@ class AuthMiddleware
         if(auth()->check()) {
             return $next($request);
         }
-        return redirect()->route('admin.login');
+        return redirect('/login');
     }
 }
