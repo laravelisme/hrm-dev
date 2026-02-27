@@ -97,6 +97,14 @@ class TenancyController extends Controller
 
         } catch (\Throwable $e) {
             DB::rollBack();
+            if (app()->environment('local')) {
+                Log::error('[TenancyController@store] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                return response()->json([
+                    'message' => 'Failed to create domain and tenant',
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ], 500);
+            }
             Log::error('[TenancyController@store] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return $this->errorResponse('Failed to create domain and tenant', 500);
         }
