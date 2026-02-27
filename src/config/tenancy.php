@@ -18,6 +18,7 @@ return [
      */
     'central_domains' => [
         'hrm-dev-tako.local',
+        'hrmdev.tako.co.id',
     ],
 
     /**
