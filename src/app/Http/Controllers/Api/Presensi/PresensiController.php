@@ -413,4 +413,25 @@ class PresensiController extends Controller
         }
     }
 
+    public function getGrupJamKerja(Request $request)
+    {
+        try {
+
+            $user = auth('api')->user();
+            $karyawan = MKaryawan::where('user_id', $user->id)->first();
+
+            if (!$karyawan) {
+                return $this->errorResponse('Karyawan not found', 404);
+            }
+
+            $grupKerja = MGrupJamKerja::findOrFail($karyawan->m_group_kerja_id);
+
+            return $this->successResponse($grupKerja, 'Grup jam kerja fetched successfully', 200);
+
+        } catch (\Throwable $e) {
+                Log::error('[PresensiController@getGrupJamKerja] '.$e->getMessage());
+                return $this->errorResponse('Failed to load grup jam kerja', 500);
+        }
+    }
+
 }

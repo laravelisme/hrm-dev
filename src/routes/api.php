@@ -60,6 +60,7 @@ Route::prefix('v2')->group(function () {
 
     Route::prefix('presensi')->middleware('auth:api')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'index']);
+        Route::get('/get-jam-kerja', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'getGrupJamKerja']);
         Route::post('/submit', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'store']);
         Route::post('checkout', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'checkout']);
         Route::get('/current-presensi', [\App\Http\Controllers\Api\Presensi\PresensiController::class, 'getCurrentPresensi']);
