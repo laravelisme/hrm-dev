@@ -434,4 +434,45 @@ class PresensiController extends Controller
         }
     }
 
+    public function getListPresensiBawahan(Request $request)
+    {
+        try {
+
+            $user = auth('api')->user();
+            $karyawan = MKaryawan::where('user_id', $user->id)->first();
+
+            if (!$karyawan) {
+                return $this->errorResponse('Karyawan not found', 404);
+            }
+
+            $bawahanIds = MKaryawan::where('atasan1_id', $karyawan->id)->pluck('id');
+
+            $searchStartDate = trim((string) $request->query('start_date', ''));
+            $searchEndDate   = trim((string) $request->query('end_date', ''));
+
+            $query = $this->presensi->newQuery();
+
+            if ($bawahanIds->isNotEmpty()) {
+                $query->whereIn('m_karyawan_id', $bawahanIds);
+            } else {
+                return $this->successResponse([], 'No bawahan found', 200);
+            }
+
+            if ($searchStartDate) {
+                $query->whereDate('check_in_date', '>=', $searchStartDate);
+            }
+            if ($searchEndDate) {
+                $query->whereDate('check_in_date', '<=', $searchEndDate);
+            }
+
+            $presensis = $query->orderByDesc('id')->with('karyawan')->get();
+
+            return $this->successResponse($presensis, 'List presensi bawahan fetched successfully', 200);
+
+        } catch (\Throwable $e) {
+                Log::error('[PresensiController@getListPresensiBawahan] '.$e->getMessage());
+                return $this->errorResponse('Failed to load list presensi bawahan', 500);
+        }
+    }
+
 }
