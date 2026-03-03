@@ -151,7 +151,7 @@ class PresensiController extends Controller
 
             $data = [
                 'presensi' => $presensi,
-                'is_on_check_in' => now()->greaterThanOrEqualTo($minCheckIn) && now()->lessThanOrEqualTo($maxCheckIn),
+                'is_on_check_in' => (now()->greaterThanOrEqualTo($minCheckIn) && now()->lessThanOrEqualTo($maxCheckIn)) && $presensi === null,
                 'is_on_check_out' => (now()->greaterThanOrEqualTo($minCheckOut) && now()->lessThanOrEqualTo($maxCheckOut)) && $presensi !== null,
             ];
 
