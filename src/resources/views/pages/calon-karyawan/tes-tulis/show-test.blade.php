@@ -260,37 +260,37 @@
                 let msg =
                     `Halo ${name || 'Kandidat'},
 
-Selamat! Anda *LOLOS* ke tahap *TES TULIS*.
+                    Selamat! Anda *LOLOS* ke tahap *TES TULIS*.
 
-Data kandidat:
-• Nama: ${name || '-'}
-• NIK: ${nik || '-'}
+                    Data kandidat:
+                    • Nama: ${name || '-'}
+                    • NIK: ${nik || '-'}
 
-Berikut link tes dan deadline pengerjaan:`;
+                    Berikut link tes dan deadline pengerjaan:`;
 
                 if (linkPs) {
                     msg += `
 
-*Tes Psikologi*
-Link: ${linkPs}
-Deadline: ${dlPs}`;
+                    *Tes Psikologi*
+                    Link: ${linkPs}
+                    Deadline: ${dlPs}`;
                 }
 
                 if (linkTk) {
                     msg += `
 
-*Tes Teknikal*
-Link: ${linkTk}
-Deadline: ${dlTk}`;
+                    *Tes Teknikal*
+                    Link: ${linkTk}
+                    Deadline: ${dlTk}`;
                 }
 
                 msg += `
 
-Silakan dikerjakan sebelum deadline.
-Jika ada kendala, silakan balas pesan ini.
+                Silakan dikerjakan sebelum deadline.
+                Jika ada kendala, silakan balas pesan ini.
 
-Terima kasih.
-HR Recruitment`;
+                Terima kasih.
+                HR Recruitment`;
 
                 const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
 
@@ -361,12 +361,11 @@ HR Recruitment`;
                 $wrap.show();
             }
 
-            // ===== helper: parse types dari URL link psikologi (fallback) =====
             function parseTypesFromPsikologiLink(link) {
                 try {
                     if (!link) return [];
                     const u = new URL(link);
-                    const t = u.searchParams.get('types'); // kalau backend encode ?types=DISC,PAPI
+                    const t = u.searchParams.get('types');
                     if (!t) return [];
                     return t.split(',').map(x => x.trim().toUpperCase()).filter(Boolean);
                 } catch (e) {
@@ -374,17 +373,101 @@ HR Recruitment`;
                 }
             }
 
-            // initial render dari link (kalau ada ?types=)
             renderPsikologiTypes(parseTypesFromPsikologiLink($('#linkPsikologi').val()));
 
-            // ===== Generate link (modal sesuai GenerateTestFormRequest) =====
+            // ===== Skill categories (Teknikal) =====
+            const SKILL_CATEGORY_API = 'http://trainee.tako.co.id/api/psychotest/skill-categories';
+            let __skillCategoryCache = null;
+            let __skillCategoryFetchPromise = null;
+
+            function setSkillCategoryLoading(isLoading) {
+                const $select = $('#selectSkillCategory');
+                const $help = $('#skillCategoryHelp');
+                if (!$select.length) return;
+
+                if (isLoading) {
+                    $select.prop('disabled', true);
+                    $help.text('Loading skill categories...');
+                }
+            }
+
+            function renderSkillCategoryOptions(items) {
+                const $select = $('#selectSkillCategory');
+                const $help = $('#skillCategoryHelp');
+                if (!$select.length) return;
+
+                $select.empty();
+                $select.append('<option value="">-- Pilih Skill Category --</option>');
+
+                (items || []).forEach(function (it) {
+                    const val = s(it).trim();
+                    if (!val) return;
+                    $select.append(`<option value="${val}">${val}</option>`);
+                });
+
+                $help.text('Pilih kategori untuk test teknikal.');
+            }
+
+            function showSkillCategoryWrap(show) {
+                const $wrap = $('#skillCategoryWrap');
+                if (!$wrap.length) return;
+                if (show) $wrap.show(); else $wrap.hide();
+            }
+
+            async function fetchSkillCategories() {
+                if (Array.isArray(__skillCategoryCache)) return __skillCategoryCache;
+
+                if (!__skillCategoryFetchPromise) {
+                    __skillCategoryFetchPromise = $.ajax({
+                        url: SKILL_CATEGORY_API,
+                        method: 'GET',
+                        dataType: 'json',
+                        timeout: 15000
+                    }).then(function (res) {
+                        if (Array.isArray(res)) {
+                            __skillCategoryCache = res;
+                            return res;
+                        }
+                        __skillCategoryCache = [];
+                        return [];
+                    }).catch(function () {
+                        __skillCategoryCache = [];
+                        return [];
+                    });
+                }
+
+                return __skillCategoryFetchPromise;
+            }
+
+            async function loadSkillCategoriesIfNeeded(isTeknikalOn) {
+                showSkillCategoryWrap(Boolean(isTeknikalOn));
+
+                if (!isTeknikalOn) {
+                    const $select = $('#selectSkillCategory');
+                    if ($select.length) $select.val('');
+                    return;
+                }
+
+                setSkillCategoryLoading(true);
+
+                const items = await fetchSkillCategories();
+
+                renderSkillCategoryOptions(items);
+
+                if (!items || !items.length) {
+                    const $select = $('#selectSkillCategory');
+                    const $help = $('#skillCategoryHelp');
+                    if ($select.length) $select.prop('disabled', true);
+                    if ($help.length) $help.text('Skill categories gagal dimuat. Silakan coba lagi atau matikan Test Teknikal.');
+                } else {
+                    $('#selectSkillCategory').prop('disabled', false);
+                }
+            }
+
             $('#btnGenerateLink').on('click', function () {
                 const url = $(this).data('url');
-
-                // prefill teknikal dari link existing
                 const hasTeknikal = ($('#linkTeknikal').val() || '').trim().length > 0;
 
-                // prefill psikologi dari badges existing (kalau sebelumnya sudah parse dari URL)
                 const currentFromLink = parseTypesFromPsikologiLink($('#linkPsikologi').val());
                 const isDISC = currentFromLink.includes('DISC');
                 const isPAPI = currentFromLink.includes('PAPI');
@@ -402,6 +485,14 @@ HR Recruitment`;
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" id="swTeknikal" ${hasTeknikal ? 'checked' : ''}>
                         <label class="form-check-label" for="swTeknikal">Test Teknikal</label>
+                    </div>
+
+                    <div id="skillCategoryWrap" class="mb-3" style="display:none;">
+                        <label class="form-label">Skill Category (Teknikal)</label>
+                        <select id="selectSkillCategory" class="form-select" disabled>
+                            <option value="">-- Pilih Skill Category --</option>
+                        </select>
+                        <div id="skillCategoryHelp" class="form-text">Loading skill categories...</div>
                     </div>
 
                     <div class="fw-semibold mb-2">Test Psikologi (pilih minimal 1)</div>
@@ -426,17 +517,38 @@ HR Recruitment`;
                     </div>
                 </div>
             `,
+                    didOpen: () => {
+                        loadSkillCategoriesIfNeeded($('#swTeknikal').is(':checked'));
+                        $(document).off('change.swTeknikal').on('change.swTeknikal', '#swTeknikal', function () {
+                            loadSkillCategoriesIfNeeded($(this).is(':checked'));
+                        });
+                    },
                     preConfirm: () => {
                         const teknikal = $('#swTeknikal').is(':checked');
                         const psikologi = $('.psy-check:checked').map((_, el) => $(el).val()).get();
 
-                        // sesuai rules GenerateTestFormRequest: test_psikologi required|array
                         if (!psikologi.length) {
                             Swal.showValidationMessage('Pilih minimal 1 test psikologi (DISC/PAPI/CFIT).');
                             return false;
                         }
 
-                        return { teknikal, psikologi };
+                        let skill_category = '';
+                        if (teknikal) {
+                            const $sel = $('#selectSkillCategory');
+                            skill_category = s($sel.val()).trim();
+
+                            if ($sel.prop('disabled')) {
+                                Swal.showValidationMessage('Skill categories belum siap. Tunggu sampai load selesai, atau matikan Test Teknikal.');
+                                return false;
+                            }
+
+                            if (!skill_category) {
+                                Swal.showValidationMessage('Pilih skill category untuk test teknikal.');
+                                return false;
+                            }
+                        }
+
+                        return { teknikal, psikologi, skill_category };
                     }
                 }).then((r) => {
                     if (!r.isConfirmed) return;
@@ -447,22 +559,19 @@ HR Recruitment`;
                         data: {
                             _token: csrf,
                             test_teknikal: r.value.teknikal ? 1 : 0,
-                            test_psikologi: r.value.psikologi
+                            test_psikologi: r.value.psikologi,
+                            skill_category: r.value.skill_category || ''
                         },
                         success: function (res) {
                             const data = res?.data || res;
 
-                            // update fields
                             $('#linkPsikologi').val(data?.test_psikologi || '');
                             $('#linkTeknikal').val(data?.test_teknikal || '');
 
-                            // update token + status badges (kalau ada)
                             if (data?.token) $('#txtToken').text(data.token);
                             if (data?.status_psikologi) $('#badgePsikologi').text(`Psikologi: ${data.status_psikologi}`);
                             if (data?.status_teknikal) $('#badgeTeknikal').text(`Teknikal: ${data.status_teknikal}`);
 
-                            // render badges psikologi:
-                            // prioritas: dari response `psikologi_types`, fallback dari URL link psikologi
                             const types = Array.isArray(data?.psikologi_types)
                                 ? data.psikologi_types
                                 : parseTypesFromPsikologiLink(data?.test_psikologi);
