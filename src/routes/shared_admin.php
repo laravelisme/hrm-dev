@@ -24,9 +24,7 @@ Route::prefix('/')->group(function () {
     });
 
     Route::middleware([AuthMiddleware::class])->group(function () {
-        Route::get('dashboard', function () {
-            return view('pages.dashboard.index');
-        })->name('admin.dashboard');
+        Route::get('dashboard', [\App\Http\Controllers\Dashboard\DashboardController::class, 'index'])->name('admin.dashboard');
 
         Route::prefix('/karyawan')->middleware(['role:hr|admin'])->group(function () {
             Route::get('/', [\App\Http\Controllers\Karyawan\KaryawanController::class, 'index'])->name('admin.karyawan.index');
