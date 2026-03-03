@@ -125,25 +125,6 @@
                                     </option>
                                 @endforeach
                             </select>
-
-{{--                            @php--}}
-{{--                                $hasFilter = request()->filled('searchName')--}}
-{{--                                    || request()->filled('searchNik')--}}
-{{--                                    || request()->filled('searchJabatan')--}}
-{{--                                    || request()->filled('searchDepartment')--}}
-{{--                                    || request()->filled('searchCompany')--}}
-{{--                                    || request()->filled('perPage');--}}
-{{--                            @endphp--}}
-
-{{--                            <button class="btn btn-primary btn-sm" type="submit" title="Filter">--}}
-{{--                                <i class="bi bi-funnel"></i>--}}
-{{--                            </button>--}}
-
-{{--                            @if($hasFilter)--}}
-{{--                                <a href="{{ url()->current() }}" class="btn btn-light btn-sm" title="Reset filter">--}}
-{{--                                    <i class="bi bi-x-circle"></i>--}}
-{{--                                </a>--}}
-{{--                            @endif--}}
                         </form>
 
                         <a href="{{ route('admin.karyawan.create') }}" class="btn btn-primary btn-sm">
@@ -164,6 +145,7 @@
                             <thead>
                             <tr>
                                 <th style="width:70px;">No</th>
+                                <th>Kode</th>
                                 <th>Nama</th>
                                 <th>NIK</th>
                                 <th>Email</th>
@@ -178,6 +160,7 @@
                             @foreach($karyawans as $i => $k)
                                 <tr>
                                     <td class="text-muted">{{ $karyawans->firstItem() + $i }}</td>
+                                    <td class="fw-semibold">{{ $k->kode_karyawan }}</td>
                                     <td class="fw-semibold">{{ $k->nama_karyawan }}</td>
                                     <td>{{ $k->nik }}</td>
                                     <td class="text-muted small">{{ $k->email }}</td>
