@@ -154,6 +154,19 @@
                                                     </a>
                                                 </li>
 
+                                                {{-- Broadcast WA --}}
+                                                <li>
+                                                    <button type="button"
+                                                            class="dropdown-item btn-wa"
+                                                            data-name="{{ $ck->nama_lengkap }}"
+                                                            data-nik="{{ $ck->nik }}"
+                                                            data-company="{{ $ck->company_name }}"
+                                                            data-department="{{ $ck->department_name }}"
+                                                            data-phone="{{ $ck->no_telp ?? '' }}">
+                                                        <i class="bi bi-whatsapp me-2"></i> Broadcast WA
+                                                    </button>
+                                                </li>
+
                                                 <li><hr class="dropdown-divider"></li>
 
                                                 {{-- Kembali ke SHORTLIST_ADMIN --}}
@@ -283,6 +296,70 @@
                             Swal.fire({ icon: 'error', title: 'Error', text: msg, confirmButtonText: 'OK' });
                         }
                     });
+                });
+            });
+
+            // ===== WA =====
+            function normalizeWaNumber(input) {
+                if (!input) return '';
+                let p = String(input).trim().replace(/[^\d+]/g, '');
+                if (p.startsWith('+')) p = p.substring(1);
+                if (p.startsWith('0')) p = '62' + p.substring(1);
+                return p;
+            }
+
+            $(document).on('click', '.btn-wa', function () {
+                const $btn       = $(this);
+                const name       = String($btn.data('name') ?? '').trim();
+                const nik        = String($btn.data('nik') ?? '').trim();
+                const company    = String($btn.data('company') ?? '').trim();
+                const department = String($btn.data('department') ?? '').trim();
+                const rawPhone   = String($btn.data('phone') ?? '').trim();
+                const phone      = normalizeWaNumber(rawPhone);
+
+                if (!phone) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Nomor WA kosong',
+                        text: `No. telp untuk ${name || 'calon karyawan'} belum ada.`
+                    });
+                    return;
+                }
+
+                const msg =
+`Halo ${name || '-'},
+
+Terima kasih sudah meluangkan waktu untuk mengikuti proses rekrutmen bersama kami.
+
+Setelah melalui proses seleksi, kami mohon maaf untuk menyampaikan bahwa Anda *belum dapat kami terima* pada posisi yang dilamar saat ini.
+
+Berikut data kandidat:
+• Nama: ${name || '-'}
+• NIK: ${nik || '-'}
+• Company: ${company || '-'}
+• Department: ${department || '-'}
+
+Kami menghargai waktu dan usaha Anda, dan berharap dapat bertemu kembali di kesempatan lain.
+Apabila ada pertanyaan, silakan membalas pesan ini.
+
+Terima kasih.
+HR Recruitment`;
+
+                const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+
+                Swal.fire({
+                    title: 'Buka WhatsApp?',
+                    html: `
+                        Kirim notifikasi <b>REJECTED</b> ke <b>${name || 'kandidat'}</b><br>
+                        <span class="text-muted small">${rawPhone || '-'}</span>
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Buka WA',
+                    cancelButtonText: 'Batal'
+                }).then((r) => {
+                    if (!r.isConfirmed) return;
+                    window.open(waUrl, '_blank');
                 });
             });
 
