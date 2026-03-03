@@ -152,7 +152,7 @@ class PresensiController extends Controller
             $data = [
                 'presensi' => $presensi,
                 'is_on_check_in' => now()->greaterThanOrEqualTo($minCheckIn) && now()->lessThanOrEqualTo($maxCheckIn),
-                'is_on_check_out' => now()->greaterThanOrEqualTo($minCheckOut) && now()->lessThanOrEqualTo($maxCheckOut),
+                'is_on_check_out' => (now()->greaterThanOrEqualTo($minCheckOut) && now()->lessThanOrEqualTo($maxCheckOut)) && $presensi !== null,
             ];
 
             return $this->successResponse($data, 'Current presensi fetched successfully', 200);
