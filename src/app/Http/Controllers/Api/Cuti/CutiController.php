@@ -231,4 +231,31 @@ class CutiController extends Controller
             return $this->errorResponse('Failed to approve cuti', 500);
         }
     }
+
+    public function getSummary(Request $request)
+    {
+        try {
+
+            $user = auth('api')->user();
+            $karyawan = MKaryawan::where('user_id', $user->id)->first();
+
+            if (!$karyawan) {
+                return $this->errorResponse('Karyawan not found for the user', 404);
+            }
+
+            $saldoCuti = TSaldoCuti::where('m_karyawan_id', $karyawan->id)->where('tahun', date('Y'))->first();
+
+            $data = [
+                "saldo" => $saldoCuti ? $saldoCuti->saldo : 0,
+                "sisa_saldo" => $saldoCuti ? $saldoCuti->sisa_saldo : 0,
+                "telah_daimbil" => $saldoCuti ? $saldoCuti->saldo - $saldoCuti->sisa_saldo : 0,
+            ];
+
+            return $this->successResponse($data, 'Cuti list fetched successfully', 200);
+
+        } catch (\Throwable $e) {
+                Log::error('[CutiController@getSummary] '.$e->getMessage());
+                return $this->errorResponse('Failed to load cuti summary', 500);
+        }
+    }
 }
