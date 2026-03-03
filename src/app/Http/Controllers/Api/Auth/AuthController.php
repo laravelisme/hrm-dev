@@ -183,6 +183,16 @@ class AuthController extends Controller
 
             MRefreshToken::where('user_id', $user->id)->delete();
 
+            $userDevice = MUserDevices::where('user_id', $user->id)->first();
+            if ($userDevice) {
+                $userDevice->device_token = null;
+                $userDevice->unique_id = null;
+                $userDevice->device_info = null;
+                $userDevice->bundle_id = null;
+                $userDevice->os = null;
+                $userDevice->save();
+            }
+
             auth('api')->logout();
 
             DB::commit();
