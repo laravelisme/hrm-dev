@@ -17,7 +17,7 @@ class HandlePresensiOfflineBulk implements ShouldQueue
             DB::transaction(function () use ($event) {
 
                 TPresensi::upsert(
-                    $event->preparedData,
+                    $event->data,
                     ['m_karyawan_id', 'check_in_date'],
                     [
                         'check_in_time',
