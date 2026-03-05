@@ -5,31 +5,28 @@ namespace App\Listeners;
 use App\Events\TenantCreated;
 use App\Events\TenantProvisionRequested;
 use App\Models\Tenant;
-use Illuminate\Http\File;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
-class ProvisionTenantAndDomain
+class ProvisionTenantAndDomain implements ShouldQueue
 {
+    use InteractsWithQueue;
+
     public function handle(TenantProvisionRequested $event): void
     {
         $data = $event->data;
-        $tmpFiles = $event->tmpFiles;
-
-        $storedPaths = [];
+        $uploadedPaths = $event->uploadedPaths;
 
         try {
             DB::beginTransaction();
 
-            foreach (['logo' => 'logos', 'background' => 'backgrounds', 'favicon' => 'favicons'] as $key => $dir) {
-                $tmpPath = $tmpFiles[$key] ?? null;
-                if (!$tmpPath) {
-                    continue;
+            foreach (['logo', 'background', 'favicon'] as $key) {
+                if (!empty($uploadedPaths[$key])) {
+                    $data[$key] = $uploadedPaths[$key];
                 }
-
-                $storedPaths[$key] = Storage::disk('public')->putFile($dir, new File($tmpPath));
-                $data[$key === 'logo' ? 'logo' : ($key === 'background' ? 'background' : 'favicon')] = $storedPaths[$key];
             }
 
             /** @var Tenant $tenant */
@@ -52,8 +49,10 @@ class ProvisionTenantAndDomain
         } catch (\Throwable $e) {
             DB::rollBack();
 
+            // Cleanup already-stored files if DB insert failed
             try {
-                foreach ($storedPaths as $path) {
+                foreach (['logo', 'background', 'favicon'] as $key) {
+                    $path = $uploadedPaths[$key] ?? null;
                     if ($path) {
                         Storage::disk('public')->delete($path);
                     }

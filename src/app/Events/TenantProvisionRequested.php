@@ -11,11 +11,11 @@ class TenantProvisionRequested
 
     /**
      * @param array<string,mixed> $data
-     * @param array<string,string|null> $tmpFiles  absolute temp path from UploadedFile::getRealPath()
+     * @param array<string,string|null> $uploadedPaths  stored paths on configured disk (e.g. public)
      */
     public function __construct(
         public array $data,
-        public array $tmpFiles,
+        public array $uploadedPaths,
         public string $rawPassword,
     ) {
     }

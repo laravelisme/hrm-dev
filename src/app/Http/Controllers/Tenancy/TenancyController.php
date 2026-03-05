@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 use Stancl\Tenancy\Database\Models\Domain;
+use Illuminate\Support\Facades\Storage;
 
 class TenancyController extends Controller
 {
@@ -59,13 +60,14 @@ class TenancyController extends Controller
                 $rawPassword = Str::random(12);
             }
 
-            $tmpFiles = [
-                'logo' => $request->file('logo')?->getRealPath(),
-                'background' => $request->file('background')?->getRealPath(),
-                'favicon' => $request->file('favicon')?->getRealPath(),
+            // Save uploads immediately to permanent storage so provisioning can be queued safely
+            $uploadedPaths = [
+                'logo' => $request->file('logo')?->store('logos', 'public'),
+                'background' => $request->file('background')?->store('backgrounds', 'public'),
+                'favicon' => $request->file('favicon')?->store('favicons', 'public'),
             ];
 
-            event(new TenantProvisionRequested($data, $tmpFiles, $rawPassword));
+            event(new TenantProvisionRequested($data, $uploadedPaths, $rawPassword));
 
             return $this->successResponse(null, 'Domain created successfully', 201);
 
