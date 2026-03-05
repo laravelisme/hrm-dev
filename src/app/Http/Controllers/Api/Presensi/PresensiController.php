@@ -185,10 +185,13 @@ class PresensiController extends Controller
 
             $minCheckIn = $grupKerja->{$day . '_min_check_in'};
             $maxCheckIn = $grupKerja->{$day . '_max_check_in'};
+            $minCheckOut = $grupKerja->{$day . '_min_check_out'};
+            $maxCheckOut = $grupKerja->{$day . '_max_check_out'};
 
-            if ($minCheckIn == null || $maxCheckIn == null) {
+            if ($minCheckIn == null || $maxCheckIn == null || $minCheckOut == null || $maxCheckOut == null) {
                 $minCheckIn = $grupKerja->min_check_in;
                 $maxCheckIn = $grupKerja->max_check_in;
+                $maxCheckOut = $grupKerja->max_check_out;
             }
 
             if ($data['check_in_time'] < $minCheckIn) {
@@ -201,7 +204,7 @@ class PresensiController extends Controller
 
             $checkOutDate = $data['check_in_date'] ?? null;
 
-            if($maxCheckIn < $minCheckIn) {
+            if($maxCheckOut < $minCheckIn) {
                 $checkOutDate = Carbon::parse($data['check_in_date'])->addDay()->format('Y-m-d');
             }
 
