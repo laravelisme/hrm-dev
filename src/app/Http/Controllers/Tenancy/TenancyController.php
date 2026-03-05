@@ -2,21 +2,13 @@
 
 namespace App\Http\Controllers\Tenancy;
 
-use App\Events\TenantCreated;
 use App\Events\TenantProvisionRequested;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenancy\Domain\DomainStoreFormRequest;
-use App\Models\MSettingApp;
-use App\Models\Tenant;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
 use Stancl\Tenancy\Database\Models\Domain;
-use Illuminate\Support\Facades\Storage;
 
 class TenancyController extends Controller
 {
