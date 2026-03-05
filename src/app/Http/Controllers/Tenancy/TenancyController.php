@@ -60,12 +60,22 @@ class TenancyController extends Controller
                 $rawPassword = Str::random(12);
             }
 
-            // Save uploads immediately to permanent storage so provisioning can be queued safely
             $uploadedPaths = [
                 'logo' => $request->file('logo')?->store('logos', 'public'),
                 'background' => $request->file('background')?->store('backgrounds', 'public'),
                 'favicon' => $request->file('favicon')?->store('favicons', 'public'),
             ];
+
+            foreach ($uploadedPaths as $k => $path) {
+                if ($path) {
+                    $data[$k] = $path;
+                }
+            }
+
+            $data = array_filter(
+                $data,
+                fn ($v) => is_null($v) || is_scalar($v),
+            );
 
             event(new TenantProvisionRequested($data, $uploadedPaths, $rawPassword));
 
