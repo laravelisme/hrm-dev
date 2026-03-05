@@ -24,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
         \App\Events\GenerateSaldoCutiTahunan::class => [
             \App\Listeners\GenerateSaldoCutiTahunanListener::class,
         ],
+        \App\Events\TenantProvisionRequested::class => [
+            \App\Listeners\ProvisionTenantAndDomain::class,
+        ],
         \App\Events\TenantCreated::class => [
             \App\Listeners\SetupTenantEnvironment::class,
         ],

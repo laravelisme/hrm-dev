@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tenancy;
 
 use App\Events\TenantCreated;
+use App\Events\TenantProvisionRequested;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenancy\Domain\DomainStoreFormRequest;
 use App\Models\MSettingApp;
@@ -53,50 +54,22 @@ class TenancyController extends Controller
         try {
             $data = $request->validated();
 
-            $generatedPassword = null;
             $rawPassword = $data['password'] ?? null;
             if (empty($rawPassword)) {
                 $rawPassword = Str::random(12);
-                $generatedPassword = $rawPassword;
             }
 
-            DB::beginTransaction();
+            $tmpFiles = [
+                'logo' => $request->file('logo')?->getRealPath(),
+                'background' => $request->file('background')?->getRealPath(),
+                'favicon' => $request->file('favicon')?->getRealPath(),
+            ];
 
-            $tenant = Tenant::create([
-                'id' => $data['domain'],
-                'nama_company' => $data['nama_company'] ?? $data['domain'],
-                'username' => $data['username'] ?? null,
-                'password' => $rawPassword ?? null,
-                'email' => $data['email'] ?? null,
-            ]);
-
-            $tenant->domains()->create([
-                'domain' => $data['domain'],
-            ]);
-
-            if ($request->hasFile('logo')) {
-                $path = $request->file('logo')->store('logos', 'public');
-                $data['logo'] = $path;
-            }
-
-            if ($request->hasFile('background')) {
-                $path = $request->file('background')->store('backgrounds', 'public');
-                $data['background'] = $path;
-            }
-
-            if ($request->hasFile('favicon')) {
-                $path = $request->file('favicon')->store('favicons', 'public');
-                $data['favicon'] = $path;
-            }
-
-            DB::commit();
-
-            event(new TenantCreated($tenant, $data, $rawPassword));
+            event(new TenantProvisionRequested($data, $tmpFiles, $rawPassword));
 
             return $this->successResponse(null, 'Domain created successfully', 201);
 
         } catch (\Throwable $e) {
-            DB::rollBack();
             if (app()->environment('local')) {
                 Log::error('[TenancyController@store] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
                 return response()->json([
@@ -105,6 +78,7 @@ class TenancyController extends Controller
                     'trace' => $e->getTraceAsString(),
                 ], 500);
             }
+
             Log::error('[TenancyController@store] ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return $this->errorResponse('Failed to create domain and tenant', 500);
         }
